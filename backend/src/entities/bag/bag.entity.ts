@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable } from "typeorm";
 import { CommonEntity } from "../common/common.entity";
 import { ManyToMany } from "typeorm";
-import { Category } from "./category.entity";
+import { Category } from "../category/category.entity";
 
 @Entity()
 export class BagEntity extends CommonEntity {

@@ -7,6 +7,45 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"Category": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"categoryName": {
+						"type": "string"
+					},
+					"bags": {
+						"items": {
+							"$ref": "#/components/schemas/BagEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"categoryName",
+					"bags"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"BagEntity": {
 				"properties": {
 					"id": {
@@ -55,37 +94,14 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Category": {
+			"CreateCategoryValidator": {
 				"properties": {
-					"id": {
+					"categoryName": {
 						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"bags": {
-						"items": {
-							"$ref": "#/components/schemas/BagEntity"
-						},
-						"type": "array"
 					}
 				},
 				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"bags"
+					"categoryName"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -130,6 +146,54 @@
 		"contact": {}
 	},
 	"paths": {
+		"/category/add-category": {
+			"post": {
+				"operationId": "AddCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/Category"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Category"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCategoryValidator"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/bag/add-bag": {
 			"post": {
 				"operationId": "AddBag",

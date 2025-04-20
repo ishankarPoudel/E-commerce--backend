@@ -1,7 +1,7 @@
 import { In } from "typeorm";
 import { AppDataSource } from "../../data-source";
 import { BagEntity } from "../../entities/bag/bag.entity";
-import { Category } from "../../entities/bag/category.entity";
+import { Category } from "../../entities/category/category.entity";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { ApiError } from "../../utils/apiError";
 
