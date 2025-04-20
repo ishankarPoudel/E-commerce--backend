@@ -7,50 +7,102 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"User": {
+			"BagEntity": {
 				"properties": {
 					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"email": {
 						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
 					},
 					"name": {
 						"type": "string"
 					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"Happy",
-							"Sad"
-						]
+					"price": {
+						"type": "number",
+						"format": "double"
 					},
-					"phoneNumbers": {
+					"description": {
+						"type": "string"
+					},
+					"categories": {
 						"items": {
-							"type": "string"
+							"$ref": "#/components/schemas/Category"
 						},
 						"type": "array"
 					}
 				},
 				"required": [
 					"id",
-					"email",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
 					"name",
-					"phoneNumbers"
+					"price",
+					"description",
+					"categories"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_User.email-or-name-or-phoneNumbers_": {
+			"Category": {
 				"properties": {
-					"email": {
+					"id": {
 						"type": "string"
 					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"bags": {
+						"items": {
+							"$ref": "#/components/schemas/BagEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"bags"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"addBagValidator": {
+				"properties": {
 					"name": {
 						"type": "string"
 					},
-					"phoneNumbers": {
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"categories": {
 						"items": {
 							"type": "string"
 						},
@@ -58,15 +110,13 @@
 					}
 				},
 				"required": [
-					"email",
 					"name",
-					"phoneNumbers"
+					"price",
+					"description",
+					"categories"
 				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"UserCreationParams": {
-				"$ref": "#/components/schemas/Pick_User.email-or-name-or-phoneNumbers_"
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -80,51 +130,40 @@
 		"contact": {}
 	},
 	"paths": {
-		"/users/{userId}": {
-			"get": {
-				"operationId": "GetUser",
+		"/bag/add-bag": {
+			"post": {
+				"operationId": "AddBag",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/User"
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/BagEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
 								}
 							}
 						}
 					}
 				},
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "name",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/users": {
-			"post": {
-				"operationId": "CreateUser",
-				"responses": {
-					"201": {
-						"description": "Created"
-					}
-				},
+				"tags": [
+					"Bag"
+				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -132,58 +171,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UserCreationParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/admins/{adminId}": {
-			"get": {
-				"operationId": "GetAdmin",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/User"
-								}
-							}
-						}
-					}
-				},
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "adminId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/admins": {
-			"post": {
-				"operationId": "CreateAdmin",
-				"responses": {
-					"201": {
-						"description": "Created"
-					}
-				},
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/UserCreationParams"
+								"$ref": "#/components/schemas/addBagValidator"
 							}
 						}
 					}

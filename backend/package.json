@@ -21,9 +21,12 @@
   "dependencies": {
     "@tsoa/runtime": "^6.6.0",
     "@types/cors": "^2.8.17",
+    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "nodemon": "^3.1.9",
+    "pg": "^8.14.1",
+    "postgres": "^3.4.5",
     "swagger-ui-express": "^5.0.1",
     "tsoa": "^6.6.0",
     "typeorm": "^0.3.22"
