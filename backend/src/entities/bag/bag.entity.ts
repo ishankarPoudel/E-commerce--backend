@@ -15,6 +15,8 @@ export class BagEntity extends CommonEntity {
   description: string;
 
   @ManyToMany(() => Category)
-  @JoinTable()
+  @JoinTable({
+    name: "bag_categorey_relation",
+  })
   categories: Category[];
 }
