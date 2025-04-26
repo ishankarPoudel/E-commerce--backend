@@ -194,6 +194,48 @@
 				}
 			}
 		},
+		"/category/get-categories": {
+			"get": {
+				"operationId": "GetCategories",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/Category"
+											},
+											"type": "array"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Category",
+					"Category"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/bag/add-bag": {
 			"post": {
 				"operationId": "AddBag",

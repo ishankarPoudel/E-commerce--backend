@@ -20,4 +20,13 @@ export class CategoryService {
     const savedCategory = await categoryRepo.save(newCategory);
     return savedCategory;
   }
+
+  async getAllCategories() {
+    const categoryRepo = AppDataSource.getRepository(Category);
+    const categories = await categoryRepo.find();
+    if (!categories || categories.length === 0) {
+      throw new ApiError(404, "No categories found");
+    }
+    return categories;
+  }
 }

@@ -108,6 +108,35 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsCategoryController_getCategories: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/category/get-categories',
+            ...(fetchMiddlewares<RequestHandler>(CategoryController)),
+            ...(fetchMiddlewares<RequestHandler>(CategoryController.prototype.getCategories)),
+
+            async function CategoryController_getCategories(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsCategoryController_getCategories, request, response });
+
+                const controller = new CategoryController();
+
+              await templateService.apiHandler({
+                methodName: 'getCategories',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsBagController_addBag: Record<string, TsoaRoute.ParameterSchema> = {
                 bag: {"in":"body","name":"bag","required":true,"ref":"addBagValidator"},
         };

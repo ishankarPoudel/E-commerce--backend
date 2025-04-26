@@ -1,4 +1,4 @@
-import { Body, Post, Route, Tags } from "tsoa";
+import { Body, Get, Post, Route, Tags } from "tsoa";
 import { CreateCategoryValidator } from "../../validators/createCategory.validator";
 import { CategoryService } from "../../services/category/category.service";
 
@@ -12,6 +12,17 @@ export class CategoryController {
       success: true,
       message: "Category added successfully",
       data: newCategory,
+    };
+  }
+
+  @Get("/get-categories")
+  @Tags("Category")
+  async getCategories() {
+    const categories = await new CategoryService().getAllCategories();
+    return {
+      success: true,
+      message: "Categories fetched successfully",
+      data: categories,
     };
   }
 }
