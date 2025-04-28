@@ -7,6 +7,61 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"BagEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"categories": {
+						"items": {
+							"$ref": "#/components/schemas/Category"
+						},
+						"type": "array"
+					},
+					"bagImages": {
+						"items": {
+							"$ref": "#/components/schemas/MediaEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"name",
+					"price",
+					"description",
+					"categories",
+					"bagImages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Category": {
 				"properties": {
 					"id": {
@@ -46,7 +101,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"BagEntity": {
+			"MediaEntity": {
 				"properties": {
 					"id": {
 						"type": "string"
@@ -64,21 +119,14 @@
 						"format": "date-time",
 						"nullable": true
 					},
-					"name": {
+					"url": {
 						"type": "string"
 					},
-					"price": {
-						"type": "number",
-						"format": "double"
-					},
-					"description": {
+					"altText": {
 						"type": "string"
 					},
-					"categories": {
-						"items": {
-							"$ref": "#/components/schemas/Category"
-						},
-						"type": "array"
+					"bag": {
+						"$ref": "#/components/schemas/BagEntity"
 					}
 				},
 				"required": [
@@ -86,10 +134,27 @@
 					"createdAt",
 					"updatedAt",
 					"deletedAt",
-					"name",
-					"price",
-					"description",
-					"categories"
+					"url",
+					"bag"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateMediaRequest": {
+				"properties": {
+					"bagId": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"altText": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bagId",
+					"url"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -146,6 +211,54 @@
 		"contact": {}
 	},
 	"paths": {
+		"/media/create-media": {
+			"post": {
+				"operationId": "CreateMedia",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/MediaEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Media"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMediaRequest"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/category/add-category": {
 			"post": {
 				"operationId": "AddCategory",

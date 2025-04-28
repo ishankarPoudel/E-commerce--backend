@@ -1,7 +1,8 @@
-import { Column, Entity, JoinTable } from "typeorm";
+import { Column, Entity, JoinTable, OneToMany } from "typeorm";
 import { CommonEntity } from "../common/common.entity";
 import { ManyToMany } from "typeorm";
 import { Category } from "../category/category.entity";
+import { MediaEntity } from "../media/media.entity";
 
 @Entity()
 export class BagEntity extends CommonEntity {
@@ -19,4 +20,7 @@ export class BagEntity extends CommonEntity {
     name: "bag_categorey_relation",
   })
   categories: Category[];
+
+  @OneToMany(() => MediaEntity, (media) => media.bag, { cascade: true })
+  bagImages: MediaEntity[];
 }

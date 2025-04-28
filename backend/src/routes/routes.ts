@@ -4,6 +4,8 @@
 import type { TsoaRoute } from '@tsoa/runtime';
 import {  fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MediaController } from './../controllers/media/media.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CategoryController } from './../controllers/category/category.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { BagController } from './../controllers/bag/bag.controller';
@@ -14,6 +16,22 @@ import type { Request as ExRequest, Response as ExResponse, RequestHandler, Rout
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "BagEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "name": {"dataType":"string","required":true},
+            "price": {"dataType":"double","required":true},
+            "description": {"dataType":"string","required":true},
+            "categories": {"dataType":"array","array":{"dataType":"refObject","ref":"Category"},"required":true},
+            "bagImages": {"dataType":"array","array":{"dataType":"refObject","ref":"MediaEntity"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Category": {
         "dataType": "refObject",
         "properties": {
@@ -27,17 +45,26 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "BagEntity": {
+    "MediaEntity": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"string","required":true},
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "name": {"dataType":"string","required":true},
-            "price": {"dataType":"double","required":true},
-            "description": {"dataType":"string","required":true},
-            "categories": {"dataType":"array","array":{"dataType":"refObject","ref":"Category"},"required":true},
+            "url": {"dataType":"string","required":true},
+            "altText": {"dataType":"string"},
+            "bag": {"ref":"BagEntity","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateMediaRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "bagId": {"dataType":"string","required":true},
+            "url": {"dataType":"string","required":true},
+            "altText": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -78,6 +105,36 @@ export function RegisterRoutes(app: Router) {
 
 
     
+        const argsMediaController_createMedia: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"CreateMediaRequest"},
+        };
+        app.post('/media/create-media',
+            ...(fetchMiddlewares<RequestHandler>(MediaController)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.createMedia)),
+
+            async function MediaController_createMedia(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_createMedia, request, response });
+
+                const controller = new MediaController();
+
+              await templateService.apiHandler({
+                methodName: 'createMedia',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCategoryController_addCategory: Record<string, TsoaRoute.ParameterSchema> = {
                 category: {"in":"body","name":"category","required":true,"ref":"CreateCategoryValidator"},
         };
