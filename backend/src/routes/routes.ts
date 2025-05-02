@@ -10,6 +10,8 @@ import { CategoryController } from './../controllers/category/category.controlle
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { BagController } from './../controllers/bag/bag.controller';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
+const multer = require('multer');
+
 
 
 
@@ -59,16 +61,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateMediaRequest": {
-        "dataType": "refObject",
-        "properties": {
-            "bagId": {"dataType":"string","required":true},
-            "url": {"dataType":"string","required":true},
-            "altText": {"dataType":"string"},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateCategoryValidator": {
         "dataType": "refObject",
         "properties": {
@@ -96,34 +88,43 @@ const templateService = new ExpressTemplateService(models, {"noImplicitAdditiona
 
 
 
-export function RegisterRoutes(app: Router) {
+export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof multer>}) {
 
     // ###########################################################################################################
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
 
+    const upload = opts?.multer ||  multer({"limits":{"fileSize":8388608}});
 
     
-        const argsMediaController_createMedia: Record<string, TsoaRoute.ParameterSchema> = {
-                body: {"in":"body","name":"body","required":true,"ref":"CreateMediaRequest"},
+        const argsMediaController_uploadMedia: Record<string, TsoaRoute.ParameterSchema> = {
+                bagId: {"in":"formData","name":"bagId","required":true,"dataType":"string"},
+                altText: {"in":"formData","name":"altText","required":true,"dataType":"string"},
+                file: {"in":"formData","name":"file","required":true,"dataType":"file"},
         };
-        app.post('/media/create-media',
+        app.post('/media/upload',
+            upload.fields([
+                {
+                    name: "file",
+                    maxCount: 1
+                }
+            ]),
             ...(fetchMiddlewares<RequestHandler>(MediaController)),
-            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.createMedia)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.uploadMedia)),
 
-            async function MediaController_createMedia(request: ExRequest, response: ExResponse, next: any) {
+            async function MediaController_uploadMedia(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_createMedia, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_uploadMedia, request, response });
 
                 const controller = new MediaController();
 
               await templateService.apiHandler({
-                methodName: 'createMedia',
+                methodName: 'uploadMedia',
                 controller,
                 response,
                 next,

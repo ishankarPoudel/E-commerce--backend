@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
@@ -5,7 +6,6 @@ import { RegisterRoutes } from "./routes/routes";
 import * as swaggerDocument from "../public/swagger.json";
 import { AppDataSource } from "./data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
-import "reflect-metadata";
 import dotenv from "dotenv";
 
 dotenv.config();

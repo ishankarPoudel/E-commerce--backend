@@ -140,25 +140,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateMediaRequest": {
-				"properties": {
-					"bagId": {
-						"type": "string"
-					},
-					"url": {
-						"type": "string"
-					},
-					"altText": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"bagId",
-					"url"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"CreateCategoryValidator": {
 				"properties": {
 					"categoryName": {
@@ -211,32 +192,52 @@
 		"contact": {}
 	},
 	"paths": {
-		"/media/create-media": {
+		"/media/upload": {
 			"post": {
-				"operationId": "CreateMedia",
+				"operationId": "UploadMedia",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"data": {
-											"$ref": "#/components/schemas/MediaEntity"
+									"anyOf": [
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
 										},
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/MediaEntity"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"data",
-										"message",
-										"success"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -250,9 +251,26 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateMediaRequest"
+								"type": "object",
+								"properties": {
+									"bagId": {
+										"type": "string"
+									},
+									"altText": {
+										"type": "string"
+									},
+									"file": {
+										"type": "string",
+										"format": "binary"
+									}
+								},
+								"required": [
+									"bagId",
+									"altText",
+									"file"
+								]
 							}
 						}
 					}

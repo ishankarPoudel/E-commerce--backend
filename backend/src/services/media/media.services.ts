@@ -4,13 +4,13 @@ import { MediaEntity } from "../../entities/media/media.entity";
 import { ApiError } from "../../utils/apiError";
 
 export class MediaServices {
-  async createMedia(bagId: string, url: string, altText?: string) {
+  async addMediaToBag(bagId: string, url: string) {
     const mediaRepo = AppDataSource.getRepository(MediaEntity);
     const bag = await AppDataSource.getRepository(BagEntity).findOneBy({
       id: bagId,
     });
     if (!bag) throw new ApiError(404, "Bag not found");
-    const media = mediaRepo.create({ url, altText, bag });
+    const media = mediaRepo.create({ url, bag });
     return await mediaRepo.save(media);
   }
 }
