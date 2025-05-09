@@ -7,7 +7,6 @@ export class MediaController extends Controller {
   @Post("/upload")
   public async uploadMedia(
     @FormField() bagId: string,
-
     @UploadedFile() file: Express.Multer.File
   ) {
     if (!file) {

@@ -5,7 +5,7 @@ import { BagEntity } from "../bag/bag.entity";
 @Entity()
 export class MediaEntity extends CommonEntity {
   @Column()
-  url: string;
+  image: string;
 
   @Column({ nullable: true })
   altText?: string;

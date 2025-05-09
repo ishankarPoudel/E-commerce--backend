@@ -100,7 +100,6 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
     
         const argsMediaController_uploadMedia: Record<string, TsoaRoute.ParameterSchema> = {
                 bagId: {"in":"formData","name":"bagId","required":true,"dataType":"string"},
-                altText: {"in":"formData","name":"altText","required":true,"dataType":"string"},
                 file: {"in":"formData","name":"file","required":true,"dataType":"file"},
         };
         app.post('/media/upload',

@@ -258,9 +258,6 @@
 									"bagId": {
 										"type": "string"
 									},
-									"altText": {
-										"type": "string"
-									},
 									"file": {
 										"type": "string",
 										"format": "binary"
@@ -268,7 +265,6 @@
 								},
 								"required": [
 									"bagId",
-									"altText",
 									"file"
 								]
 							}
