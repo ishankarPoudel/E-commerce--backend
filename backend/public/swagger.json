@@ -119,7 +119,7 @@
 						"format": "date-time",
 						"nullable": true
 					},
-					"url": {
+					"image": {
 						"type": "string"
 					},
 					"altText": {
@@ -134,7 +134,7 @@
 					"createdAt",
 					"updatedAt",
 					"deletedAt",
-					"url",
+					"image",
 					"bag"
 				],
 				"type": "object",
@@ -221,7 +221,10 @@
 										{
 											"properties": {
 												"data": {
-													"$ref": "#/components/schemas/MediaEntity"
+													"items": {
+														"$ref": "#/components/schemas/MediaEntity"
+													},
+													"type": "array"
 												},
 												"message": {
 													"type": "string"

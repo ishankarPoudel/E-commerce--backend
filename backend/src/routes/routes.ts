@@ -54,7 +54,7 @@ const models: TsoaRoute.Models = {
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "url": {"dataType":"string","required":true},
+            "image": {"dataType":"string","required":true},
             "altText": {"dataType":"string"},
             "bag": {"ref":"BagEntity","required":true},
         },

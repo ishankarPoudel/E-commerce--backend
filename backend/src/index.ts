@@ -7,6 +7,7 @@ import * as swaggerDocument from "../public/swagger.json";
 import { AppDataSource } from "./data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import dotenv from "dotenv";
+import path from "path";
 
 dotenv.config();
 
@@ -25,6 +26,9 @@ app.use(express.json());
 
 // Serve Swagger UI
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, "../../public")));
 
 // Serve raw Swagger JSON (optional but useful for OpenAPI clients)
 app.get("/swagger.json", (req: Request, res: Response) => {

@@ -9,8 +9,11 @@ export class MediaServices {
     const bag = await AppDataSource.getRepository(BagEntity).findOneBy({
       id: bagId,
     });
-    if (!bag) throw new ApiError(404, "Bag not found");
-    const media = mediaRepo.create({ url, bag });
+    if (!bag) {
+      throw new ApiError(404, "Bag not found");
+    }
+
+    const media = mediaRepo.create({ image: url, bag });
     return await mediaRepo.save(media);
   }
 }
