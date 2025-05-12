@@ -26,4 +26,17 @@ export class BagService {
 
     return savedBag;
   }
+
+  async getAllBags() {
+    const bags = AppDataSource.getRepository(BagEntity)
+      .createQueryBuilder("bags")
+      .innerJoinAndSelect("bags.categories", "categories")
+      .innerJoinAndSelect("bags.bagImages", "bagImages")
+      .getMany();
+
+    if (!bags) {
+      throw new ApiError(404, "No bags found.");
+    }
+    return bags;
+  }
 }
