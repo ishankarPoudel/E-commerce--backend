@@ -21,14 +21,12 @@ export class BagService {
     if (newBag.categories.length === 0) {
       throw new ApiError(400, "No categories found for the provided IDs.");
     }
-
     const savedBag = await AppDataSource.getRepository(BagEntity).save(newBag);
-
     return savedBag;
   }
 
   async getAllBags() {
-    const bags = AppDataSource.getRepository(BagEntity)
+    const bags = await AppDataSource.getRepository(BagEntity)
       .createQueryBuilder("bags")
       .innerJoinAndSelect("bags.categories", "categories")
       .innerJoinAndSelect("bags.bagImages", "bagImages")
@@ -38,5 +36,31 @@ export class BagService {
       throw new ApiError(404, "No bags found.");
     }
     return bags;
+  }
+
+  async getBagById(id: string) {
+    const bag = await AppDataSource.getRepository(BagEntity)
+      .createQueryBuilder("bags")
+      .innerJoinAndSelect("bags.categories", "categories")
+      .innerJoinAndSelect("bags.bagImages", "bagImages")
+      .where("bags.id = :id", { id })
+      .getOne();
+    if (!bag) {
+      throw new ApiError(404, "Bag not found.");
+    }
+    return bag;
+  }
+
+  async deleteBagById(id: string) {
+    const bag = await AppDataSource.getRepository(BagEntity).findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!bag) {
+      throw new ApiError(404, "Bag not found.");
+    }
+    await AppDataSource.getRepository(BagEntity).delete(id);
+    return bag;
   }
 }

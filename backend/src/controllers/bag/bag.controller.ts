@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Route, Tags } from "tsoa";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { BagService } from "../../services/bag/bag.service";
 
@@ -18,6 +18,19 @@ export class BagController extends Controller {
       success: true,
       message: "Bags retrieved successfully",
       data: bags,
+    };
+  }
+
+  @Get("/get-bag/:id")
+  async getbagById(@Path() id: string) {}
+
+  @Delete("/delete-bag/:id")
+  async deleteBagById(@Path() id: string) {
+    const bag = await new BagService().deleteBagById(id);
+    return {
+      success: true,
+      message: "Bag deleted successfully",
+      data: bag,
     };
   }
 }

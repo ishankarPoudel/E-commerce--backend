@@ -28,7 +28,7 @@ app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Serve static files from the public directory
-app.use(express.static(path.join(__dirname, "../../public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // Serve raw Swagger JSON (optional but useful for OpenAPI clients)
 app.get("/swagger.json", (req: Request, res: Response) => {
