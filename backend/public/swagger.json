@@ -422,10 +422,33 @@
 								"schema": {
 									"properties": {
 										"data": {
-											"items": {
-												"$ref": "#/components/schemas/BagEntity"
+											"properties": {
+												"totalPages": {
+													"type": "number",
+													"format": "double"
+												},
+												"page": {
+													"type": "number",
+													"format": "double"
+												},
+												"total": {
+													"type": "number",
+													"format": "double"
+												},
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/BagEntity"
+													},
+													"type": "array"
+												}
 											},
-											"type": "array"
+											"required": [
+												"totalPages",
+												"page",
+												"total",
+												"data"
+											],
+											"type": "object"
 										},
 										"message": {
 											"type": "string"
@@ -450,6 +473,77 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/bag/get-bag/{id}": {
+			"get": {
+				"operationId": "GetbagById",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Bag"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/bag/delete-bag/{id}": {
+			"delete": {
+				"operationId": "DeleteBagById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/BagEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bag"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		}
 	},

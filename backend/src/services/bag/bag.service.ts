@@ -4,6 +4,7 @@ import { BagEntity } from "../../entities/bag/bag.entity";
 import { Category } from "../../entities/category/category.entity";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { ApiError } from "../../utils/apiError";
+import { Query } from "tsoa";
 
 export class BagService {
   async addBag(bag: addBagValidator) {
@@ -25,17 +26,28 @@ export class BagService {
     return savedBag;
   }
 
-  async getAllBags() {
-    const bags = await AppDataSource.getRepository(BagEntity)
-      .createQueryBuilder("bags")
-      .innerJoinAndSelect("bags.categories", "categories")
-      .innerJoinAndSelect("bags.bagImages", "bagImages")
-      .getMany();
+  async getAllBags(@Query() page: number = 1, @Query() limit: number = 10) {
+    const offset = (page - 1) * limit;
 
-    if (!bags) {
-      throw new ApiError(404, "No bags found.");
-    }
-    return bags;
+    const [bags, total] = await AppDataSource.getRepository(
+      BagEntity
+    ).findAndCount({
+      skip: offset,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+      relations: {
+        categories: true,
+        bagImages: true,
+      },
+    });
+    return {
+      data: bags,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async getBagById(id: string) {
