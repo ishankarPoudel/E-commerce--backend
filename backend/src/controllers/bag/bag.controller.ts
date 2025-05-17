@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Path, Post, Route, Tags } from "tsoa";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Path,
+  Post,
+  Query,
+  Route,
+  Tags,
+} from "tsoa";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { BagService } from "../../services/bag/bag.service";
 
@@ -12,8 +22,8 @@ export class BagController extends Controller {
   }
 
   @Get("/get-all-bags")
-  async getAllBags() {
-    const bags = await new BagService().getAllBags();
+  async getAllBags(@Query() page?: number, @Query() limit?: number) {
+    const bags = await new BagService().getAllBags(page, limit);
     return {
       success: true,
       message: "Bags retrieved successfully",

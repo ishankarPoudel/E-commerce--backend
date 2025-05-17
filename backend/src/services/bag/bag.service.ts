@@ -26,14 +26,14 @@ export class BagService {
     return savedBag;
   }
 
-  async getAllBags(@Query() page: number = 1, @Query() limit: number = 10) {
-    const offset = (page - 1) * limit;
+  async getAllBags(@Query() page?: number, @Query() limit?: number) {
+    const offset = ((page || 1) - 1) * (limit || 10);
 
     const [bags, total] = await AppDataSource.getRepository(
       BagEntity
     ).findAndCount({
       skip: offset,
-      take: limit,
+      take: limit || 10,
       order: {
         createdAt: "DESC",
       },
@@ -45,8 +45,8 @@ export class BagService {
     return {
       data: bags,
       total,
-      page,
-      totalPages: Math.ceil(total / limit),
+      page: page || 1,
+      totalPages: Math.ceil(total / (limit || 10)),
     };
   }
 
