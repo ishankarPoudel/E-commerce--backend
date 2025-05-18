@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   password: "classmate",
   database: "ecommerce",
   synchronize: true,
-  logging: true,
+  // logging: true,
   entities: ["src/entities/**/*.ts"],
   subscribers: [],
   migrations: [],

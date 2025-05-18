@@ -80,6 +80,18 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "updateBagValidator": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string"},
+            "price": {"dataType":"double"},
+            "description": {"dataType":"string"},
+            "categories": {"dataType":"array","array":{"dataType":"string"}},
+            "bagImages": {"dataType":"array","array":{"dataType":"string"}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {"noImplicitAdditionalProperties":"throw-on-extras","bodyCoercion":true});
 
@@ -255,25 +267,26 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsBagController_getbagById: Record<string, TsoaRoute.ParameterSchema> = {
+        const argsBagController_updateBag: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                bag: {"in":"body","name":"bag","required":true,"ref":"updateBagValidator"},
         };
-        app.get('/bag/get-bag/:id',
+        app.patch('/bag/update-bag/:id',
             ...(fetchMiddlewares<RequestHandler>(BagController)),
-            ...(fetchMiddlewares<RequestHandler>(BagController.prototype.getbagById)),
+            ...(fetchMiddlewares<RequestHandler>(BagController.prototype.updateBag)),
 
-            async function BagController_getbagById(request: ExRequest, response: ExResponse, next: any) {
+            async function BagController_updateBag(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsBagController_getbagById, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsBagController_updateBag, request, response });
 
                 const controller = new BagController();
 
               await templateService.apiHandler({
-                methodName: 'getbagById',
+                methodName: 'updateBag',
                 controller,
                 response,
                 next,

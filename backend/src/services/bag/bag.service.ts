@@ -5,6 +5,8 @@ import { Category } from "../../entities/category/category.entity";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { ApiError } from "../../utils/apiError";
 import { Query } from "tsoa";
+import { updateBagValidator } from "../../validators/updateBag.validator";
+import { MediaEntity } from "../../entities/media/media.entity";
 
 export class BagService {
   async addBag(bag: addBagValidator) {
@@ -61,6 +63,45 @@ export class BagService {
       throw new ApiError(404, "Bag not found.");
     }
     return bag;
+  }
+
+  async updateBagById(id: string, bag: updateBagValidator) {
+    const bagRepo = AppDataSource.getRepository(BagEntity);
+    const categoryRepo = AppDataSource.getRepository(Category);
+    const bagImageRepo = AppDataSource.getRepository(MediaEntity);
+
+    const existingBag = await bagRepo.findOne({
+      where: { id },
+      relations: {
+        categories: true,
+        bagImages: true,
+      },
+    });
+    if (!existingBag) throw new ApiError(404, "Bag not found.");
+    if (bag.name !== undefined) existingBag.name = bag.name;
+    if (bag.price !== undefined) existingBag.price = bag.price;
+    if (bag.description !== undefined)
+      existingBag.description = bag.description;
+
+    if (bag.categories !== undefined) {
+      const newBagCategories = await categoryRepo.find({
+        where: {
+          id: In(bag.categories),
+        },
+      });
+      existingBag.categories = newBagCategories;
+    }
+
+    if (bag.bagImages !== undefined) {
+      const newBagImages = await bagImageRepo.find({
+        where: {
+          id: In(bag.bagImages),
+        },
+      });
+      existingBag.bagImages = newBagImages;
+    }
+    await bagRepo.save(existingBag);
+    return existingBag;
   }
 
   async deleteBagById(id: string) {

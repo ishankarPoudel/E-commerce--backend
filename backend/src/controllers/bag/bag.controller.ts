@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Patch,
   Path,
   Post,
   Query,
@@ -11,6 +12,7 @@ import {
 } from "tsoa";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { BagService } from "../../services/bag/bag.service";
+import { updateBagValidator } from "../../validators/updateBag.validator";
 
 @Route("/bag")
 @Tags("Bag")
@@ -31,8 +33,15 @@ export class BagController extends Controller {
     };
   }
 
-  @Get("/get-bag/:id")
-  async getbagById(@Path() id: string) {}
+  @Patch("/update-bag/:id")
+  async updateBag(@Path() id: string, @Body() bag: updateBagValidator) {
+    const updatedBag = await new BagService().updateBagById(id, bag);
+    return {
+      success: true,
+      message: "Bag updated successfully",
+      data: updatedBag,
+    };
+  }
 
   @Delete("/delete-bag/:id")
   async deleteBagById(@Path() id: string) {

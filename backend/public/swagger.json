@@ -179,6 +179,34 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"updateBagValidator": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"categories": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"bagImages": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -494,12 +522,35 @@
 				]
 			}
 		},
-		"/bag/get-bag/{id}": {
-			"get": {
-				"operationId": "GetbagById",
+		"/bag/update-bag/{id}": {
+			"patch": {
+				"operationId": "UpdateBag",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/BagEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
 					}
 				},
 				"tags": [
@@ -515,7 +566,17 @@
 							"type": "string"
 						}
 					}
-				]
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/updateBagValidator"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/bag/delete-bag/{id}": {
