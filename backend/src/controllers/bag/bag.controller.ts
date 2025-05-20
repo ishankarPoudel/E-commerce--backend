@@ -33,6 +33,16 @@ export class BagController extends Controller {
     };
   }
 
+  @Get("/get-bag/:id")
+  async getBagById(@Path() id: string) {
+    const bagById = await new BagService().getBagById(id);
+    return {
+      success: true,
+      message: "Bag retrieved successfully",
+      data: bagById,
+    };
+  }
+
   @Patch("/update-bag/:id")
   async updateBag(@Path() id: string, @Body() bag: updateBagValidator) {
     const updatedBag = await new BagService().updateBagById(id, bag);
