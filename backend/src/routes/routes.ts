@@ -239,6 +239,10 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsBagController_getAllBags: Record<string, TsoaRoute.ParameterSchema> = {
                 page: {"in":"query","name":"page","dataType":"double"},
                 limit: {"in":"query","name":"limit","dataType":"double"},
+                search: {"in":"query","name":"search","dataType":"string"},
+                category: {"in":"query","name":"category","dataType":"string"},
+                minPrice: {"in":"query","name":"minPrice","dataType":"double"},
+                maxPrice: {"in":"query","name":"maxPrice","dataType":"double"},
         };
         app.get('/bag/get-all-bags',
             ...(fetchMiddlewares<RequestHandler>(BagController)),

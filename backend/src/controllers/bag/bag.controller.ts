@@ -24,8 +24,22 @@ export class BagController extends Controller {
   }
 
   @Get("/get-all-bags")
-  async getAllBags(@Query() page?: number, @Query() limit?: number) {
-    const bags = await new BagService().getAllBags(page, limit);
+  async getAllBags(
+    @Query() page?: number,
+    @Query() limit?: number,
+    @Query() search?: string,
+    @Query() category?: string,
+    @Query() minPrice?: number,
+    @Query() maxPrice?: number
+  ) {
+    const bags = await new BagService().getAllBags(
+      page,
+      limit,
+      search,
+      category,
+      minPrice,
+      maxPrice
+    );
     return {
       success: true,
       message: "Bags retrieved successfully",

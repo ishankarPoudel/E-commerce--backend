@@ -7,6 +7,7 @@ import { ApiError } from "../../utils/apiError";
 import { Query } from "tsoa";
 import { updateBagValidator } from "../../validators/updateBag.validator";
 import { MediaEntity } from "../../entities/media/media.entity";
+import { min } from "class-validator";
 
 export class BagService {
   async addBag(bag: addBagValidator) {
@@ -28,22 +29,43 @@ export class BagService {
     return savedBag;
   }
 
-  async getAllBags(@Query() page?: number, @Query() limit?: number) {
+  async getAllBags(
+    page?: number,
+    limit?: number,
+    search?: string,
+    category?: string,
+    minPrice?: number,
+    maxPrice?: number
+  ) {
     const offset = ((page || 1) - 1) * (limit || 10);
 
-    const [bags, total] = await AppDataSource.getRepository(
-      BagEntity
-    ).findAndCount({
-      skip: offset,
-      take: limit || 10,
-      order: {
-        createdAt: "DESC",
-      },
-      relations: {
-        categories: true,
-        bagImages: true,
-      },
-    });
+    const queryBuilder = await AppDataSource.getRepository(BagEntity)
+      .createQueryBuilder("bag")
+      .leftJoinAndSelect("bag.categories", "categories")
+      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .orderBy("bag.createdAt", "DESC")
+      .skip(offset)
+      .take(limit || 10);
+
+    if (search) {
+      queryBuilder.andWhere(
+        "(LOWER(bag.name) LIKE LOWER(:search) OR LOWER(bag.description) LIKE LOWER(:search))",
+        { search: `%${search}%` }
+      );
+    }
+    if (category && category.length > 0) {
+      queryBuilder.andWhere("category.id IN (:...categoryIds)", { category });
+    }
+
+    if (minPrice !== undefined) {
+      queryBuilder.andWhere("bag.price >= :minPrice", { minPrice });
+    }
+    if (maxPrice !== undefined) {
+      queryBuilder.andWhere("bag.price <= :maxPrice", { maxPrice });
+    }
+
+    const [bags, total] = await queryBuilder.getManyAndCount();
+
     return {
       data: bags,
       total,
