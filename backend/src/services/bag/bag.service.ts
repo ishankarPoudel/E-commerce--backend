@@ -67,39 +67,32 @@ export class BagService {
 
   async updateBagById(id: string, bag: updateBagValidator) {
     const bagRepo = AppDataSource.getRepository(BagEntity);
-    const categoryRepo = AppDataSource.getRepository(Category);
     const bagImageRepo = AppDataSource.getRepository(MediaEntity);
 
     const existingBag = await bagRepo.findOne({
       where: { id },
-      relations: {
-        categories: true,
-        bagImages: true,
-      },
+      relations: { bagImages: true },
     });
     if (!existingBag) throw new ApiError(404, "Bag not found.");
-    if (bag.name !== undefined) existingBag.name = bag.name;
-    if (bag.price !== undefined) existingBag.price = bag.price;
-    if (bag.description !== undefined)
-      existingBag.description = bag.description;
-
-    if (bag.categories !== undefined) {
-      const newBagCategories = await categoryRepo.find({
-        where: {
-          id: In(bag.categories),
-        },
-      });
-      existingBag.categories = newBagCategories;
-    }
 
     if (bag.bagImages !== undefined) {
       const newBagImages = await bagImageRepo.find({
-        where: {
-          id: In(bag.bagImages),
-        },
+        where: { id: In(bag.bagImages) },
       });
+
+      // Find images to remove (those currently linked but not in newBagImages)
+      const imagesToRemove = existingBag.bagImages.filter(
+        (img) => !(bag.bagImages ?? []).includes(img.id)
+      );
+
+      // Remove the MediaEntity records for imagesToRemove
+      if (imagesToRemove.length > 0) {
+        await bagImageRepo.remove(imagesToRemove);
+      }
+
       existingBag.bagImages = newBagImages;
     }
+
     await bagRepo.save(existingBag);
     return existingBag;
   }

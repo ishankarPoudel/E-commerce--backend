@@ -21,6 +21,9 @@ export class BagEntity extends CommonEntity {
   })
   categories: Category[];
 
-  @OneToMany(() => MediaEntity, (media) => media.bag, { cascade: true })
+  @OneToMany(() => MediaEntity, (media) => media.bag, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
   bagImages: MediaEntity[];
 }
