@@ -384,11 +384,93 @@
 					}
 				},
 				"tags": [
-					"Category",
 					"Category"
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/category/get-categories-with-bags": {
+			"get": {
+				"operationId": "GetCategoriesWithBags",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"totalPages": {
+													"type": "number",
+													"format": "double"
+												},
+												"page": {
+													"type": "number",
+													"format": "double"
+												},
+												"total": {
+													"type": "number",
+													"format": "double"
+												},
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/Category"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"totalPages",
+												"page",
+												"total",
+												"data"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Category"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/bag/add-bag": {

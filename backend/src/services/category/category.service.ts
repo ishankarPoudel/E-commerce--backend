@@ -4,9 +4,9 @@ import { ApiError } from "../../utils/apiError";
 import { CreateCategoryValidator } from "../../validators/createCategory.validator";
 
 export class CategoryService {
+  private categoryRepo = AppDataSource.getRepository(Category);
   async createCategory(category: CreateCategoryValidator) {
-    const categoryRepo = AppDataSource.getRepository(Category);
-    const existingCategory = await categoryRepo.findOne({
+    const existingCategory = await this.categoryRepo.findOne({
       where: {
         categoryName: category.categoryName,
       },
@@ -17,16 +17,54 @@ export class CategoryService {
 
     const newCategory = new Category();
     newCategory.categoryName = category.categoryName;
-    const savedCategory = await categoryRepo.save(newCategory);
+    const savedCategory = await this.categoryRepo.save(newCategory);
     return savedCategory;
   }
 
   async getAllCategories() {
-    const categoryRepo = AppDataSource.getRepository(Category);
-    const categories = await categoryRepo.find();
+    const categories = await this.categoryRepo.find();
     if (!categories || categories.length === 0) {
       throw new ApiError(404, "No categories found");
     }
     return categories;
+  }
+
+  async deleteCategoryById(id: string) {
+    const categoryExits = await this.categoryRepo.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!categoryExits) {
+      throw new ApiError(404, "Category not found");
+    }
+    const deletedCategory = await this.categoryRepo.delete(id);
+    if (deletedCategory.affected === 0) {
+      throw new ApiError(500, "Failed to delete category");
+    }
+    return deletedCategory;
+  }
+
+  async getCategoriesWithBags(page: number, limit: number) {
+    const [categories, total] = await this.categoryRepo.findAndCount({
+      relations: ["bags"],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+    });
+    if (!categories || categories.length === 0) {
+      throw new ApiError(
+        404,
+        "No bags associated with any of the categories found"
+      );
+    }
+    return {
+      data: categories,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }
