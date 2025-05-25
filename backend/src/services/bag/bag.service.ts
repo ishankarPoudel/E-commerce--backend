@@ -54,7 +54,10 @@ export class BagService {
       );
     }
     if (category && category.length > 0) {
-      queryBuilder.andWhere("category.id IN (:...categoryIds)", { category });
+      const categoryIds = Array.isArray(category) ? category : [category];
+      queryBuilder.andWhere("categories.id IN (:...categoryIds)", {
+        categoryIds,
+      });
     }
 
     if (minPrice !== undefined) {
