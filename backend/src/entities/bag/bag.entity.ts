@@ -15,7 +15,7 @@ export class BagEntity extends CommonEntity {
   @Column({ type: "text", nullable: true })
   description: string;
 
-  @ManyToMany(() => Category)
+  @ManyToMany(() => Category, (category) => category.bags)
   @JoinTable({
     name: "bag_categorey_relation",
   })

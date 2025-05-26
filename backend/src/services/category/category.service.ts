@@ -5,6 +5,7 @@ import { CreateCategoryValidator } from "../../validators/createCategory.validat
 
 export class CategoryService {
   private categoryRepo = AppDataSource.getRepository(Category);
+
   async createCategory(category: CreateCategoryValidator) {
     const existingCategory = await this.categoryRepo.findOne({
       where: {
@@ -46,14 +47,14 @@ export class CategoryService {
   }
 
   async getCategoriesWithBags(page: number, limit: number) {
-    const [categories, total] = await this.categoryRepo.findAndCount({
-      relations: ["bags"],
-      skip: (page - 1) * limit,
-      take: limit,
-      order: {
-        createdAt: "DESC",
-      },
-    });
+    const [categories, total] = await this.categoryRepo
+      .createQueryBuilder("category")
+      .innerJoinAndSelect("category.bags", "bag")
+      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy("category.createdAt", "DESC")
+      .getManyAndCount();
     if (!categories || categories.length === 0) {
       throw new ApiError(
         404,
