@@ -21,10 +21,12 @@
   },
   "dependencies": {
     "@tsoa/runtime": "^6.6.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.12",
     "@types/passport": "^1.0.17",
+    "bcrypt": "^6.0.0",
     "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
