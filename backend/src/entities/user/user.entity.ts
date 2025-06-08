@@ -26,4 +26,7 @@ export class UserEntity extends CommonEntity {
 
   @Column({ type: "timestamp", nullable: true })
   emailVerificationTokenExpiresAt: Date | null;
+
+  @Column({ nullable: true })
+  refreshToken: string | null;
 }

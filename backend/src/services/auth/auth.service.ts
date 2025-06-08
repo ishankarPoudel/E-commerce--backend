@@ -23,8 +23,11 @@ export class AuthService {
       fullName: user.fullName,
       email: user.email,
       password: hashedPassword,
+      isOauth: false,
+      provider: "local",
     });
     await this.userRepo.save(newUser);
+
     return this.generateTokens(newUser);
   }
 
@@ -45,6 +48,10 @@ export class AuthService {
     const payload = { userId: user.id };
     const accessToken = new Tokens().signAccessToken(payload);
     const refreshToken = new Tokens().signRefreshToken(payload);
+
+    //stored hashed refresh token in DB
+    user.refreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepo.save(user);
 
     return { accessToken, refreshToken };
   }
