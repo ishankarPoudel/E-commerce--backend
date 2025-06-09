@@ -9,7 +9,7 @@ export class UserEntity extends CommonEntity {
   @Column({ nullable: true })
   fullName: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   password: string;
 
   @Column({ default: false })
@@ -28,5 +28,5 @@ export class UserEntity extends CommonEntity {
   emailVerificationTokenExpiresAt: Date | null;
 
   @Column({ nullable: true })
-  refreshToken: string | null;
+  refreshToken: string;
 }

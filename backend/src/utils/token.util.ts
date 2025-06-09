@@ -1,23 +1,33 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
 
 export class Tokens {
   signAccessToken = (payload: object) => {
-    return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
-      expiresIn: Number(process.env.JWT_ACCESS_EXPIRES_IN),
-    });
+    const secret = process.env.JWT_ACCESS_SECRET;
+    const options: SignOptions = {
+      expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || "15m") as any,
+    };
+
+    return jwt.sign(payload, secret as string, options);
   };
 
   signRefreshToken = (payload: object) => {
-    return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
-      expiresIn: Number(process.env.JWT_REFRESH_EXPIRES_IN),
-    });
+    const secret = process.env.JWT_REFRESH_SECRET;
+
+    const options: SignOptions = {
+      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || "7d") as any,
+    };
+
+    return jwt.sign(payload, secret as string, options);
   };
 
   verifyAccessToken = (token: string) => {
-    return jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
+    const secret = process.env.JWT_ACCESS_SECRET;
+
+    return jwt.verify(token, secret as string);
   };
 
   verifyRefreshToken = (token: string) => {
-    return jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
+    const secret = process.env.JWT_REFRESH_SECRET;
+    return jwt.verify(token, secret as string);
   };
 }
