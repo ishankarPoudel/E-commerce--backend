@@ -17,12 +17,18 @@ importers:
       '@types/cors':
         specifier: ^2.8.17
         version: 2.8.17
+      '@types/crypto-js':
+        specifier: ^4.2.2
+        version: 4.2.2
       '@types/jsonwebtoken':
         specifier: ^9.0.9
         version: 9.0.9
       '@types/multer':
         specifier: ^1.4.12
         version: 1.4.12
+      '@types/nodemailer':
+        specifier: ^6.4.17
+        version: 6.4.17
       '@types/passport':
         specifier: ^1.0.17
         version: 1.0.17
@@ -35,6 +41,9 @@ importers:
       cors:
         specifier: ^2.8.5
         version: 2.8.5
+      crypto-js:
+        specifier: ^4.2.0
+        version: 4.2.0
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -44,6 +53,9 @@ importers:
       multer:
         specifier: 1.4.5-lts.2
         version: 1.4.5-lts.2
+      nodemailer:
+        specifier: ^7.0.3
+        version: 7.0.3
       nodemon:
         specifier: ^3.1.9
         version: 3.1.9
@@ -251,6 +263,9 @@ packages:
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
 
+  '@types/crypto-js@4.2.2':
+    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
+
   '@types/express-serve-static-core@5.0.6':
     resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==}
 
@@ -286,6 +301,9 @@ packages:
 
   '@types/node@22.14.1':
     resolution: {integrity: sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==}
+
+  '@types/nodemailer@6.4.17':
+    resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
 
   '@types/passport@1.0.17':
     resolution: {integrity: sha512-aciLyx+wDwT2t2/kJGJR2AEeBz0nJU4WuRX04Wu9Dqc5lSUtwu0WERPHYsLhF9PtseiAMPBGNUOtFjxZ56prsg==}
@@ -490,6 +508,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
 
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
@@ -890,6 +911,10 @@ packages:
   node-gyp-build@4.8.4:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
+
+  nodemailer@7.0.3:
+    resolution: {integrity: sha512-Ajq6Sz1x7cIK3pN6KesGTah+1gnwMnx5gKl3piQlQQE/PwyJ4Mbc8is2psWYxK3RJTVeqsDaCv8ZzXLCDHMTZw==}
+    engines: {node: '>=6.0.0'}
 
   nodemon@3.1.9:
     resolution: {integrity: sha512-hdr1oIb2p6ZSxu3PB2JWWYS7ZQ0qvaZsc3hK8DR8f02kRzc8rjYmxAIvdz+aYC+8F2IjNaB7HMcSDg8nQpJxyg==}
@@ -1684,6 +1709,8 @@ snapshots:
     dependencies:
       '@types/node': 22.14.1
 
+  '@types/crypto-js@4.2.2': {}
+
   '@types/express-serve-static-core@5.0.6':
     dependencies:
       '@types/node': 22.14.1
@@ -1734,6 +1761,10 @@ snapshots:
   '@types/node@22.14.1':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/nodemailer@6.4.17':
+    dependencies:
+      '@types/node': 22.14.1
 
   '@types/passport@1.0.17':
     dependencies:
@@ -1957,6 +1988,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  crypto-js@4.2.0: {}
 
   dayjs@1.11.13: {}
 
@@ -2382,6 +2415,8 @@ snapshots:
   node-addon-api@8.3.1: {}
 
   node-gyp-build@4.8.4: {}
+
+  nodemailer@7.0.3: {}
 
   nodemon@3.1.9:
     dependencies:
