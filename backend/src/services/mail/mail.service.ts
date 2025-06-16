@@ -1,19 +1,39 @@
 import { mailTransport } from "../../config/mail/mail.config";
+import { AppDataSource } from "../../data-source";
+import { UserEntity } from "../../entities/user/user.entity";
+import { ApiError } from "../../utils/apiError";
 
 export class MailService {
+  private UserRepo = AppDataSource.getRepository(UserEntity);
   async sendVerificationEmail(email: string, token: string) {
-    const url = `http://localhost:3000/api/auth/verify-email?token=${token}`;
+    const existingUser = await this.UserRepo.findOneBy({ email });
+    if (existingUser) {
+      throw new ApiError(400, "User with this email already exists");
+    }
 
-    await mailTransport.sendMail({
-      from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
-      to: email,
-      subject: "Verify your email",
-      html: `
-
-                <p>Click the link below to verify your email address:</p>
-                <a href="${url}">Verify Email</a>
-                <p>If you did not create an account, please ignore this email.</p>
-            `,
+    const user = this.UserRepo.create({
+      email,
+      emailVerificationToken: token,
+      emailVerificationTokenExpiresAt: new Date(
+        Date.now() + 1 * 60 * 60 * 1000
+      ), // Token valid for 1 hours
     });
+    await this.UserRepo.save(user);
+    console.log("sending email to", email);
+
+    try {
+      await mailTransport.sendMail({
+        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "OPT to activate your account",
+        html: `
+        <p>Enter the OTP shown below to register your account with Avisekh Bag Pashal</p>
+        <b>${token}</b>
+        <p>If you did not create an account, please ignore this email.</p>
+        `,
+      });
+    } catch (err) {
+      console.error("Error sending email:", err);
+    }
   }
 }

@@ -6,10 +6,8 @@ import { RegisterRoutes } from "./routes/routes";
 import * as swaggerDocument from "../public/swagger.json";
 import { AppDataSource } from "./data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
-import dotenv from "dotenv";
 import path from "path";
-
-dotenv.config();
+import "dotenv/config";
 
 const app = express();
 
