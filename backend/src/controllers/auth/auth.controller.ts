@@ -40,6 +40,20 @@ export class AuthController extends Controller {
       message: "OTP sent to your email",
     };
   }
+
+  @Post("/verify-otp")
+  async verifyOtp(@Body() { email, otp }: { email: string; otp: string }) {
+    const user = await new MailService().verifyOtp(email, otp);
+
+    return {
+      success: true,
+      message: "Email verified successfully",
+      data: {
+        email: user.email,
+        fullName: user.fullName,
+      },
+    };
+  }
   @Post("/register")
   async registerUser(@Body() user: RegisterUserDto): Promise<RegisterResponse> {
     const { accessToken, refreshToken } = await new AuthService().registerUser(

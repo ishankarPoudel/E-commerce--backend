@@ -36,4 +36,22 @@ export class MailService {
       console.error("Error sending email:", err);
     }
   }
+
+  async verifyOtp(email: string, otp: string) {
+    const user = await this.UserRepo.findOneBy({ email });
+    if (
+      !user ||
+      user.emailVerificationToken !== otp ||
+      !user.emailVerificationTokenExpiresAt ||
+      user.emailVerificationTokenExpiresAt < new Date()
+    ) {
+      throw new ApiError(400, "Invalid or expired OTP");
+    }
+
+    user.emailVerificationToken = "";
+    user.emailVerificationTokenExpiresAt = null;
+    await this.UserRepo.save(user);
+
+    return user;
+  }
 }

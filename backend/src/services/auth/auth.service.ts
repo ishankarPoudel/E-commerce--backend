@@ -14,21 +14,27 @@ export class AuthService {
         email: user.email,
       },
     });
-    if (existingUser)
-      throw new ApiError(409, "User with this email already exists");
+    if (!existingUser)
+      throw new ApiError(
+        400,
+        "Please verify your email first with provided OTP"
+      );
 
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    if (existingUser.isEmailVerified) {
+      throw new ApiError(400, "User with this email already exists");
+    }
 
-    const newUser = this.userRepo.create({
-      fullName: user.fullName,
-      email: user.email,
-      password: hashedPassword,
-      isOauth: false,
-      provider: "local",
-    });
-    await this.userRepo.save(newUser);
+    existingUser.fullName = user.fullName;
+    existingUser.password = await bcrypt.hash(user.password, 10);
+    existingUser.isOauth = false;
+    existingUser.provider = "local";
+    existingUser.isEmailVerified = true;
+    existingUser.emailVerificationToken = "";
+    existingUser.emailVerificationTokenExpiresAt = null;
 
-    return this.generateTokens(newUser);
+    await this.userRepo.save(existingUser);
+
+    return this.generateTokens(existingUser);
   }
 
   async loginUser(email: string, password: string) {
