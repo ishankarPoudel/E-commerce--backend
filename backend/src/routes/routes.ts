@@ -426,38 +426,8 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsAuthController_sendVerificationEmail: Record<string, TsoaRoute.ParameterSchema> = {
-                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true}}},
-        };
-        app.post('/auth/send-verification-email',
-            ...(fetchMiddlewares<RequestHandler>(AuthController)),
-            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.sendVerificationEmail)),
-
-            async function AuthController_sendVerificationEmail(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_sendVerificationEmail, request, response });
-
-                const controller = new AuthController();
-
-              await templateService.apiHandler({
-                methodName: 'sendVerificationEmail',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_verifyOtp: Record<string, TsoaRoute.ParameterSchema> = {
-                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"otp":{"dataType":"string","required":true},"email":{"dataType":"string","required":true}}},
+                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"otp":{"dataType":"string","required":true}}},
         };
         app.post('/auth/verify-otp',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),

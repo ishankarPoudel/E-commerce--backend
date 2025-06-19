@@ -859,58 +859,6 @@
 				]
 			}
 		},
-		"/auth/send-verification-email": {
-			"post": {
-				"operationId": "SendVerificationEmail",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"message",
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Auth"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/auth/verify-otp": {
 			"post": {
 				"operationId": "VerifyOtp",
@@ -967,14 +915,10 @@
 								"properties": {
 									"otp": {
 										"type": "string"
-									},
-									"email": {
-										"type": "string"
 									}
 								},
 								"required": [
-									"otp",
-									"email"
+									"otp"
 								],
 								"type": "object"
 							}

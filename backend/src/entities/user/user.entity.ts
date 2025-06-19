@@ -9,7 +9,7 @@ export class UserEntity extends CommonEntity {
   @Column({ nullable: true })
   fullName: string;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: false })

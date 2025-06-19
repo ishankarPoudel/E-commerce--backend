@@ -5,6 +5,7 @@ import { AppDataSource } from "./../../data-source";
 import { GenerateRandomToken } from "../../utils/emailToken/randomToken";
 import { UserEntity } from "../../entities/user/user.entity";
 import { MailService } from "../../services/mail/mail.service";
+import { ApiError } from "../../utils/apiError";
 
 export interface UserResponseData {
   email: string;
@@ -22,32 +23,19 @@ interface RegisterResponse {
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
-  @Post("/send-verification-email")
-  async sendVerificationEmail(@Body() { email }: { email: string }) {
-    const userExists = await AppDataSource.getRepository(UserEntity).findOneBy({
-      email,
-    });
-    if (userExists) {
-      return {
-        success: false,
-        message: "User already exists",
-      };
-    }
-    const token = new GenerateRandomToken().mailToken();
-    await new MailService().sendVerificationEmail(email, token);
-    return {
-      success: true,
-      message: "OTP sent to your email",
-    };
-  }
-
   @Post("/verify-otp")
-  async verifyOtp(@Body() { email, otp }: { email: string; otp: string }) {
-    const user = await new MailService().verifyOtp(email, otp);
+  async verifyOtp(@Body() { otp }: { otp: string }) {
+    const { user, accessToken, refreshToken } =
+      await new MailService().verifyOtp(otp);
+
+    this.setHeader("Set-Cookie", [
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=None; Secure`,
+      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=None; Secure`,
+    ]);
 
     return {
       success: true,
-      message: "Email verified successfully",
+      message: "Email verified successfully and logging you in",
       data: {
         email: user.email,
         fullName: user.fullName,
@@ -56,22 +44,15 @@ export class AuthController extends Controller {
   }
   @Post("/register")
   async registerUser(@Body() user: RegisterUserDto): Promise<RegisterResponse> {
-    const { accessToken, refreshToken } = await new AuthService().registerUser(
-      user
-    );
-
-    this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path= "/"; SameSite= None; Secure`,
-      `refreshToken=${refreshToken}; HttpOnly; Path= "/"; SameSite= None; Secure`,
-    ]);
-
+    const result = await new AuthService().registerUser(user);
+    if (!result) throw new ApiError(400, "User registration failed");
     return {
       success: true,
-      message: "User registered successfully",
+      message: "OPT sent to your email",
       data: {
         user: {
-          email: user.email,
-          fullName: user.fullName,
+          email: result.email,
+          fullName: result.fullName,
         },
       },
     };

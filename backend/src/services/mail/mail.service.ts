@@ -2,25 +2,11 @@ import { mailTransport } from "../../config/mail/mail.config";
 import { AppDataSource } from "../../data-source";
 import { UserEntity } from "../../entities/user/user.entity";
 import { ApiError } from "../../utils/apiError";
+import { AuthService } from "../auth/auth.service";
 
 export class MailService {
   private UserRepo = AppDataSource.getRepository(UserEntity);
   async sendVerificationEmail(email: string, token: string) {
-    const existingUser = await this.UserRepo.findOneBy({ email });
-    if (existingUser) {
-      throw new ApiError(400, "User with this email already exists");
-    }
-
-    const user = this.UserRepo.create({
-      email,
-      emailVerificationToken: token,
-      emailVerificationTokenExpiresAt: new Date(
-        Date.now() + 1 * 60 * 60 * 1000
-      ), // Token valid for 1 hours
-    });
-    await this.UserRepo.save(user);
-    console.log("sending email to", email);
-
     try {
       await mailTransport.sendMail({
         from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
@@ -37,7 +23,7 @@ export class MailService {
     }
   }
 
-  async verifyOtp(email: string, otp: string) {
+  async verifyOtp(otp: string, email?: string) {
     const user = await this.UserRepo.findOneBy({ email });
     if (
       !user ||
@@ -48,10 +34,14 @@ export class MailService {
       throw new ApiError(400, "Invalid or expired OTP");
     }
 
+    user.isEmailVerified = true;
     user.emailVerificationToken = "";
     user.emailVerificationTokenExpiresAt = null;
     await this.UserRepo.save(user);
 
-    return user;
+    const { accessToken, refreshToken } =
+      await new AuthService().generateTokens(user);
+
+    return { user, accessToken, refreshToken };
   }
 }

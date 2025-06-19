@@ -1,7 +1,9 @@
 import { AppDataSource } from "../../data-source";
 import { UserEntity } from "../../entities/user/user.entity";
 import { ApiError } from "../../utils/apiError";
+import { GenerateRandomToken } from "../../utils/emailToken/randomToken";
 import { Tokens } from "../../utils/token.util";
+import { MailService } from "../mail/mail.service";
 import { RegisterUserDto } from "./../../validators/registerUser.validator";
 import bcrypt from "bcrypt";
 
@@ -9,32 +11,43 @@ export class AuthService {
   private userRepo = AppDataSource.getRepository(UserEntity);
 
   async registerUser(user: RegisterUserDto) {
-    const existingUser = await this.userRepo.findOne({
+    let existingUser = await this.userRepo.findOne({
       where: {
         email: user.email,
       },
     });
-    if (!existingUser)
-      throw new ApiError(
-        400,
-        "Please verify your email first with provided OTP"
-      );
-
-    if (existingUser.isEmailVerified) {
-      throw new ApiError(400, "User with this email already exists");
+    // If user is already fully registered
+    if (existingUser && existingUser.isEmailVerified) {
+      throw new ApiError(400, "User already exists");
     }
 
-    existingUser.fullName = user.fullName;
-    existingUser.password = await bcrypt.hash(user.password, 10);
-    existingUser.isOauth = false;
-    existingUser.provider = "local";
-    existingUser.isEmailVerified = true;
-    existingUser.emailVerificationToken = "";
-    existingUser.emailVerificationTokenExpiresAt = null;
+    if (!existingUser) {
+      existingUser = this.userRepo.create({
+        email: user.email,
+        fullName: user.fullName,
+        password: await bcrypt.hash(user.password, 10),
+        isOauth: false,
+        provider: "local",
+        isEmailVerified: false,
+      });
+    } else {
+      // Only update if not already set
+      if (!existingUser.fullName) existingUser.fullName = user.fullName;
+      if (!existingUser.password)
+        existingUser.password = await bcrypt.hash(user.password, 10);
+    }
+
+    const otp = new GenerateRandomToken().mailToken();
+    existingUser.emailVerificationToken = otp;
+    existingUser.emailVerificationTokenExpiresAt = new Date(
+      Date.now() + 15 * 60 * 1000
+    ); // 15 minutes from now
 
     await this.userRepo.save(existingUser);
 
-    return this.generateTokens(existingUser);
+    await new MailService().sendVerificationEmail(existingUser.email, otp);
+
+    return existingUser;
   }
 
   async loginUser(email: string, password: string) {
