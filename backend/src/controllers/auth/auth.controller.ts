@@ -29,8 +29,8 @@ export class AuthController extends Controller {
       await new MailService().verifyOtp(otp);
 
     this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=None; Secure`,
-      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=None; Secure`,
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=None; Max-Age=3600;`,
+      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=None; Max-Age=604800;`,
     ]);
 
     return {
