@@ -6,10 +6,12 @@ import { RegisterRoutes } from "./routes/routes";
 import * as swaggerDocument from "../public/swagger.json";
 import { AppDataSource } from "./data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
+import cookieParser from "cookie-parser";
 import path from "path";
 import "dotenv/config";
 
 const app = express();
+app.use(cookieParser());
 
 app.use(
   cors({

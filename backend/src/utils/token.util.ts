@@ -4,7 +4,7 @@ export class Tokens {
   signAccessToken = (payload: object) => {
     const secret = process.env.JWT_ACCESS_SECRET;
     const options: SignOptions = {
-      expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || "15m") as any,
+      expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || "15s") as any,
     };
 
     return jwt.sign(payload, secret as string, options);
@@ -14,7 +14,7 @@ export class Tokens {
     const secret = process.env.JWT_REFRESH_SECRET;
 
     const options: SignOptions = {
-      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || "7d") as any,
+      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || "45s") as any,
     };
 
     return jwt.sign(payload, secret as string, options);
@@ -22,7 +22,6 @@ export class Tokens {
 
   verifyAccessToken = (token: string) => {
     const secret = process.env.JWT_ACCESS_SECRET;
-
     return jwt.verify(token, secret as string);
   };
 

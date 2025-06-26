@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, Route, Tags } from "tsoa";
+import { Body, Controller, Post, Request, Res, Route, Tags } from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
 import { AppDataSource } from "./../../data-source";
@@ -6,6 +6,7 @@ import { GenerateRandomToken } from "../../utils/emailToken/randomToken";
 import { UserEntity } from "../../entities/user/user.entity";
 import { MailService } from "../../services/mail/mail.service";
 import { ApiError } from "../../utils/apiError";
+import { Request as ExpressRequest } from "express";
 
 export interface UserResponseData {
   email: string;
@@ -55,6 +56,22 @@ export class AuthController extends Controller {
           fullName: result.fullName,
         },
       },
+    };
+  }
+
+  @Post("/refresh-token")
+  async refreshToken(@Request() req: ExpressRequest) {
+    const refreshToken = req.cookies?.refreshToken;
+
+    const newTokens = await new AuthService().refreshTokens(refreshToken);
+
+    this.setHeader("Set-Cookie", [
+      `accessToken=${newTokens.accessToken}; HttpOnly; Path=/; SameSite=None; Max-Age=3600;`,
+      `refreshToken=${newTokens.refreshToken}; HttpOnly; Path=/; SameSite=None; Max-Age=604800;`,
+    ]);
+    return {
+      success: true,
+      message: "Tokens refreshed Successfully",
     };
   }
 }
