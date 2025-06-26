@@ -57,7 +57,20 @@ export class AuthService {
         email,
       },
     });
-    if (!user) throw new ApiError(404, "User not found");
+    if (!user) throw new ApiError(404, "User not found!");
+
+    if (user.isOauth) {
+      throw new ApiError(
+        400,
+        `This account was created using ${user.provider}. Please log in with that method.`
+      );
+    }
+    if (!user.isEmailVerified) {
+      throw new ApiError(
+        403,
+        "Email not verified. Please verify your email first."
+      );
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 

@@ -59,6 +59,32 @@ export class AuthController extends Controller {
     };
   }
 
+  @Post("/login")
+  async loginUser(@Body() user: { email: string; password: string }) {
+    const { email, password } = user;
+    const { accessToken, refreshToken } = await new AuthService().loginUser(
+      email,
+      password
+    );
+
+    this.setHeader("Set-Cookie", [
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=None; Max-Age=3600;`,
+      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=None; Max-Age=604800;`,
+    ]);
+    return {
+      success: true,
+      message: "Login successful",
+      data: {
+        user: {
+          email,
+          fullName:
+            (await AppDataSource.getRepository(UserEntity).findOneBy({ email }))
+              ?.fullName || "",
+        },
+      },
+    };
+  }
+
   @Post("/refresh-token")
   async refreshToken(@Request() req: ExpressRequest) {
     const refreshToken = req.cookies?.refreshToken;
