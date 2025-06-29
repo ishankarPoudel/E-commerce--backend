@@ -9,15 +9,18 @@ import {
   Query,
   Route,
   Tags,
+  Middlewares,
 } from "tsoa";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { BagService } from "../../services/bag/bag.service";
 import { updateBagValidator } from "../../validators/updateBag.validator";
+import { authenticateToken } from "../../middlewares/auth.middleware";
 
 @Route("/bag")
 @Tags("Bag")
 export class BagController extends Controller {
   @Post("/add-bag")
+  @Middlewares(authenticateToken)
   async addBag(@Body() bag: addBagValidator) {
     const newBag = await new BagService().addBag(bag);
     return { success: true, message: "Bag added successfully", data: newBag };
@@ -58,6 +61,7 @@ export class BagController extends Controller {
   }
 
   @Patch("/update-bag/:id")
+  @Middlewares(authenticateToken)
   async updateBag(@Path() id: string, @Body() bag: updateBagValidator) {
     const updatedBag = await new BagService().updateBagById(id, bag);
     return {
@@ -68,6 +72,7 @@ export class BagController extends Controller {
   }
 
   @Delete("/delete-bag/:id")
+  @Middlewares(authenticateToken)
   async deleteBagById(@Path() id: string) {
     const bag = await new BagService().deleteBagById(id);
     return {

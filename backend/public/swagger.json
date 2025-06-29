@@ -1072,6 +1072,60 @@
 				"security": [],
 				"parameters": []
 			}
+		},
+		"/auth/me": {
+			"get": {
+				"operationId": "GetCurrentUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"fullName": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"id",
+												"fullName",
+												"email"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [],
+				"parameters": []
+			}
 		}
 	},
 	"servers": [

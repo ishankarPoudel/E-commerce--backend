@@ -1,4 +1,14 @@
-import { Body, Controller, Post, Request, Res, Route, Tags } from "tsoa";
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  Res,
+  Route,
+  Tags,
+  Get,
+  Middlewares,
+} from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
 import { AppDataSource } from "./../../data-source";
@@ -7,6 +17,10 @@ import { UserEntity } from "../../entities/user/user.entity";
 import { MailService } from "../../services/mail/mail.service";
 import { ApiError } from "../../utils/apiError";
 import { Request as ExpressRequest } from "express";
+import {
+  authenticateToken,
+  AuthenticatedRequest,
+} from "../../middlewares/auth.middleware";
 
 export interface UserResponseData {
   email: string;
@@ -30,8 +44,8 @@ export class AuthController extends Controller {
       await new MailService().verifyOtp(otp);
 
     this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=None; Max-Age=3600;`,
-      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=None; Max-Age=604800;`,
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
     ]);
 
     return {
@@ -68,8 +82,8 @@ export class AuthController extends Controller {
     );
 
     this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=None; Max-Age=3600;`,
-      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=None; Max-Age=604800;`,
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
     ]);
     return {
       success: true,
@@ -87,17 +101,43 @@ export class AuthController extends Controller {
 
   @Post("/refresh-token")
   async refreshToken(@Request() req: ExpressRequest) {
+    console.log("Refresh token endpoint called");
+    console.log("Cookies:", req.cookies);
+    console.log("Headers:", req.headers);
+
     const refreshToken = req.cookies?.refreshToken;
+    console.log(
+      "Extracted refresh token:",
+      refreshToken ? "Present" : "Missing"
+    );
 
     const newTokens = await new AuthService().refreshTokens(refreshToken);
 
     this.setHeader("Set-Cookie", [
-      `accessToken=${newTokens.accessToken}; HttpOnly; Path=/; SameSite=None; Max-Age=3600;`,
-      `refreshToken=${newTokens.refreshToken}; HttpOnly; Path=/; SameSite=None; Max-Age=604800;`,
+      `accessToken=${newTokens.accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+      `refreshToken=${newTokens.refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
     ]);
+
+    console.log("New tokens generated and cookies set");
+
     return {
       success: true,
       message: "Tokens refreshed Successfully",
+    };
+  }
+
+  @Get("/me")
+  @Middlewares(authenticateToken)
+  async getCurrentUser(@Request() req: AuthenticatedRequest) {
+    const user = req.user;
+    return {
+      success: true,
+      message: "User data retrieved successfully",
+      data: {
+        email: user?.email,
+        fullName: user?.fullName,
+        id: user?.id,
+      },
     };
   }
 }

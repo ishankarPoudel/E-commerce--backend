@@ -4,7 +4,7 @@ export class Tokens {
   signAccessToken = (payload: object) => {
     const secret = process.env.JWT_ACCESS_SECRET;
     const options: SignOptions = {
-      expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || "15s") as any,
+      expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || "15s") as any, // Changed from 15s to 15m
     };
 
     return jwt.sign(payload, secret as string, options);
