@@ -14,7 +14,7 @@ export class Tokens {
     const secret = process.env.JWT_REFRESH_SECRET;
 
     const options: SignOptions = {
-      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || "45s") as any,
+      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || "7d") as any,
     };
 
     return jwt.sign(payload, secret as string, options);
