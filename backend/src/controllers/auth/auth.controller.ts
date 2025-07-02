@@ -39,9 +39,9 @@ interface RegisterResponse {
 @Tags("Auth")
 export class AuthController extends Controller {
   @Post("/verify-otp")
-  async verifyOtp(@Body() { otp }: { otp: string }) {
+  async verifyOtp(@Body() { otp, email }: { otp: string; email: string }) {
     const { user, accessToken, refreshToken } =
-      await new MailService().verifyOtp(otp);
+      await new MailService().verifyOtp(otp, email);
 
     this.setHeader("Set-Cookie", [
       `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,

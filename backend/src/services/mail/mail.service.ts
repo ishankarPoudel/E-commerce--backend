@@ -1,3 +1,4 @@
+import { MoreThan } from "typeorm";
 import { mailTransport } from "../../config/mail/mail.config";
 import { AppDataSource } from "../../data-source";
 import { UserEntity } from "../../entities/user/user.entity";
@@ -24,7 +25,13 @@ export class MailService {
   }
 
   async verifyOtp(otp: string, email?: string) {
-    const user = await this.UserRepo.findOneBy({ email });
+    const user = await this.UserRepo.findOne({
+      where: {
+        emailVerificationToken: otp,
+        email: email,
+        emailVerificationTokenExpiresAt: MoreThan(new Date()),
+      },
+    });
     if (
       !user ||
       user.emailVerificationToken !== otp ||
