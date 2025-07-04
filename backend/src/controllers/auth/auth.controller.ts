@@ -11,8 +11,7 @@ import {
 } from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
-import { AppDataSource } from "./../../data-source";
-import { GenerateRandomToken } from "../../utils/emailToken/randomToken";
+import { AppDataSource } from "../../config/data-source/data-source";
 import { UserEntity } from "../../entities/user/user.entity";
 import { MailService } from "../../services/mail/mail.service";
 import { ApiError } from "../../utils/apiError";

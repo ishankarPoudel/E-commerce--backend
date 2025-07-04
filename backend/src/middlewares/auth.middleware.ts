@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Tokens } from "../utils/token.util";
 import { ApiError } from "../utils/apiError";
-import { AppDataSource } from "../data-source";
+import { AppDataSource } from "../config/data-source/data-source";
 import { UserEntity } from "../entities/user/user.entity";
 
 export interface AuthenticatedRequest extends Request {

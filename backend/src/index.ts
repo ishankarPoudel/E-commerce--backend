@@ -4,7 +4,7 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./routes/routes";
 import * as swaggerDocument from "../public/swagger.json";
-import { AppDataSource } from "./data-source";
+import { AppDataSource } from "./config/data-source/data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";

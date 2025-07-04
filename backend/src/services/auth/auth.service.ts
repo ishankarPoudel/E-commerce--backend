@@ -1,5 +1,5 @@
 import { TokenExpiredError } from "jsonwebtoken";
-import { AppDataSource } from "../../data-source";
+import { AppDataSource } from "../../config/data-source/data-source";
 import { UserEntity } from "../../entities/user/user.entity";
 import { ApiError } from "../../utils/apiError";
 import { GenerateRandomToken } from "../../utils/emailToken/randomToken";

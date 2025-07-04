@@ -1,5 +1,5 @@
 import { In } from "typeorm";
-import { AppDataSource } from "../../data-source";
+import { AppDataSource } from "../../config/data-source/data-source";
 import { BagEntity } from "../../entities/bag/bag.entity";
 import { Category } from "../../entities/category/category.entity";
 import { addBagValidator } from "../../validators/addBag.validator";

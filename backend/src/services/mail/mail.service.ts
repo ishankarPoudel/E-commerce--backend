@@ -1,6 +1,6 @@
 import { MoreThan } from "typeorm";
 import { mailTransport } from "../../config/mail/mail.config";
-import { AppDataSource } from "../../data-source";
+import { AppDataSource } from "../../config/data-source/data-source";
 import { UserEntity } from "../../entities/user/user.entity";
 import { ApiError } from "../../utils/apiError";
 import { AuthService } from "../auth/auth.service";
