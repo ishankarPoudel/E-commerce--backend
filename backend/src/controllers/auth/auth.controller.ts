@@ -24,6 +24,7 @@ import {
 } from "../../middlewares/auth.middleware";
 import passport from "../../config/passport/passport.config";
 import { Tokens } from "../../utils/token.util";
+import bcrypt from "bcrypt";
 
 export interface UserResponseData {
   email: string;
@@ -133,28 +134,59 @@ export class AuthController extends Controller {
   async googleAuth(@Request() req: ExpressRequest) {
     passport.authenticate("google", {
       scope: ["profile", "email"],
-    });
+    })(req, req.res);
   }
 
   @Get("/google/callback")
-  async googleCallBack(@Request() req: ExpressRequest) {
-    passport.authenticate("google", (err: Error, user: any) => {
-      if (err || !user) {
-        (req.res as ExpressResponse).redirect(
-          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
-        );
-        return;
-      }
-      const accessToken = new Tokens().signAccessToken({ userId: user.id });
-      const refreshToken = new Tokens().signRefreshToken({ userId: user.id });
-      this.setHeader("Set-Cookie", [
-        `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
-        `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
-      ]);
-      (req.res as ExpressResponse).redirect(
-        `${process.env.FRONTEND_URL}/login?success=oauth_success`
-      );
-    })(req, req.res as ExpressResponse);
+  async googleCallBack(@Request() req: ExpressRequest): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      passport.authenticate(
+        "google",
+        async (err: Error, user: any, info: any) => {
+          console.log("Error:", err ? err.message : "None");
+          console.log("User:", user ? user.id : "No user found");
+          console.log("Info:", info);
+          try {
+            if (err || !user) {
+              // Set redirect header using TSOA's method
+              this.setHeader(
+                "Location",
+                `${process.env.FRONTEND_BASE_URL}/login?error=oauth_failed`
+              );
+              this.setStatus(302);
+              return resolve();
+            }
+
+            const accessToken = new Tokens().signAccessToken({
+              userId: user.id,
+            });
+            const refreshToken = new Tokens().signRefreshToken({
+              userId: user.id,
+            });
+            const userRepo = AppDataSource.getRepository(UserEntity);
+            user.refreshToken = await bcrypt.hash(refreshToken, 10);
+            await userRepo.save(user);
+
+            // Set cookies using TSOA's setHeader
+            this.setHeader("Set-Cookie", [
+              `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+              `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
+            ]);
+
+            // Set redirect header using TSOA's method
+            this.setHeader(
+              "Location",
+              `${process.env.FRONTEND_BASE_URL}/login?success=oauth_success`
+            );
+            this.setStatus(302);
+
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        }
+      )(req, req.res as ExpressResponse);
+    });
   }
 
   @Get("/me")

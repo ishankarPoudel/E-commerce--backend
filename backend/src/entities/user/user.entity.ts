@@ -3,6 +3,9 @@ import { CommonEntity } from "../common/common.entity";
 
 @Entity()
 export class UserEntity extends CommonEntity {
+  @Column({ nullable: true })
+  googleId: string;
+
   @Column({ unique: true })
   email: string;
 

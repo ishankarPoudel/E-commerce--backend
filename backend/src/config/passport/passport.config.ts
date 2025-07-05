@@ -16,21 +16,24 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Find or create user in the database
-        let user = await userRepo.findOne({ where: { id: profile.id } });
+        console.log("Google profile:", profile);
+        let user = await userRepo.findOne({ where: { googleId: profile.id } });
 
         if (!user) {
           user = userRepo.create({
-            id: profile.id,
+            googleId: profile.id,
             email: profile.emails?.[0]?.value,
             fullName: profile.displayName,
             isOauth: true,
             provider: "google",
+            isEmailVerified: true, // Google OAuth users are considered verified
           });
           await userRepo.save(user);
         }
 
         return done(null, user);
       } catch (error) {
+        console.error("Error in Google strategy:", error);
         return done(error, false);
       }
     }
