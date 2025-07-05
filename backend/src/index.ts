@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "reflect-metadata";
 import express, { Request, Response } from "express";
 import cors from "cors";
@@ -8,7 +9,6 @@ import { AppDataSource } from "./config/data-source/data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
-import "dotenv/config";
 
 const app = express();
 app.use(cookieParser());

@@ -1077,6 +1077,36 @@
 				"parameters": []
 			}
 		},
+		"/auth/google": {
+			"get": {
+				"operationId": "GoogleAuth",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/auth/google/callback": {
+			"get": {
+				"operationId": "GoogleCallBack",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/auth/me": {
 			"get": {
 				"operationId": "GetCurrentUser",

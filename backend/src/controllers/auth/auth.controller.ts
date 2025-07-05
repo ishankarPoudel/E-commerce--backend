@@ -8,6 +8,7 @@ import {
   Tags,
   Get,
   Middlewares,
+  TsoaResponse,
 } from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
@@ -16,10 +17,13 @@ import { UserEntity } from "../../entities/user/user.entity";
 import { MailService } from "../../services/mail/mail.service";
 import { ApiError } from "../../utils/apiError";
 import { Request as ExpressRequest } from "express";
+import { Response as ExpressResponse } from "express";
 import {
   authenticateToken,
   AuthenticatedRequest,
 } from "../../middlewares/auth.middleware";
+import passport from "../../config/passport/passport.config";
+import { Tokens } from "../../utils/token.util";
 
 export interface UserResponseData {
   email: string;
@@ -123,6 +127,34 @@ export class AuthController extends Controller {
       success: true,
       message: "Tokens refreshed Successfully",
     };
+  }
+
+  @Get("/google")
+  async googleAuth(@Request() req: ExpressRequest) {
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+    });
+  }
+
+  @Get("/google/callback")
+  async googleCallBack(@Request() req: ExpressRequest) {
+    passport.authenticate("google", (err: Error, user: any) => {
+      if (err || !user) {
+        (req.res as ExpressResponse).redirect(
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+        );
+        return;
+      }
+      const accessToken = new Tokens().signAccessToken({ userId: user.id });
+      const refreshToken = new Tokens().signRefreshToken({ userId: user.id });
+      this.setHeader("Set-Cookie", [
+        `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+        `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
+      ]);
+      (req.res as ExpressResponse).redirect(
+        `${process.env.FRONTEND_URL}/login?success=oauth_success`
+      );
+    })(req, req.res as ExpressResponse);
   }
 
   @Get("/me")

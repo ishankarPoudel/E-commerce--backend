@@ -12,6 +12,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
     },
+
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Find or create user in the database
@@ -35,20 +36,4 @@ passport.use(
     }
   )
 );
-
-// Serialize user into session
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
-});
-
-// Deserialize user from session
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await userRepo.findOne({ where: { id } });
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
-
 export default passport;
