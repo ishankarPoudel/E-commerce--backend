@@ -77,6 +77,24 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
+  async loginWithOAuth(user: UserEntity) {
+    let existingUser = await this.userRepo.findOne({
+      where: {
+        googleId: user.googleId,
+      },
+    });
+    if (!existingUser)
+      throw new ApiError(404, "User not found, please register first");
+    if (!existingUser.isOauth) {
+      throw new ApiError(
+        400,
+
+        "Plese login with your email and password as you haven't registered using Google Authorization"
+      );
+    }
+    return this.generateTokens(existingUser);
+  }
+
   async generateTokens(user: UserEntity) {
     const payload = { userId: user.id };
     const accessToken = new Tokens().signAccessToken(payload);

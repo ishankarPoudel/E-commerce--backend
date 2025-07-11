@@ -9,6 +9,7 @@ import { AppDataSource } from "./config/data-source/data-source";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { rateLimit } from "express-rate-limit";
 
 const app = express();
 app.use(cookieParser());
@@ -22,6 +23,12 @@ app.use(
   })
 );
 
+// Rate limiting middleware
+const rateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests, please try again later.",
+});
 app.use(express.json());
 
 // Serve Swagger UI

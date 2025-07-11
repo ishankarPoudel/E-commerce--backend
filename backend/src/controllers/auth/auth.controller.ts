@@ -189,6 +189,7 @@ export class AuthController extends Controller {
     });
   }
 
+  @Get("/OAuth/login")
   @Get("/me")
   @Middlewares(authenticateToken)
   async getCurrentUser(@Request() req: AuthenticatedRequest) {
