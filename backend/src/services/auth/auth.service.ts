@@ -19,7 +19,10 @@ export class AuthService {
     });
     // If user is already fully registered
     if (existingUser && existingUser.isEmailVerified) {
-      throw new ApiError(400, "User already exists");
+      throw new ApiError(
+        400,
+        `Account already exists, please login via ${existingUser.provider} `
+      );
     }
 
     if (!existingUser) {

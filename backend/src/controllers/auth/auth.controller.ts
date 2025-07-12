@@ -151,7 +151,7 @@ export class AuthController extends Controller {
               // Set redirect header using TSOA's method
               this.setHeader(
                 "Location",
-                `${process.env.FRONTEND_BASE_URL}/login?error=oauth_failed`
+                `${process.env.FRONTEND_BASE_URL}/auth/login?error=oauth_failed`
               );
               this.setStatus(302);
               return resolve();
@@ -176,7 +176,7 @@ export class AuthController extends Controller {
             // Set redirect header using TSOA's method
             this.setHeader(
               "Location",
-              `${process.env.FRONTEND_BASE_URL}/login?success=oauth_success`
+              `${process.env.FRONTEND_BASE_URL}/auth/login?success=oauth_success`
             );
             this.setStatus(302);
 
