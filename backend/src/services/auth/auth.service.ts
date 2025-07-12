@@ -51,6 +51,8 @@ export class AuthService {
     return existingUser;
   }
 
+  // this is the local login method  **NOT OAUTH**
+  // it will be used for login with email and password
   async loginUser(email: string, password: string) {
     const user = await this.userRepo.findOne({
       where: {
@@ -75,24 +77,6 @@ export class AuthService {
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
     return this.generateTokens(user);
-  }
-
-  async loginWithOAuth(user: UserEntity) {
-    let existingUser = await this.userRepo.findOne({
-      where: {
-        googleId: user.googleId,
-      },
-    });
-    if (!existingUser)
-      throw new ApiError(404, "User not found, please register first");
-    if (!existingUser.isOauth) {
-      throw new ApiError(
-        400,
-
-        "Plese login with your email and password as you haven't registered using Google Authorization"
-      );
-    }
-    return this.generateTokens(existingUser);
   }
 
   async generateTokens(user: UserEntity) {

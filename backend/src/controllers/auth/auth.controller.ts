@@ -54,7 +54,7 @@ export class AuthController extends Controller {
 
     return {
       success: true,
-      message: "Email verified successfully and logging you in",
+      message: "Email verified successfully,  logging you in",
       data: {
         email: user.email,
         fullName: user.fullName,
@@ -189,7 +189,6 @@ export class AuthController extends Controller {
     });
   }
 
-  @Get("/OAuth/login")
   @Get("/me")
   @Middlewares(authenticateToken)
   async getCurrentUser(@Request() req: AuthenticatedRequest) {
