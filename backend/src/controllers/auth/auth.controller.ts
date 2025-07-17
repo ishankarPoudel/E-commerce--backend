@@ -65,6 +65,7 @@ export class AuthController extends Controller {
   async registerUser(@Body() user: RegisterUserDto): Promise<RegisterResponse> {
     const result = await new AuthService().registerUser(user);
     if (!result) throw new ApiError(400, "User registration failed");
+
     return {
       success: true,
       message: "OPT sent to your email",
