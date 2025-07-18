@@ -10,6 +10,7 @@ import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { rateLimit } from "express-rate-limit";
+import "./crons/index.ts";
 
 const app = express();
 app.use(cookieParser());
