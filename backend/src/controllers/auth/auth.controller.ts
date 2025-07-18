@@ -45,7 +45,7 @@ export class AuthController extends Controller {
   @Post("/verify-otp")
   async verifyOtp(@Body() { otp, email }: { otp: string; email: string }) {
     const { user, accessToken, refreshToken } =
-      await new MailService().verifyOtp(otp, email);
+      await new AuthService().verifyOtp(otp, email);
 
     this.setHeader("Set-Cookie", [
       `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
@@ -100,6 +100,38 @@ export class AuthController extends Controller {
             (await AppDataSource.getRepository(UserEntity).findOneBy({ email }))
               ?.fullName || "",
         },
+      },
+    };
+  }
+
+  @Post("/reset-password")
+  async resetPassword(@Body() { email }: { email: string }) {
+    const { email: userEmail, resetToken } =
+      await new AuthService().resetPassword(email);
+
+    return {
+      success: true,
+      message: "Password reset email sent",
+      data: {
+        email: userEmail,
+      },
+    };
+  }
+
+  @Post("/recover-password")
+  async recoverPassword(
+    @Body()
+    { newPassword, resetToken }: { newPassword: string; resetToken: string }
+  ) {
+    const { email } = await new AuthService().recoverPassword(
+      newPassword,
+      resetToken
+    );
+    return {
+      success: true,
+      message: "Password reset successfully",
+      data: {
+        email,
       },
     };
   }

@@ -7,6 +7,7 @@ import { Tokens } from "../../utils/token.util";
 import { MailService } from "../mail/mail.service";
 import { RegisterUserDto } from "./../../validators/registerUser.validator";
 import bcrypt from "bcrypt";
+import { MoreThan } from "typeorm";
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(UserEntity);
@@ -54,6 +55,34 @@ export class AuthService {
     return existingUser;
   }
 
+  async verifyOtp(otp: string, email?: string) {
+    const user = await this.userRepo.findOne({
+      where: {
+        emailVerificationToken: otp,
+        email: email,
+        emailVerificationTokenExpiresAt: MoreThan(new Date()),
+      },
+    });
+    if (
+      !user ||
+      user.emailVerificationToken !== otp ||
+      !user.emailVerificationTokenExpiresAt ||
+      user.emailVerificationTokenExpiresAt < new Date()
+    ) {
+      throw new ApiError(400, "Invalid or expired OTP");
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = "";
+    user.emailVerificationTokenExpiresAt = null;
+    await this.userRepo.save(user);
+
+    const { accessToken, refreshToken } =
+      await new AuthService().generateTokens(user);
+
+    return { user, accessToken, refreshToken };
+  }
+
   // this is the local login method  **NOT OAUTH**
   // it will be used for login with email and password
   async loginUser(email: string, password: string) {
@@ -80,6 +109,36 @@ export class AuthService {
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
     return this.generateTokens(user);
+  }
+
+  async resetPassword(email: string) {
+    const userExists = await this.userRepo.findOneBy({ email });
+    if (!userExists) throw new ApiError(404, "User not found");
+    if (userExists.isOauth) {
+      throw new ApiError(
+        400,
+        `This account was created using ${userExists.provider}. Please log in with that method. You cannot reset the password here.`
+      );
+    }
+
+    const resetToken = new Tokens().signAccessToken({ userId: userExists.id });
+
+    await new MailService().sendPasswordResetEmail(email, resetToken);
+    return {
+      email,
+      resetToken,
+    };
+  }
+
+  async recoverPassword(newPassword: string, resetToken: string) {
+    const payload = new Tokens().verifyAccessToken(resetToken) as any;
+    const user = await this.userRepo.findOneBy({ id: payload.userId });
+    if (!user || !payload)
+      throw new ApiError(401, "Invalid or expired reset token");
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await this.userRepo.save(user);
+    return { email: user.email };
   }
 
   async generateTokens(user: UserEntity) {
