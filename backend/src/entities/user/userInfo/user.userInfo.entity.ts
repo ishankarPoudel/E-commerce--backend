@@ -1,5 +1,6 @@
-import { Column, Entity } from "typeorm";
-import { CommonEntity } from "../common/common.entity";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { CommonEntity } from "../../common/common.entity";
+import { DeviceInfoEntity } from "../deviceInfo/user.deveiceInfo.entity";
 
 @Entity()
 export class UserEntity extends CommonEntity {
@@ -32,4 +33,11 @@ export class UserEntity extends CommonEntity {
 
   @Column({ nullable: true, type: "varchar", length: 255 })
   refreshToken: string;
+
+  @OneToOne(() => DeviceInfoEntity, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinColumn()
+  deviceInfo: DeviceInfoEntity;
 }

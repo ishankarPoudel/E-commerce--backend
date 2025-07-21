@@ -12,7 +12,7 @@ import {
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
 import { AppDataSource } from "../../config/data-source/data-source";
-import { UserEntity } from "../../entities/user/user.entity";
+import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
 import { Request as ExpressRequest } from "express";
 import { Response as ExpressResponse } from "express";
@@ -24,6 +24,7 @@ import passport from "../../config/passport/passport.config";
 import { Tokens } from "../../utils/token.util";
 import bcrypt from "bcrypt";
 import { TokensService } from "../../services/tokens/tokens.service";
+import rateLimit from "express-rate-limit";
 
 export interface UserResponseData {
   email: string;
@@ -38,10 +39,17 @@ interface RegisterResponse {
     user: UserResponseData;
   };
 }
+
+const rateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: { message: "Too many requests, please try again later." },
+});
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
   @Post("/verify-otp")
+  @Middlewares(rateLimiter)
   async verifyOtp(@Body() { otp, email }: { otp: string; email: string }) {
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp(otp, email);
@@ -90,6 +98,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/login")
+  @Middlewares(rateLimiter)
   async loginUser(@Body() user: { email: string; password: string }) {
     const { email, password } = user;
     const { accessToken, refreshToken } = await new AuthService().loginUser(
@@ -116,6 +125,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/reset-password")
+  @Middlewares(rateLimiter)
   async resetPassword(@Body() { email }: { email: string }) {
     const { email: userEmail } = await new AuthService().resetPassword(email);
 
@@ -129,6 +139,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/recover-password")
+  @Middlewares(rateLimiter)
   async recoverPassword(
     @Body()
     { newPassword, resetToken }: { newPassword: string; resetToken: string }

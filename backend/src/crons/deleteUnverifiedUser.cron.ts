@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { AppDataSource } from "../config/data-source/data-source";
-import { UserEntity } from "../entities/user/user.entity";
+import { UserEntity } from "../entities/user/userInfo/user.userInfo.entity";
 import { LessThan } from "typeorm";
 
 cron.schedule("*/10 * * * * *", async () => {
