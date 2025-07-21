@@ -8,13 +8,11 @@ import {
   Tags,
   Get,
   Middlewares,
-  TsoaResponse,
 } from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
 import { AppDataSource } from "../../config/data-source/data-source";
 import { UserEntity } from "../../entities/user/user.entity";
-import { MailService } from "../../services/mail/mail.service";
 import { ApiError } from "../../utils/apiError";
 import { Request as ExpressRequest } from "express";
 import { Response as ExpressResponse } from "express";
@@ -25,6 +23,7 @@ import {
 import passport from "../../config/passport/passport.config";
 import { Tokens } from "../../utils/token.util";
 import bcrypt from "bcrypt";
+import { TokensService } from "../../services/tokens/tokens.service";
 
 export interface UserResponseData {
   email: string;
@@ -58,6 +57,18 @@ export class AuthController extends Controller {
       data: {
         email: user.email,
         fullName: user.fullName,
+      },
+    };
+  }
+
+  @Post("/resend-otp")
+  async resendOtp(@Body() { email }: { email: string }) {
+    const otp = await new AuthService().resendOtp(email);
+    return {
+      success: true,
+      message: "OTP resent successfully",
+      data: {
+        email,
       },
     };
   }
@@ -106,8 +117,7 @@ export class AuthController extends Controller {
 
   @Post("/reset-password")
   async resetPassword(@Body() { email }: { email: string }) {
-    const { email: userEmail, resetToken } =
-      await new AuthService().resetPassword(email);
+    const { email: userEmail } = await new AuthService().resetPassword(email);
 
     return {
       success: true,
@@ -148,7 +158,7 @@ export class AuthController extends Controller {
       refreshToken ? "Present" : "Missing"
     );
 
-    const newTokens = await new AuthService().refreshTokens(refreshToken);
+    const newTokens = await new TokensService().refreshTokens(refreshToken);
 
     this.setHeader("Set-Cookie", [
       `accessToken=${newTokens.accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,

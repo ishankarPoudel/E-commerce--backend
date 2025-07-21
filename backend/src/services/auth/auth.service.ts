@@ -83,6 +83,21 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
 
+  async resendOtp(email: string) {
+    const user = await this.userRepo.findOneBy({ email });
+    if (!user) throw new ApiError(404, "User not found");
+    if (user.isEmailVerified) {
+      throw new ApiError(400, "Email already verified");
+    }
+    const otp = new GenerateRandomToken().mailToken();
+    user.emailVerificationToken = otp;
+    user.emailVerificationTokenExpiresAt = new Date(
+      Date.now() + 15 * 60 * 1000
+    ); // 15 minutes from now
+    await this.userRepo.save(user);
+    await new MailService().sendVerificationEmail(user.email, otp);
+  }
+
   // this is the local login method  **NOT OAUTH**
   // it will be used for login with email and password
   async loginUser(email: string, password: string) {
@@ -151,41 +166,5 @@ export class AuthService {
     await this.userRepo.save(user);
 
     return { accessToken, refreshToken };
-  }
-
-  async refreshTokens(refreshToken: string) {
-    if (!refreshToken) throw new ApiError(401, "Refresh Token missing");
-    let payload: any;
-    try {
-      payload = new Tokens().verifyRefreshToken(refreshToken);
-    } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        throw new ApiError(401, "Refresh Token expired");
-      }
-      throw new ApiError(401, "Invalid Refresh Token");
-    }
-
-    const user = await this.userRepo.findOne({
-      where: {
-        id: payload.userId,
-      },
-    });
-    if (!user || !user.refreshToken)
-      throw new ApiError(401, "User not found or refresh token missing");
-
-    const isRefreshTokenValid = await bcrypt.compare(
-      refreshToken,
-      user.refreshToken
-    );
-    if (!isRefreshTokenValid) throw new ApiError(401, "Invalid Refresh Token");
-
-    // Generate new tokens
-    const newAccessToken = new Tokens().signAccessToken({ userId: user.id });
-    const newRefreshToken = new Tokens().signRefreshToken({ userId: user.id });
-
-    user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
-    await this.userRepo.save(user);
-
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
 }
