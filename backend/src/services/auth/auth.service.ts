@@ -8,6 +8,11 @@ import { MailService } from "../mail/mail.service";
 import { RegisterUserDto } from "./../../validators/registerUser.validator";
 import bcrypt from "bcrypt";
 import { MoreThan } from "typeorm";
+import {
+  LoginValidator,
+  OTPValidator,
+} from "./../../validators/auth/login.validator";
+import { DeviceInfoEntity } from "../../entities/user/deviceInfo/user.deveiceInfo.entity";
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(UserEntity);
@@ -55,7 +60,7 @@ export class AuthService {
     return existingUser;
   }
 
-  async verifyOtp(otp: string, email?: string) {
+  async verifyOtp({ email, otp }: { email: string; otp: string }) {
     const user = await this.userRepo.findOne({
       where: {
         emailVerificationToken: otp,
@@ -100,10 +105,10 @@ export class AuthService {
 
   // this is the local login method  **NOT OAUTH**
   // it will be used for login with email and password
-  async loginUser(email: string, password: string) {
+  async loginUser(credentials: LoginValidator) {
     const user = await this.userRepo.findOne({
       where: {
-        email,
+        email: credentials.email,
       },
     });
     if (!user) throw new ApiError(404, "User not found!");
@@ -120,8 +125,29 @@ export class AuthService {
         "Email not verified. Please verify your email first."
       );
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
+    const deviceInfo = AppDataSource.getRepository(DeviceInfoEntity);
+    const device = deviceInfo.create({
+      device: credentials.device,
+      os: credentials.os,
+      browser: credentials.browser,
+    });
+    const location =
+      typeof credentials.location === "string"
+        ? JSON.parse(credentials.location)
+        : credentials.location;
+
+    await deviceInfo.save(device);
+    await new MailService().sendLoginDetectedEmail(user.email, {
+      os: credentials.os,
+      browser: credentials.browser,
+      device: credentials.device,
+      location,
+    });
 
     return this.generateTokens(user);
   }

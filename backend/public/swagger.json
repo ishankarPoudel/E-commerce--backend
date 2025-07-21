@@ -277,6 +277,41 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"LoginValidator": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"rememberMe": {
+						"type": "boolean"
+					},
+					"os": {
+						"type": "string"
+					},
+					"browser": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password",
+					"os",
+					"browser",
+					"device",
+					"location"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -1088,19 +1123,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"password": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"password",
-									"email"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/LoginValidator"
 							}
 						}
 					}

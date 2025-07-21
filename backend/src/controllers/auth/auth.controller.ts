@@ -25,6 +25,8 @@ import { Tokens } from "../../utils/token.util";
 import bcrypt from "bcrypt";
 import { TokensService } from "../../services/tokens/tokens.service";
 import rateLimit from "express-rate-limit";
+import { LoginValidator } from "../../validators/auth/login.validator";
+import { MailService } from "../../services/mail/mail.service";
 
 export interface UserResponseData {
   email: string;
@@ -52,7 +54,7 @@ export class AuthController extends Controller {
   @Middlewares(rateLimiter)
   async verifyOtp(@Body() { otp, email }: { otp: string; email: string }) {
     const { user, accessToken, refreshToken } =
-      await new AuthService().verifyOtp(otp, email);
+      await new AuthService().verifyOtp({ otp, email });
 
     this.setHeader("Set-Cookie", [
       `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
@@ -99,11 +101,10 @@ export class AuthController extends Controller {
 
   @Post("/login")
   @Middlewares(rateLimiter)
-  async loginUser(@Body() user: { email: string; password: string }) {
-    const { email, password } = user;
+  async loginUser(@Body() user: LoginValidator) {
+    const { email } = user;
     const { accessToken, refreshToken } = await new AuthService().loginUser(
-      email,
-      password
+      user
     );
 
     this.setHeader("Set-Cookie", [
