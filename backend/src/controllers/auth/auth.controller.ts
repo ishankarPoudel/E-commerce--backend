@@ -198,9 +198,6 @@ export class AuthController extends Controller {
       passport.authenticate(
         "google",
         async (err: Error, user: any, info: any) => {
-          console.log("Error:", err ? err.message : "None");
-          console.log("User:", user ? user.id : "No user found");
-          console.log("Info:", info);
           try {
             if (err || !user) {
               // Set redirect header using TSOA's method
@@ -236,6 +233,17 @@ export class AuthController extends Controller {
             this.setStatus(302);
 
             resolve();
+
+            await new MailService().sendLoginDetectedEmail(user.email, {
+              device: "Google OAuth",
+              os: "Unknown",
+              browser: "Unknown",
+              location: {
+                city: "Unknown",
+                region: "Unknown",
+                country: "Unknown",
+              },
+            });
           } catch (error) {
             reject(error);
           }

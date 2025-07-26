@@ -23,11 +23,32 @@ export class MailService {
       await mailTransport.sendMail({
         from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
         to: email,
-        subject: "Password Reset Link",
+        subject: "Reset Your Password",
         html: `
-          <p>Click the link below to reset your password:</p>
-          <a href="${process.env.FRONTEND_BASE_URL}/auth/recover-password/${token}">Reset Password</a>
-        `,
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
+        <h2 style="color: #333;">Password Reset Request</h2>
+        <p style="font-size: 16px; color: #555;">
+          Hi there,
+        </p>
+        <p style="font-size: 16px; color: #555;">
+          We received a request to reset your password. Click the button below to choose a new one:
+        </p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${
+            process.env.FRONTEND_BASE_URL
+          }/auth/recover-password/${token}" style="background-color: #007BFF; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+            Reset Password
+          </a>
+        </div>
+        <p style="font-size: 14px; color: #999;">
+          If you didn't request this, you can safely ignore this email.
+        </p>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+        <p style="font-size: 12px; color: #bbb; text-align: center;">
+          &copy; ${new Date().getFullYear()} Avisekh Bag Pashal. All rights reserved.
+        </p>
+      </div>
+    `,
       });
     } catch (err) {
       console.error("Error sending email:", err);
