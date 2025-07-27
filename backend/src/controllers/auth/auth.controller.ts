@@ -26,7 +26,6 @@ import bcrypt from "bcrypt";
 import { TokensService } from "../../services/tokens/tokens.service";
 import rateLimit from "express-rate-limit";
 import { LoginValidator } from "../../validators/auth/login.validator";
-import { MailService } from "../../services/mail/mail.service";
 
 export interface UserResponseData {
   email: string;
@@ -233,37 +232,11 @@ export class AuthController extends Controller {
             this.setStatus(302);
 
             resolve();
-
-            await new MailService().sendLoginDetectedEmail(user.email, {
-              device: "Google OAuth",
-              os: "Unknown",
-              browser: "Unknown",
-              location: {
-                city: "Unknown",
-                region: "Unknown",
-                country: "Unknown",
-              },
-            });
           } catch (error) {
             reject(error);
           }
         }
       )(req, req.res as ExpressResponse);
     });
-  }
-
-  @Get("/me")
-  @Middlewares(authenticateToken)
-  async getCurrentUser(@Request() req: AuthenticatedRequest) {
-    const user = req.user;
-    return {
-      success: true,
-      message: "User data retrieved successfully",
-      data: {
-        email: user?.email,
-        fullName: user?.fullName,
-        id: user?.id,
-      },
-    };
   }
 }

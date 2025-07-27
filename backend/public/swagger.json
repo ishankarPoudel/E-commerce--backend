@@ -325,6 +325,72 @@
 		"contact": {}
 	},
 	"paths": {
+		"/user/me": {
+			"get": {
+				"operationId": "GetUserById",
+				"responses": {
+					"200": {
+						"description": "User retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"provider": {
+													"type": "string"
+												},
+												"isOauth": {
+													"type": "boolean"
+												},
+												"isEmailVerified": {
+													"type": "boolean"
+												},
+												"fullName": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"provider",
+												"isOauth",
+												"isEmailVerified",
+												"fullName",
+												"email",
+												"id"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/media/upload": {
 			"post": {
 				"operationId": "UploadMedia",
@@ -1317,60 +1383,6 @@
 				"responses": {
 					"204": {
 						"description": "No content"
-					}
-				},
-				"tags": [
-					"Auth"
-				],
-				"security": [],
-				"parameters": []
-			}
-		},
-		"/auth/me": {
-			"get": {
-				"operationId": "GetCurrentUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"data": {
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"fullName": {
-													"type": "string"
-												},
-												"email": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"id",
-												"fullName",
-												"email"
-											],
-											"type": "object"
-										},
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"data",
-										"message",
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
 					}
 				},
 				"tags": [
