@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { CommonEntity } from "../../common/common.entity";
 import { DeviceInfoEntity } from "../deviceInfo/user.deveiceInfo.entity";
+import { CartEntity } from "../../cart/cart.entity";
 
 @Entity()
 export class UserEntity extends CommonEntity {
@@ -40,4 +41,11 @@ export class UserEntity extends CommonEntity {
   })
   @JoinColumn()
   deviceInfo: DeviceInfoEntity;
+
+  @OneToOne(() => CartEntity, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinColumn()
+  cart: CartEntity;
 }

@@ -4,7 +4,6 @@ import { UserEntity } from "../entities/user/userInfo/user.userInfo.entity";
 import { LessThan } from "typeorm";
 
 cron.schedule("*/10 * * * * *", async () => {
-  console.log("Cron job triggered!");
   const userRepo = AppDataSource.getRepository(UserEntity);
   const cutOff = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
