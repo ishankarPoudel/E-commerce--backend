@@ -2,9 +2,6 @@ import { IsInt, IsNotEmpty, IsNumber, Min } from "class-validator";
 
 export class AddToCartValidator {
   @IsNotEmpty()
-  userId: string;
-
-  @IsNotEmpty()
   bagId: string;
 
   @IsNotEmpty({ message: "Quantity is required" })

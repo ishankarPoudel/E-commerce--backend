@@ -152,6 +152,221 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"DeviceInfoEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"os": {
+						"type": "string"
+					},
+					"browser": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"os",
+					"browser",
+					"device"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CartEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					},
+					"cartItems": {
+						"items": {
+							"$ref": "#/components/schemas/CartItemEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"user",
+					"cartItems"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"googleId": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"fullName": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"isOauth": {
+						"type": "boolean"
+					},
+					"provider": {
+						"type": "string"
+					},
+					"isEmailVerified": {
+						"type": "boolean"
+					},
+					"emailVerificationToken": {
+						"type": "string"
+					},
+					"emailVerificationTokenExpiresAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"refreshToken": {
+						"type": "string"
+					},
+					"deviceInfo": {
+						"$ref": "#/components/schemas/DeviceInfoEntity"
+					},
+					"cart": {
+						"$ref": "#/components/schemas/CartEntity"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"googleId",
+					"email",
+					"fullName",
+					"password",
+					"isOauth",
+					"provider",
+					"isEmailVerified",
+					"emailVerificationToken",
+					"emailVerificationTokenExpiresAt",
+					"refreshToken",
+					"deviceInfo",
+					"cart"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CartItemEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"cart": {
+						"$ref": "#/components/schemas/CartEntity"
+					},
+					"bag": {
+						"$ref": "#/components/schemas/BagEntity"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"cart",
+					"bag",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AddToCartValidator": {
+				"properties": {
+					"bagId": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"bagId",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"addBagValidator": {
 				"properties": {
 					"name": {
@@ -642,6 +857,172 @@
 						}
 					}
 				]
+			}
+		},
+		"/cart/add-to-cart": {
+			"post": {
+				"operationId": "AddToCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/CartEntity"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Cart"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddToCartValidator"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/cart/remove-from-cart": {
+			"delete": {
+				"operationId": "RemoveFromCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/CartEntity"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Cart"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddToCartValidator"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/cart/update-cart": {
+			"patch": {
+				"operationId": "UpdateCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/CartEntity"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Cart"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddToCartValidator"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/cart/get-cart": {
+			"get": {
+				"operationId": "GetCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/CartEntity"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Cart"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/bag/add-bag": {
