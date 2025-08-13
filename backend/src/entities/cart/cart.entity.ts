@@ -11,7 +11,6 @@ export class CartEntity extends CommonEntity {
 
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart, {
     cascade: true,
-    eager: true,
   })
   cartItems: CartItemEntity[];
 }

@@ -7,7 +7,6 @@ export class CartService {
   private cartRepo = AppDataSource.getRepository(CartEntity);
   private cartItemRepo = AppDataSource.getRepository(CartItemEntity);
 
-  // ...existing code...
   async addToCart(userId: string, bagId: string, quantity: number) {
     if (!quantity || quantity <= 0) throw new ApiError(400, "Invalid quantity");
 
@@ -17,50 +16,39 @@ export class CartService {
         const cartItemRepo =
           transactionalEntityManager.getRepository(CartItemEntity);
 
-        // STEP 1: Find the cart and LOCK the row for writing
-        // This is the key to preventing the race condition.
+        // STEP 1: Find and lock the cart WITHOUT relations
         let cart = await cartRepo.findOne({
           where: { user: { id: userId } },
-          relations: ["cartItems", "cartItems.bag"],
-          lock: {
-            mode: "pessimistic_write",
+          lock: { mode: "pessimistic_write" },
+        });
+
+        // If the cart doesn't exist, create it
+        if (!cart) {
+          cart = cartRepo.create({ user: { id: userId } });
+          await cartRepo.save(cart);
+        }
+
+        // STEP 2: Find the specific item now that the cart is locked
+        let existingItem = await cartItemRepo.findOne({
+          where: {
+            cart: { id: cart.id },
+            bag: { id: bagId },
           },
         });
 
-        // If cart doesn't exist, create it. Locking doesn't apply here.
-        if (!cart) {
-          const newCartItem = cartItemRepo.create({
-            bag: { id: bagId },
-            quantity,
-          });
-          cart = cartRepo.create({
-            user: { id: userId },
-            cartItems: [newCartItem],
-          });
-          await cartRepo.save(cart);
-          return cart;
-        }
-
-        // STEP 2: Now that the cart is locked, safely find the item
-        const existingItem = cart.cartItems.find(
-          (item) => item.bag?.id === bagId
-        );
-
         if (existingItem) {
-          // Item exists, update quantity
-          existingItem.quantity += quantity;
+          existingItem.quantity = quantity;
           await cartItemRepo.save(existingItem);
         } else {
-          // Item does not exist, create a new one
           const newItem = cartItemRepo.create({
+            cart: { id: cart.id },
             bag: { id: bagId },
             quantity,
-            cart: { id: cart.id }, // Explicitly link to the cart
           });
           await cartItemRepo.save(newItem);
         }
 
-        // STEP 3: Reload the cart to return the final, correct state
+        // STEP 3: Reload the full cart to return the final state
         return await cartRepo.findOne({
           where: { id: cart.id },
           relations: ["cartItems", "cartItems.bag"],
@@ -68,7 +56,6 @@ export class CartService {
       }
     );
   }
-  // ...existing code...
 
   async removeFromCart(userId: string, bagId: string) {
     const cart = await this.cartRepo.findOne({
