@@ -5,7 +5,9 @@ import { BagEntity } from "../bag/bag.entity";
 
 @Entity("cart-item")
 export class CartItemEntity extends CommonEntity {
-  @ManyToOne(() => CartEntity, (cart) => cart.cartItems)
+  @ManyToOne(() => CartEntity, (cart) => cart.cartItems, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "cart_id" })
   cart: CartEntity;
 
