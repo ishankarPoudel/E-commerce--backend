@@ -105,7 +105,7 @@ export class CartService {
       where: {
         user: { id: userId },
       },
-      relations: ["cartItems", "cartItems.bag"],
+      relations: ["cartItems", "cartItems.bag", "cartItems.bag.bagImages"],
     });
     if (!cart) throw new ApiError(404, "Cart not found");
     return {
