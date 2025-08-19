@@ -43,7 +43,7 @@ export class CartController extends Controller {
 
   @Delete("/remove-from-cart")
   async removeFromCart(
-    @Body() cart: AddToCartValidator,
+    @Body() cart: { bagId: string; userId?: string },
     @Request() req: AuthenticatedRequest
   ) {
     const userId = this.getUserIdFromRequest(req);
@@ -53,13 +53,13 @@ export class CartController extends Controller {
     );
     return {
       message: "Item removed from cart successfully",
-      data: cartService.cart,
+      data: cartService,
     };
   }
 
   @Patch("/update-cart")
   async updateCart(
-    @Body() cart: AddToCartValidator,
+    @Body() cart: { bagId: string; quantity: number },
     @Request() req: AuthenticatedRequest
   ) {
     const userId = this.getUserIdFromRequest(req);

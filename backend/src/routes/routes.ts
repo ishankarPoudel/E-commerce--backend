@@ -423,7 +423,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCartController_removeFromCart: Record<string, TsoaRoute.ParameterSchema> = {
-                cart: {"in":"body","name":"cart","required":true,"ref":"AddToCartValidator"},
+                cart: {"in":"body","name":"cart","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"userId":{"dataType":"string"},"bagId":{"dataType":"string","required":true}}},
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.delete('/cart/remove-from-cart',
@@ -454,7 +454,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCartController_updateCart: Record<string, TsoaRoute.ParameterSchema> = {
-                cart: {"in":"body","name":"cart","required":true,"ref":"AddToCartValidator"},
+                cart: {"in":"body","name":"cart","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true},"bagId":{"dataType":"string","required":true}}},
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.patch('/cart/update-cart',

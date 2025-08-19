@@ -914,7 +914,15 @@
 								"schema": {
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/CartEntity"
+											"properties": {
+												"itemsToRemove": {
+													"$ref": "#/components/schemas/CartItemEntity"
+												}
+											},
+											"required": [
+												"itemsToRemove"
+											],
+											"type": "object"
 										},
 										"message": {
 											"type": "string"
@@ -940,7 +948,18 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/AddToCartValidator"
+								"properties": {
+									"userId": {
+										"type": "string"
+									},
+									"bagId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"bagId"
+								],
+								"type": "object"
 							}
 						}
 					}
@@ -984,7 +1003,20 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/AddToCartValidator"
+								"properties": {
+									"quantity": {
+										"type": "number",
+										"format": "double"
+									},
+									"bagId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"quantity",
+									"bagId"
+								],
+								"type": "object"
 							}
 						}
 					}
