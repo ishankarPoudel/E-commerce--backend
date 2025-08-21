@@ -11,9 +11,15 @@ export class OrderEntity extends CommonEntity {
   @Column({ default: "pending" })
   status!: "pending" | "paid" | "failed" | "refunded";
 
+  @Column({ type: "integer" })
+  amount!: number;
+
   @Column({ nullable: true })
   stripePaymentIntentId?: string;
 
   @Column({ nullable: true })
   stripeChargeId?: string;
+
+  @Column({ type: "jsonb", nullable: true })
+  itemsSnapShot?: unknown;
 }
