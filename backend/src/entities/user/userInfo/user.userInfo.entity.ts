@@ -1,7 +1,8 @@
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { CommonEntity } from "../../common/common.entity";
 import { DeviceInfoEntity } from "../deviceInfo/user.deveiceInfo.entity";
 import { CartEntity } from "../../cart/cart.entity";
+import { OrderEntity } from "../../order/orders.entity";
 
 @Entity()
 export class UserEntity extends CommonEntity {
@@ -48,4 +49,7 @@ export class UserEntity extends CommonEntity {
   })
   @JoinColumn()
   cart: CartEntity;
+
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders!: OrderEntity[];
 }

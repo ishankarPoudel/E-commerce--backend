@@ -977,7 +977,7 @@
 								"schema": {
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/CartEntity"
+											"$ref": "#/components/schemas/CartItemEntity"
 										},
 										"message": {
 											"type": "string"
