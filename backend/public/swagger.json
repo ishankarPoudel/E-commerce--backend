@@ -286,6 +286,12 @@
 					},
 					"cart": {
 						"$ref": "#/components/schemas/CartEntity"
+					},
+					"orders": {
+						"items": {
+							"$ref": "#/components/schemas/OrderEntity"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -304,7 +310,62 @@
 					"emailVerificationTokenExpiresAt",
 					"refreshToken",
 					"deviceInfo",
-					"cart"
+					"cart",
+					"orders"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"pending",
+							"paid",
+							"failed",
+							"refunded"
+						]
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"stripePaymentIntentId": {
+						"type": "string"
+					},
+					"stripeChargeId": {
+						"type": "string"
+					},
+					"itemsSnapShot": {}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"user",
+					"status",
+					"amount"
 				],
 				"type": "object",
 				"additionalProperties": false

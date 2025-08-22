@@ -11,6 +11,9 @@ export class OrderEntity extends CommonEntity {
   @Column({ default: "pending" })
   status!: "pending" | "paid" | "failed" | "refunded";
 
+  @Column({ default: "USD" })
+  currency!: string;
+
   @Column({ type: "integer" })
   amount!: number;
 
