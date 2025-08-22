@@ -12,8 +12,10 @@ import path from "path";
 import { rateLimit } from "express-rate-limit";
 import "./crons/index.ts";
 import { authMiddlewareWithExclusions } from "./middlewares/authExclude.middleware";
+import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
 
 const app = express();
+
 app.use(cookieParser());
 
 app.use(
@@ -25,6 +27,7 @@ app.use(
   })
 );
 
+app.use(stripeWebHook);
 app.use(express.json());
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
