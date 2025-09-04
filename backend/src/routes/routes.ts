@@ -6,7 +6,11 @@ import {  fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../controllers/user/user.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { OrderController } from './../controllers/order/order.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MediaController } from './../controllers/media/media.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { CheckOutController } from './../controllers/checkout/checkout.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CategoryController } from './../controllers/category/category.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -24,6 +28,57 @@ const multer = require('multer');
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "DeviceInfoEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "os": {"dataType":"string","required":true},
+            "browser": {"dataType":"string","required":true},
+            "device": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "googleId": {"dataType":"string","required":true},
+            "email": {"dataType":"string","required":true},
+            "fullName": {"dataType":"string","required":true},
+            "password": {"dataType":"string","required":true},
+            "isOauth": {"dataType":"boolean","required":true},
+            "provider": {"dataType":"string","required":true},
+            "isEmailVerified": {"dataType":"boolean","required":true},
+            "emailVerificationToken": {"dataType":"string","required":true},
+            "emailVerificationTokenExpiresAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "refreshToken": {"dataType":"string","required":true},
+            "deviceInfo": {"ref":"DeviceInfoEntity","required":true},
+            "cart": {"ref":"CartEntity","required":true},
+            "orders": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderEntity"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CartEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "user": {"ref":"UserEntity","required":true},
+            "cartItems": {"dataType":"array","array":{"dataType":"refObject","ref":"CartItemEntity"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "BagEntity": {
         "dataType": "refObject",
         "properties": {
@@ -67,61 +122,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateCategoryValidator": {
-        "dataType": "refObject",
-        "properties": {
-            "categoryName": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DeviceInfoEntity": {
+    "CartItemEntity": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"string","required":true},
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "os": {"dataType":"string","required":true},
-            "browser": {"dataType":"string","required":true},
-            "device": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CartEntity": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "user": {"ref":"UserEntity","required":true},
-            "cartItems": {"dataType":"array","array":{"dataType":"refObject","ref":"CartItemEntity"},"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserEntity": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "googleId": {"dataType":"string","required":true},
-            "email": {"dataType":"string","required":true},
-            "fullName": {"dataType":"string","required":true},
-            "password": {"dataType":"string","required":true},
-            "isOauth": {"dataType":"boolean","required":true},
-            "provider": {"dataType":"string","required":true},
-            "isEmailVerified": {"dataType":"boolean","required":true},
-            "emailVerificationToken": {"dataType":"string","required":true},
-            "emailVerificationTokenExpiresAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "refreshToken": {"dataType":"string","required":true},
-            "deviceInfo": {"ref":"DeviceInfoEntity","required":true},
             "cart": {"ref":"CartEntity","required":true},
-            "orders": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderEntity"},"required":true},
+            "bag": {"ref":"BagEntity","required":true},
+            "quantity": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -135,6 +145,7 @@ const models: TsoaRoute.Models = {
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
             "user": {"ref":"UserEntity","required":true},
             "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["pending"]},{"dataType":"enum","enums":["paid"]},{"dataType":"enum","enums":["failed"]},{"dataType":"enum","enums":["refunded"]}],"required":true},
+            "currency": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
             "stripePaymentIntentId": {"dataType":"string"},
             "stripeChargeId": {"dataType":"string"},
@@ -143,16 +154,10 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CartItemEntity": {
+    "CreateCategoryValidator": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"string","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "cart": {"ref":"CartEntity","required":true},
-            "bag": {"ref":"BagEntity","required":true},
-            "quantity": {"dataType":"double","required":true},
+            "categoryName": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -282,6 +287,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsOrderController_getOrderById: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                order: {"in":"body","name":"order","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"orderId":{"dataType":"string","required":true}}},
+        };
+        app.post('/order/get-order-by-id',
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.getOrderById)),
+
+            async function OrderController_getOrderById(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsOrderController_getOrderById, request, response });
+
+                const controller = new OrderController();
+
+              await templateService.apiHandler({
+                methodName: 'getOrderById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsMediaController_uploadMedia: Record<string, TsoaRoute.ParameterSchema> = {
                 bagId: {"in":"formData","name":"bagId","required":true,"dataType":"string"},
                 file: {"in":"formData","name":"file","required":true,"dataType":"file"},
@@ -308,6 +344,36 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'uploadMedia',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsCheckOutController_createPaymentIntent: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.post('/checkout/create-payment-intent',
+            ...(fetchMiddlewares<RequestHandler>(CheckOutController)),
+            ...(fetchMiddlewares<RequestHandler>(CheckOutController.prototype.createPaymentIntent)),
+
+            async function CheckOutController_createPaymentIntent(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsCheckOutController_createPaymentIntent, request, response });
+
+                const controller = new CheckOutController();
+
+              await templateService.apiHandler({
+                methodName: 'createPaymentIntent',
                 controller,
                 response,
                 next,

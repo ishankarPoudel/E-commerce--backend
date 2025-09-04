@@ -109,4 +109,98 @@ export class MailService {
       console.error("Error sending email:", err);
     }
   }
+
+  async sendOrderConfirmationEmail(email: string, order: any) {
+    try {
+      type OrderItem = { name: string; price: number; quantity: number };
+      const items: OrderItem[] =
+        order.itemsSnapshot || order.itemsSnapShot || [];
+
+      const currency = order.currency || "usd";
+      const rows = items
+        .map((it) => {
+          const lineTotal = (it.price || 0) * (it.quantity || 0);
+          return `
+      <tr>
+        <td style="padding:8px;font-size:14px;color:#555;">${it.name}</td>
+        <td align="center" style="padding:8px;font-size:14px;color:#555;">${
+          it.quantity
+        }</td>
+        <td align="right" style="padding:8px;font-size:14px;color:#555;">
+          ${lineTotal} ${currency.toUpperCase()}
+        </td>
+      </tr>
+    `;
+        })
+        .join("");
+
+      const statusColor =
+        order.status === "paid"
+          ? "#27ae60"
+          : order.status === "pending"
+          ? "#f39c12"
+          : "#e74c3c";
+
+      const html = `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
+  <h2 style="color: #2c3e50; text-align: center; margin-bottom: 12px;">👜 Order Confirmation</h2>
+  <p style="color: #555; text-align: center; font-size: 15px; margin-top: 0;">
+    Thank you for your purchase! Your order has been received.
+  </p>
+
+  <div style="margin-top: 24px;">
+    <h3 style="color: #2c3e50; margin-bottom: 8px;">Order Details</h3>
+    <p style="font-size: 14px; color: #555; margin: 4px 0;">Order ID: <strong>#${
+      order.id
+    }</strong></p>
+    <p style="font-size: 14px; color: #555; margin: 4px 0;">
+      Status:
+      <strong style="color: ${statusColor};">
+        ${order.status}
+      </strong>
+    </p>
+  </div>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+    <thead>
+      <tr>
+        <th align="left" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Item</th>
+        <th align="center" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Qty</th>
+        <th align="right" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${
+        rows ||
+        `<tr><td colspan="3" style="padding:8px;color:#999;font-size:14px;">No items to display</td></tr>`
+      }
+    </tbody>
+  </table>
+
+  <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+    <p style="font-size: 15px; color: #333; margin: 4px 0; text-align: right;">
+      <strong>Total Paid:</strong>
+      <span style="color: #27ae60; font-size: 16px;">
+        ${order.amount || 0} ${currency.toUpperCase()}
+      </span>
+    </p>
+  </div>
+
+  <div style="margin-top: 32px; text-align: center; color: #888; font-size: 13px;">
+    <p style="margin: 4px 0;">We’ll notify you when your bags are on the way.</p>
+    <p style="margin: 4px 0;">Thank you for shopping with <strong>Avisekh Bag Pashal</strong> 👜</p>
+  </div>
+</div>
+`;
+
+      await mailTransport.sendMail({
+        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "Order Confirmation - Thank You for Your Purchase!",
+        html,
+      });
+    } catch (err) {
+      console.error("Error sending email:", err);
+    }
+  }
 }

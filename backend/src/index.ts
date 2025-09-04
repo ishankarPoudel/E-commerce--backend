@@ -16,6 +16,7 @@ import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
 
 const app = express();
 
+app.use(stripeWebHook);
 app.use(cookieParser());
 
 app.use(
@@ -27,7 +28,6 @@ app.use(
   })
 );
 
-app.use(stripeWebHook);
 app.use(express.json());
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

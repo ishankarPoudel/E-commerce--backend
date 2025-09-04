@@ -100,7 +100,9 @@ export class CartService {
       },
       relations: ["cartItems", "cartItems.bag", "cartItems.bag.bagImages"],
     });
-    if (!cart) throw new ApiError(404, "Cart not found");
+    if (!cart) {
+      return { cart: { cartItems: [] } };
+    }
     return {
       cart,
     };

@@ -7,6 +7,170 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"DeviceInfoEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"os": {
+						"type": "string"
+					},
+					"browser": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"os",
+					"browser",
+					"device"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"googleId": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"fullName": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"isOauth": {
+						"type": "boolean"
+					},
+					"provider": {
+						"type": "string"
+					},
+					"isEmailVerified": {
+						"type": "boolean"
+					},
+					"emailVerificationToken": {
+						"type": "string"
+					},
+					"emailVerificationTokenExpiresAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"refreshToken": {
+						"type": "string"
+					},
+					"deviceInfo": {
+						"$ref": "#/components/schemas/DeviceInfoEntity"
+					},
+					"cart": {
+						"$ref": "#/components/schemas/CartEntity"
+					},
+					"orders": {
+						"items": {
+							"$ref": "#/components/schemas/OrderEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"googleId",
+					"email",
+					"fullName",
+					"password",
+					"isOauth",
+					"provider",
+					"isEmailVerified",
+					"emailVerificationToken",
+					"emailVerificationTokenExpiresAt",
+					"refreshToken",
+					"deviceInfo",
+					"cart",
+					"orders"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CartEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					},
+					"cartItems": {
+						"items": {
+							"$ref": "#/components/schemas/CartItemEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"user",
+					"cartItems"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"BagEntity": {
 				"properties": {
 					"id": {
@@ -140,236 +304,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateCategoryValidator": {
-				"properties": {
-					"categoryName": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"categoryName"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DeviceInfoEntity": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"os": {
-						"type": "string"
-					},
-					"browser": {
-						"type": "string"
-					},
-					"device": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"os",
-					"browser",
-					"device"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CartEntity": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"user": {
-						"$ref": "#/components/schemas/UserEntity"
-					},
-					"cartItems": {
-						"items": {
-							"$ref": "#/components/schemas/CartItemEntity"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"user",
-					"cartItems"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"UserEntity": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"googleId": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"fullName": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"isOauth": {
-						"type": "boolean"
-					},
-					"provider": {
-						"type": "string"
-					},
-					"isEmailVerified": {
-						"type": "boolean"
-					},
-					"emailVerificationToken": {
-						"type": "string"
-					},
-					"emailVerificationTokenExpiresAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"refreshToken": {
-						"type": "string"
-					},
-					"deviceInfo": {
-						"$ref": "#/components/schemas/DeviceInfoEntity"
-					},
-					"cart": {
-						"$ref": "#/components/schemas/CartEntity"
-					},
-					"orders": {
-						"items": {
-							"$ref": "#/components/schemas/OrderEntity"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"googleId",
-					"email",
-					"fullName",
-					"password",
-					"isOauth",
-					"provider",
-					"isEmailVerified",
-					"emailVerificationToken",
-					"emailVerificationTokenExpiresAt",
-					"refreshToken",
-					"deviceInfo",
-					"cart",
-					"orders"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"OrderEntity": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"user": {
-						"$ref": "#/components/schemas/UserEntity"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"pending",
-							"paid",
-							"failed",
-							"refunded"
-						]
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					},
-					"stripePaymentIntentId": {
-						"type": "string"
-					},
-					"stripeChargeId": {
-						"type": "string"
-					},
-					"itemsSnapShot": {}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"user",
-					"status",
-					"amount"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"CartItemEntity": {
 				"properties": {
 					"id": {
@@ -407,6 +341,76 @@
 					"cart",
 					"bag",
 					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"pending",
+							"paid",
+							"failed",
+							"refunded"
+						]
+					},
+					"currency": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"stripePaymentIntentId": {
+						"type": "string"
+					},
+					"stripeChargeId": {
+						"type": "string"
+					},
+					"itemsSnapShot": {}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"user",
+					"status",
+					"currency",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateCategoryValidator": {
+				"properties": {
+					"categoryName": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"categoryName"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -667,6 +671,62 @@
 				"parameters": []
 			}
 		},
+		"/order/get-order-by-id": {
+			"post": {
+				"operationId": "GetOrderById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/OrderEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Order"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"orderId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"orderId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/media/upload": {
 			"post": {
 				"operationId": "UploadMedia",
@@ -746,6 +806,56 @@
 						}
 					}
 				}
+			}
+		},
+		"/checkout/create-payment-intent": {
+			"post": {
+				"operationId": "CreatePaymentIntent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"clientSecret": {
+													"type": "string"
+												},
+												"orderId": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"clientSecret",
+												"orderId"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Checkout"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/category/add-category": {

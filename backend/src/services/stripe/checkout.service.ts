@@ -5,9 +5,6 @@ import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
 
 export class CheckOutService {
-  //   private cartRepo = AppDataSource.getRepository(CartEntity);
-  //   private orderRepo = AppDataSource.getRepository(OrderEntity);
-
   async createPaymentIntent(userId: string) {
     return AppDataSource.transaction(async (transcationEntityManager) => {
       const cartRepo = transcationEntityManager.getRepository(CartEntity);
