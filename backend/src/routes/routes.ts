@@ -289,7 +289,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsOrderController_getOrderById: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                order: {"in":"body","name":"order","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"orderId":{"dataType":"string","required":true}}},
+                order: {"in":"body","name":"order","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"orderId":{"dataType":"string"}}},
         };
         app.post('/order/get-order-by-id',
             ...(fetchMiddlewares<RequestHandler>(OrderController)),

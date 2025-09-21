@@ -617,6 +617,14 @@
 									"properties": {
 										"data": {
 											"properties": {
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
 												"provider": {
 													"type": "string"
 												},
@@ -631,18 +639,16 @@
 												},
 												"email": {
 													"type": "string"
-												},
-												"id": {
-													"type": "string"
 												}
 											},
 											"required": [
+												"updatedAt",
+												"createdAt",
 												"provider",
 												"isOauth",
 												"isEmailVerified",
 												"fullName",
-												"email",
-												"id"
+												"email"
 											],
 											"type": "object"
 										},
@@ -717,9 +723,6 @@
 										"type": "string"
 									}
 								},
-								"required": [
-									"orderId"
-								],
 								"type": "object"
 							}
 						}
@@ -1205,7 +1208,23 @@
 								"schema": {
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/CartEntity"
+											"anyOf": [
+												{
+													"$ref": "#/components/schemas/CartEntity"
+												},
+												{
+													"properties": {
+														"cartItems": {
+															"items": {},
+															"type": "array"
+														}
+													},
+													"required": [
+														"cartItems"
+													],
+													"type": "object"
+												}
+											]
 										},
 										"message": {
 											"type": "string"

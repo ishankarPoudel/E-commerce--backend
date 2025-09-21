@@ -11,12 +11,13 @@ export class UserService {
     });
     if (!user) throw new ApiError(404, "User not found");
     const userInfo = {
-      id: user.id,
       email: user.email,
       fullName: user.fullName,
       isEmailVerified: user.isEmailVerified,
       isOauth: user.isOauth,
       provider: user.provider,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
     return userInfo;
   }

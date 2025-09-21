@@ -52,6 +52,7 @@ export class CheckOutService {
         {
           amount,
           currency: "CAD",
+          receipt_email: cart?.user?.email || undefined,
           metadata: {
             orderId: order.id,
             userId: userId,
