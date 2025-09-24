@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
-  Path,
+  Patch,
+  Put,
   Request,
   Route,
   SuccessResponse,
@@ -24,6 +26,24 @@ export class UserController extends Controller {
       success: true,
       message: "User retrieved successfully",
       data: user,
+    };
+  }
+
+  @Patch("/update-me")
+  @SuccessResponse("200", "User updated successfully")
+  async updateUserById(
+    @Request() req: AuthenticatedRequest,
+    @Body() body: any
+  ) {
+    const userId = req?.user?.id;
+    const updatedUser = await new UserService().updateUserById(
+      userId as string,
+      body
+    );
+    return {
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
     };
   }
 }

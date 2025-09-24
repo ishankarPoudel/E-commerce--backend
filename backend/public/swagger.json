@@ -677,6 +677,60 @@
 				"parameters": []
 			}
 		},
+		"/user/update-me": {
+			"patch": {
+				"operationId": "UpdateUserById",
+				"responses": {
+					"200": {
+						"description": "User updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"fullName": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"fullName"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
+		},
 		"/order/get-order-by-id": {
 			"post": {
 				"operationId": "GetOrderById",
