@@ -193,4 +193,12 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
+  async logoutUser(userId: string) {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new ApiError(404, "User not found");
+    user.refreshToken = "";
+    await this.userRepo.save(user);
+    return;
+  }
 }

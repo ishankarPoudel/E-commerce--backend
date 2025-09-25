@@ -56,7 +56,7 @@ export class AuthController extends Controller {
       await new AuthService().verifyOtp({ otp, email });
 
     this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=900;`,
       `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
     ]);
 
@@ -121,6 +121,24 @@ export class AuthController extends Controller {
               ?.fullName || "",
         },
       },
+    };
+  }
+
+  @Post("/logout")
+  @Middlewares(authenticateToken)
+  async logout(@Request() req: AuthenticatedRequest) {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    await new AuthService().logoutUser(req.user.id);
+    this.setHeader("Set-Cookie", [
+      `accessToken=; HttpOnly; Path=/; SameSite=lax; Max-Age=0;`,
+      `refreshToken=; HttpOnly; Path=/; SameSite=lax; Max-Age=0;`,
+    ]);
+    return {
+      success: true,
+      message: "Logout successful",
     };
   }
 
