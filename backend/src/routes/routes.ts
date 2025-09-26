@@ -147,9 +147,25 @@ const models: TsoaRoute.Models = {
             "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["pending"]},{"dataType":"enum","enums":["paid"]},{"dataType":"enum","enums":["failed"]},{"dataType":"enum","enums":["refunded"]}],"required":true},
             "currency": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderItemEntity"}},
             "stripePaymentIntentId": {"dataType":"string"},
             "stripeChargeId": {"dataType":"string"},
             "itemsSnapShot": {"dataType":"any"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OrderItemEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "order": {"ref":"OrderEntity","required":true},
+            "bag": {"ref":"BagEntity","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "unitPrice": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -338,6 +354,36 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'getOrderById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsOrderController_getAllOrders: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.get('/order/get-all-orders',
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.getAllOrders)),
+
+            async function OrderController_getAllOrders(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsOrderController_getAllOrders, request, response });
+
+                const controller = new OrderController();
+
+              await templateService.apiHandler({
+                methodName: 'getAllOrders',
                 controller,
                 response,
                 next,

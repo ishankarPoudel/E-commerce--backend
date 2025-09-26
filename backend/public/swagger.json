@@ -382,6 +382,12 @@
 						"type": "number",
 						"format": "double"
 					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/OrderItemEntity"
+						},
+						"type": "array"
+					},
 					"stripePaymentIntentId": {
 						"type": "string"
 					},
@@ -399,6 +405,52 @@
 					"status",
 					"currency",
 					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderItemEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"order": {
+						"$ref": "#/components/schemas/OrderEntity"
+					},
+					"bag": {
+						"$ref": "#/components/schemas/BagEntity"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"order",
+					"bag",
+					"quantity",
+					"unitPrice"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -782,6 +834,167 @@
 						}
 					}
 				}
+			}
+		},
+		"/order/get-all-orders": {
+			"get": {
+				"operationId": "GetAllOrders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"orders": {
+													"items": {
+														"properties": {
+															"deletedAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"updatedAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"createdAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"id": {
+																"type": "string"
+															},
+															"itemsSnapShot": {},
+															"amount": {
+																"type": "number",
+																"format": "double"
+															},
+															"currency": {
+																"type": "string"
+															},
+															"status": {
+																"type": "string",
+																"enum": [
+																	"pending",
+																	"paid",
+																	"failed",
+																	"refunded"
+																]
+															},
+															"user": {
+																"$ref": "#/components/schemas/UserEntity"
+															},
+															"items": {
+																"items": {
+																	"properties": {
+																		"bag": {
+																			"properties": {
+																				"images": {
+																					"items": {
+																						"properties": {
+																							"url": {
+																								"type": "string"
+																							},
+																							"id": {
+																								"type": "string"
+																							}
+																						},
+																						"required": [
+																							"url",
+																							"id"
+																						],
+																						"type": "object"
+																					},
+																					"type": "array"
+																				},
+																				"price": {
+																					"type": "number",
+																					"format": "double"
+																				},
+																				"name": {
+																					"type": "string"
+																				},
+																				"id": {
+																					"type": "string"
+																				}
+																			},
+																			"required": [
+																				"images",
+																				"price",
+																				"name",
+																				"id"
+																			],
+																			"type": "object"
+																		},
+																		"unitPrice": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"quantity": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"id": {
+																			"type": "string"
+																		}
+																	},
+																	"required": [
+																		"bag",
+																		"unitPrice",
+																		"quantity",
+																		"id"
+																	],
+																	"type": "object"
+																},
+																"type": "array"
+															}
+														},
+														"required": [
+															"deletedAt",
+															"updatedAt",
+															"createdAt",
+															"id",
+															"amount",
+															"currency",
+															"status",
+															"user",
+															"items"
+														],
+														"type": "object"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"orders"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Order"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/media/upload": {

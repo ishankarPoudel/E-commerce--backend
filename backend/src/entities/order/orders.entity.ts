@@ -1,6 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { CommonEntity } from "../common/common.entity";
 import { UserEntity } from "../user/userInfo/user.userInfo.entity";
+import { CartItemEntity } from "../cart/cartItem.entity";
+import { OrderItemEntity } from "./orderItems.entity";
 
 @Entity({ name: "orders" })
 export class OrderEntity extends CommonEntity {
@@ -16,6 +18,9 @@ export class OrderEntity extends CommonEntity {
 
   @Column({ type: "integer" })
   amount!: number;
+
+  @OneToMany(() => OrderItemEntity, (item) => item.order, { cascade: true })
+  items?: OrderItemEntity[];
 
   @Column({ nullable: true })
   stripePaymentIntentId?: string;

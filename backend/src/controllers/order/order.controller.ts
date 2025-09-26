@@ -29,4 +29,15 @@ export class OrderController extends Controller {
       data: orderService,
     };
   }
+
+  @Get("/get-all-orders")
+  async getAllOrders(@Request() req: AuthenticatedRequest) {
+    const userId = this.getUserIdFromRequest(req);
+    const orders = await new OrderService().getAllOrders(userId);
+    return {
+      success: true,
+      message: "Orders retrieved successfully",
+      data: orders,
+    };
+  }
 }

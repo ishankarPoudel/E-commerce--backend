@@ -14,7 +14,7 @@ export class CheckOutService {
         where: {
           user: { id: userId },
         },
-        relations: ["cartItems", "cartItems.bag"],
+        relations: ["cartItems", "cartItems.bag", "cartItems.bag.bagImages"],
       });
 
       if (!cart || !cart.cartItems?.length) {
@@ -41,6 +41,7 @@ export class CheckOutService {
             name: item.bag?.name,
             price: item.bag?.price,
             quantity: item.quantity,
+            image: item.bag?.bagImages?.[0]?.image || null,
           };
         }),
       });
