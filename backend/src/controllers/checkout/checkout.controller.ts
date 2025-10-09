@@ -1,4 +1,12 @@
-import { Controller, Middlewares, Post, Request, Route, Tags } from "tsoa";
+import {
+  Body,
+  Controller,
+  Middlewares,
+  Post,
+  Request,
+  Route,
+  Tags,
+} from "tsoa";
 import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
 import { CheckOutService } from "../../services/stripe/checkout.service";
@@ -7,12 +15,16 @@ import { CheckOutService } from "../../services/stripe/checkout.service";
 @Tags("Checkout")
 export class CheckOutController extends Controller {
   @Post("/create-payment-intent")
-  async createPaymentIntent(@Request() req: AuthenticatedRequest) {
+  async createPaymentIntent(
+    @Request() req: AuthenticatedRequest,
+    @Body() body: { deliveryMethod?: "delivery" | "pickup" }
+  ) {
     const userId = req.user?.id;
 
     if (!userId) throw new ApiError(401, "Unauthorized");
     const checkoutIntent = await new CheckOutService().createPaymentIntent(
-      userId
+      userId,
+      body.deliveryMethod
     );
     return {
       success: true,

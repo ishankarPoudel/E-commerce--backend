@@ -375,6 +375,13 @@
 							"refunded"
 						]
 					},
+					"deliveryMethod": {
+						"type": "string",
+						"enum": [
+							"delivery",
+							"pickup"
+						]
+					},
 					"currency": {
 						"type": "string"
 					},
@@ -403,6 +410,7 @@
 					"deletedAt",
 					"user",
 					"status",
+					"deliveryMethod",
 					"currency",
 					"amount"
 				],
@@ -874,6 +882,13 @@
 															"currency": {
 																"type": "string"
 															},
+															"deliveryMethod": {
+																"type": "string",
+																"enum": [
+																	"delivery",
+																	"pickup"
+																]
+															},
 															"status": {
 																"type": "string",
 																"enum": [
@@ -958,6 +973,7 @@
 															"id",
 															"amount",
 															"currency",
+															"deliveryMethod",
 															"status",
 															"user",
 															"items"
@@ -1089,19 +1105,56 @@
 								"schema": {
 									"properties": {
 										"data": {
-											"properties": {
-												"clientSecret": {
-													"type": "string"
+											"anyOf": [
+												{
+													"properties": {
+														"clientSecret": {},
+														"message": {
+															"type": "string"
+														},
+														"deliveryMethod": {
+															"type": "string",
+															"enum": [
+																"delivery",
+																"pickup"
+															]
+														},
+														"orderId": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"message",
+														"deliveryMethod",
+														"orderId"
+													],
+													"type": "object"
 												},
-												"orderId": {
-													"type": "string"
+												{
+													"properties": {
+														"message": {},
+														"deliveryMethod": {
+															"type": "string",
+															"enum": [
+																"delivery",
+																"pickup"
+															]
+														},
+														"clientSecret": {
+															"type": "string"
+														},
+														"orderId": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"deliveryMethod",
+														"clientSecret",
+														"orderId"
+													],
+													"type": "object"
 												}
-											},
-											"required": [
-												"clientSecret",
-												"orderId"
-											],
-											"type": "object"
+											]
 										},
 										"message": {
 											"type": "string"
@@ -1125,7 +1178,26 @@
 					"Checkout"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"deliveryMethod": {
+										"type": "string",
+										"enum": [
+											"delivery",
+											"pickup"
+										]
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/category/add-category": {

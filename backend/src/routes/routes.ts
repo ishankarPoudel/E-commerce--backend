@@ -145,6 +145,7 @@ const models: TsoaRoute.Models = {
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
             "user": {"ref":"UserEntity","required":true},
             "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["pending"]},{"dataType":"enum","enums":["paid"]},{"dataType":"enum","enums":["failed"]},{"dataType":"enum","enums":["refunded"]}],"required":true},
+            "deliveryMethod": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}],"required":true},
             "currency": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
             "items": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderItemEntity"}},
@@ -434,6 +435,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCheckOutController_createPaymentIntent: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"deliveryMethod":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}]}}},
         };
         app.post('/checkout/create-payment-intent',
             ...(fetchMiddlewares<RequestHandler>(CheckOutController)),

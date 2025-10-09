@@ -3,72 +3,110 @@ import { stripe } from "../../config/stripe/stripe.config";
 import { CartEntity } from "../../entities/cart/cart.entity";
 import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
+import { MailService } from "../mail/mail.service";
 
 export class CheckOutService {
-  async createPaymentIntent(userId: string) {
-    return AppDataSource.transaction(async (transcationEntityManager) => {
-      const cartRepo = transcationEntityManager.getRepository(CartEntity);
-      const orderRepo = transcationEntityManager.getRepository(OrderEntity);
+  async createPaymentIntent(
+    userId: string,
+    deliveryMethod: "delivery" | "pickup" = "delivery"
+  ) {
+    const mailer = new MailService();
+
+    const result = await AppDataSource.transaction(async (tx) => {
+      const cartRepo = tx.getRepository(CartEntity);
+      const orderRepo = tx.getRepository(OrderEntity);
 
       const cart = await cartRepo.findOne({
-        where: {
-          user: { id: userId },
-        },
-        relations: ["cartItems", "cartItems.bag", "cartItems.bag.bagImages"],
+        where: { user: { id: userId } },
+        relations: [
+          "cartItems",
+          "cartItems.bag",
+          "cartItems.bag.bagImages",
+          "user",
+        ],
       });
-
-      if (!cart || !cart.cartItems?.length) {
+      if (!cart || !cart.cartItems?.length)
         throw new ApiError(400, "Cart is empty");
-      }
 
-      //computing total amount
       const amount = cart.cartItems.reduce((sum, ci) => {
         if (!ci.bag) return sum;
         return sum + Math.round(Number(ci.bag.price) * 100) * ci.quantity;
       }, 0);
       if (amount <= 0) throw new ApiError(400, "Invalid cart amount");
 
-      //now creating order default pending state
       const order = orderRepo.create({
-        user: { id: userId },
+        user: { id: userId } as any,
         status: "pending",
         amount,
-        currency: "CAD",
-        itemsSnapShot: cart.cartItems.map((item) => {
-          return {
-            cartItemId: item.id,
-            bagId: item.bag?.id,
-            name: item.bag?.name,
-            price: item.bag?.price,
-            quantity: item.quantity,
-            image: item.bag?.bagImages?.[0]?.image || null,
-          };
-        }),
+        currency: "USD",
+        deliveryMethod,
+        itemsSnapShot: cart.cartItems.map((ci) => ({
+          bagId: ci.bag?.id,
+          name: ci.bag?.name,
+          price: ci.bag?.price,
+          quantity: ci.quantity,
+          image: ci.bag?.bagImages?.[0]?.image || null,
+        })),
       });
       await orderRepo.save(order);
 
-      //creating the paymentIntent
+      // for pickup orders,as no payemnt is needed
+      if (deliveryMethod === "pickup") {
+        return {
+          mode: "pickup" as const,
+          order,
+          email: cart.user?.email,
+        };
+      }
 
+      // delivery -> create PI
       const paymentIntent = await stripe.paymentIntents.create(
         {
           amount,
-          currency: "CAD",
-          receipt_email: cart?.user?.email || undefined,
+          currency: "usd",
           metadata: {
             orderId: order.id,
-            userId: userId,
+            userId,
+            deliveryMethod,
           },
+          automatic_payment_methods: { enabled: true },
+          receipt_email: cart.user?.email || undefined,
         },
-        {
-          idempotencyKey: `order-${order.id}`,
-        }
+        { idempotencyKey: `order-${order.id}` }
       );
+
       order.stripePaymentIntentId = paymentIntent.id;
       await orderRepo.save(order);
+
       return {
-        orderId: order.id,
+        mode: "delivery" as const,
+        order,
         clientSecret: paymentIntent.client_secret,
+        email: cart.user?.email,
       };
     });
+
+    // Send email AFTER commit
+    if (result.mode === "pickup" && result.email) {
+      await mailer.sendOrderConfirmationEmail(result.email, {
+        id: result.order.id,
+        status: result.order.status,
+        amount: (result.order.amount / 100).toFixed(2),
+        currency: result.order.currency,
+        deliveryMethod: result.order.deliveryMethod,
+        itemsSnapShot: result.order.itemsSnapShot,
+      });
+      return {
+        orderId: result.order.id,
+        deliveryMethod: result.order.deliveryMethod,
+        message: "Pickup order created. Pay in-store.",
+      };
+    }
+
+    return {
+      orderId: result.order.id,
+      clientSecret: result.clientSecret,
+      deliveryMethod: result.order.deliveryMethod,
+    };
   }
 }
