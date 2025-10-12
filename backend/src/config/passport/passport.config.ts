@@ -1,7 +1,8 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { AppDataSource } from "../data-source/data-source";
+
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
+import AppDataSource from "../data-source/data-source";
 
 const userRepo = AppDataSource.getRepository(UserEntity);
 

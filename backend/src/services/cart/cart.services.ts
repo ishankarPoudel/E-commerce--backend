@@ -1,4 +1,4 @@
-import { AppDataSource } from "../../config/data-source/data-source";
+import AppDataSource from "../../config/data-source/data-source";
 import { CartEntity } from "../../entities/cart/cart.entity";
 import { CartItemEntity } from "../../entities/cart/cartItem.entity";
 import { ApiError } from "../../utils/apiError";

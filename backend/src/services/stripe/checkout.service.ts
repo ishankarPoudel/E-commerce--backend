@@ -1,4 +1,4 @@
-import { AppDataSource } from "../../config/data-source/data-source";
+import AppDataSource from "../../config/data-source/data-source";
 import { stripe } from "../../config/stripe/stripe.config";
 import { CartEntity } from "../../entities/cart/cart.entity";
 import { OrderEntity } from "../../entities/order/orders.entity";

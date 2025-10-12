@@ -1,4 +1,4 @@
-import { AppDataSource } from "../../config/data-source/data-source";
+import AppDataSource from "../../config/data-source/data-source";
 import { BagEntity } from "../../entities/bag/bag.entity";
 import { MediaEntity } from "../../entities/media/media.entity";
 import { ApiError } from "../../utils/apiError";

@@ -1,13 +1,12 @@
 import { In } from "typeorm";
-import { AppDataSource } from "../../config/data-source/data-source";
+
 import { BagEntity } from "../../entities/bag/bag.entity";
 import { Category } from "../../entities/category/category.entity";
 import { addBagValidator } from "../../validators/addBag.validator";
 import { ApiError } from "../../utils/apiError";
-import { Query } from "tsoa";
 import { updateBagValidator } from "../../validators/updateBag.validator";
 import { MediaEntity } from "../../entities/media/media.entity";
-import { min } from "class-validator";
+import AppDataSource from "../../config/data-source/data-source";
 
 export class BagService {
   async addBag(bag: addBagValidator) {
@@ -133,5 +132,40 @@ export class BagService {
     }
     await AppDataSource.getRepository(BagEntity).delete(id);
     return bag;
+  }
+
+  async searchBags(query: string) {
+    const bagRepo = AppDataSource.getRepository(BagEntity);
+    const q = (query ?? "").trim();
+    if (!q) return [];
+
+    return bagRepo
+      .createQueryBuilder("bag")
+      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .leftJoinAndSelect("bag.categories", "categories")
+      .where(
+        `
+        to_tsvector('english',
+          coalesce(bag.name,'') || ' ' ||
+          coalesce(bag.description,'')
+        ) @@ websearch_to_tsquery('english', :q)
+      `,
+        { q }
+      )
+      .addSelect(
+        `
+        ts_rank(
+          to_tsvector('english',
+            coalesce(bag.name,'') || ' ' ||
+            coalesce(bag.description,'')
+          ),
+          websearch_to_tsquery('english', :q)
+        )
+      `,
+        "rank"
+      )
+      .orderBy("rank", "DESC")
+      .limit(20)
+      .getMany();
   }
 }

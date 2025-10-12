@@ -1,9 +1,10 @@
 import { TokenExpiredError } from "jsonwebtoken";
-import { AppDataSource } from "../../config/data-source/data-source";
+
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
 import { Tokens } from "../../utils/token.util";
 import bcrypt from "bcrypt";
+import AppDataSource from "../../config/data-source/data-source";
 
 export class TokensService {
   private userRepo = AppDataSource.getRepository(UserEntity);

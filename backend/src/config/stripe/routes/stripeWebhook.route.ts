@@ -1,11 +1,12 @@
 import { Router, raw } from "express";
 import Stripe from "stripe";
-import { AppDataSource } from "../../data-source/data-source";
+
 import { OrderEntity } from "../../../entities/order/orders.entity";
 import { stripe } from "../stripe.config";
 import { CartEntity } from "../../../entities/cart/cart.entity";
 
 import { MailService } from "../../../services/mail/mail.service";
+import AppDataSource from "../../data-source/data-source";
 
 export const stripeWebHook = Router();
 

@@ -1,7 +1,8 @@
 import cron from "node-cron";
-import { AppDataSource } from "../config/data-source/data-source";
+
 import { UserEntity } from "../entities/user/userInfo/user.userInfo.entity";
 import { LessThan } from "typeorm";
+import AppDataSource from "../config/data-source/data-source";
 
 cron.schedule("*/10 * * * * *", async () => {
   const userRepo = AppDataSource.getRepository(UserEntity);

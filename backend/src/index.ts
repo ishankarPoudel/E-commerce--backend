@@ -5,7 +5,7 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./routes/routes";
 import * as swaggerDocument from "../public/swagger.json";
-import { AppDataSource } from "./config/data-source/data-source";
+
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -13,6 +13,7 @@ import { rateLimit } from "express-rate-limit";
 import "./crons/index.ts";
 import { authMiddlewareWithExclusions } from "./middlewares/authExclude.middleware";
 import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
+import AppDataSource from "./config/data-source/data-source";
 
 const app = express();
 

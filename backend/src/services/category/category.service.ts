@@ -1,4 +1,4 @@
-import { AppDataSource } from "../../config/data-source/data-source";
+import AppDataSource from "../../config/data-source/data-source";
 import { Category } from "../../entities/category/category.entity";
 import { ApiError } from "../../utils/apiError";
 import { CreateCategoryValidator } from "../../validators/createCategory.validator";

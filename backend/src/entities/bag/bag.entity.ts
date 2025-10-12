@@ -26,4 +26,8 @@ export class BagEntity extends CommonEntity {
     onDelete: "CASCADE",
   })
   bagImages: MediaEntity[];
+
+  // Full text search vector
+  @Column({ select: false, type: "tsvector", nullable: true })
+  search_vector: string;
 }

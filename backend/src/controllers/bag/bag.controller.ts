@@ -81,4 +81,14 @@ export class BagController extends Controller {
       data: bag,
     };
   }
+
+  @Get("/search")
+  async searchBags(@Query() query: string) {
+    const bags = await new BagService().searchBags(query);
+    return {
+      success: true,
+      message: "Bags retrieved successfully",
+      data: bags,
+    };
+  }
 }

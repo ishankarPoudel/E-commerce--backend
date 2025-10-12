@@ -1,4 +1,4 @@
-import { AppDataSource } from "../../config/data-source/data-source";
+import AppDataSource from "../../config/data-source/data-source";
 import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
 
