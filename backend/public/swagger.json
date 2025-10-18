@@ -7,31 +7,166 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"CreateCategoryValidator": {
+			"DeviceInfoEntity": {
 				"properties": {
-					"categoryName": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"os": {
+						"type": "string"
+					},
+					"browser": {
+						"type": "string"
+					},
+					"device": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"categoryName"
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"os",
+					"browser",
+					"device"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"AddToCartValidator": {
+			"UserEntity": {
 				"properties": {
-					"bagId": {
+					"id": {
 						"type": "string"
 					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"googleId": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"fullName": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"isOauth": {
+						"type": "boolean"
+					},
+					"provider": {
+						"type": "string"
+					},
+					"isEmailVerified": {
+						"type": "boolean"
+					},
+					"emailVerificationToken": {
+						"type": "string"
+					},
+					"emailVerificationTokenExpiresAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"refreshToken": {
+						"type": "string"
+					},
+					"deviceInfo": {
+						"$ref": "#/components/schemas/DeviceInfoEntity"
+					},
+					"cart": {
+						"$ref": "#/components/schemas/CartEntity"
+					},
+					"orders": {
+						"items": {
+							"$ref": "#/components/schemas/OrderEntity"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"bagId",
-					"quantity"
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"googleId",
+					"email",
+					"fullName",
+					"password",
+					"isOauth",
+					"provider",
+					"isEmailVerified",
+					"emailVerificationToken",
+					"emailVerificationTokenExpiresAt",
+					"refreshToken",
+					"deviceInfo",
+					"cart",
+					"orders"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CartEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					},
+					"cartItems": {
+						"items": {
+							"$ref": "#/components/schemas/CartItemEntity"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"user",
+					"cartItems"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -169,6 +304,194 @@
 					"deletedAt",
 					"image",
 					"bag"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CartItemEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"cart": {
+						"$ref": "#/components/schemas/CartEntity"
+					},
+					"bag": {
+						"$ref": "#/components/schemas/BagEntity"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"cart",
+					"bag",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"pending",
+							"paid",
+							"failed",
+							"refunded"
+						]
+					},
+					"deliveryMethod": {
+						"type": "string",
+						"enum": [
+							"delivery",
+							"pickup"
+						]
+					},
+					"currency": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/OrderItemEntity"
+						},
+						"type": "array"
+					},
+					"stripePaymentIntentId": {
+						"type": "string"
+					},
+					"stripeChargeId": {
+						"type": "string"
+					},
+					"itemsSnapShot": {}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"user",
+					"status",
+					"deliveryMethod",
+					"currency",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderItemEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"order": {
+						"$ref": "#/components/schemas/OrderEntity"
+					},
+					"bag": {
+						"$ref": "#/components/schemas/BagEntity"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"order",
+					"bag",
+					"quantity",
+					"unitPrice"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateCategoryValidator": {
+				"properties": {
+					"categoryName": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"categoryName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AddToCartValidator": {
+				"properties": {
+					"bagId": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"bagId",
+					"quantity"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -358,13 +681,29 @@
 									"properties": {
 										"data": {
 											"properties": {
-												"updatedAt": {},
-												"createdAt": {},
-												"provider": {},
-												"isOauth": {},
-												"isEmailVerified": {},
-												"fullName": {},
-												"email": {}
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"provider": {
+													"type": "string"
+												},
+												"isOauth": {
+													"type": "boolean"
+												},
+												"isEmailVerified": {
+													"type": "boolean"
+												},
+												"fullName": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												}
 											},
 											"required": [
 												"updatedAt",
@@ -414,7 +753,9 @@
 									"properties": {
 										"data": {
 											"properties": {
-												"fullName": {}
+												"fullName": {
+													"type": "string"
+												}
 											},
 											"required": [
 												"fullName"
@@ -464,7 +805,9 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"$ref": "#/components/schemas/OrderEntity"
+										},
 										"message": {
 											"type": "string"
 										},
@@ -517,7 +860,132 @@
 									"properties": {
 										"data": {
 											"properties": {
-												"orders": {}
+												"orders": {
+													"items": {
+														"properties": {
+															"deletedAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"updatedAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"createdAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"id": {
+																"type": "string"
+															},
+															"itemsSnapShot": {},
+															"amount": {
+																"type": "number",
+																"format": "double"
+															},
+															"currency": {
+																"type": "string"
+															},
+															"deliveryMethod": {
+																"type": "string",
+																"enum": [
+																	"delivery",
+																	"pickup"
+																]
+															},
+															"status": {
+																"type": "string",
+																"enum": [
+																	"pending",
+																	"paid",
+																	"failed",
+																	"refunded"
+																]
+															},
+															"user": {
+																"$ref": "#/components/schemas/UserEntity"
+															},
+															"items": {
+																"items": {
+																	"properties": {
+																		"bag": {
+																			"properties": {
+																				"images": {
+																					"items": {
+																						"properties": {
+																							"url": {
+																								"type": "string"
+																							},
+																							"id": {
+																								"type": "string"
+																							}
+																						},
+																						"required": [
+																							"url",
+																							"id"
+																						],
+																						"type": "object"
+																					},
+																					"type": "array"
+																				},
+																				"price": {
+																					"type": "number",
+																					"format": "double"
+																				},
+																				"name": {
+																					"type": "string"
+																				},
+																				"id": {
+																					"type": "string"
+																				}
+																			},
+																			"required": [
+																				"images",
+																				"price",
+																				"name",
+																				"id"
+																			],
+																			"type": "object"
+																		},
+																		"unitPrice": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"quantity": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"id": {
+																			"type": "string"
+																		}
+																	},
+																	"required": [
+																		"bag",
+																		"unitPrice",
+																		"quantity",
+																		"id"
+																	],
+																	"type": "object"
+																},
+																"type": "array"
+															}
+														},
+														"required": [
+															"deletedAt",
+															"updatedAt",
+															"createdAt",
+															"id",
+															"amount",
+															"currency",
+															"deliveryMethod",
+															"status",
+															"user",
+															"items"
+														],
+														"type": "object"
+													},
+													"type": "array"
+												}
 											},
 											"required": [
 												"orders"
@@ -577,7 +1045,9 @@
 										},
 										{
 											"properties": {
-												"data": {},
+												"data": {
+													"$ref": "#/components/schemas/MediaEntity"
+												},
 												"message": {
 													"type": "string"
 												},
@@ -646,8 +1116,16 @@
 														"message": {
 															"type": "string"
 														},
-														"deliveryMethod": {},
-														"orderId": {}
+														"deliveryMethod": {
+															"type": "string",
+															"enum": [
+																"delivery",
+																"pickup"
+															]
+														},
+														"orderId": {
+															"type": "string"
+														}
 													},
 													"required": [
 														"message",
@@ -659,9 +1137,19 @@
 												{
 													"properties": {
 														"message": {},
-														"deliveryMethod": {},
-														"clientSecret": {},
-														"orderId": {}
+														"deliveryMethod": {
+															"type": "string",
+															"enum": [
+																"delivery",
+																"pickup"
+															]
+														},
+														"clientSecret": {
+															"type": "string"
+														},
+														"orderId": {
+															"type": "string"
+														}
 													},
 													"required": [
 														"deliveryMethod",
@@ -726,7 +1214,9 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"$ref": "#/components/schemas/Category"
+										},
 										"message": {
 											"type": "string"
 										},
@@ -772,7 +1262,12 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/Category"
+											},
+											"type": "array"
+										},
 										"message": {
 											"type": "string"
 										},
@@ -818,8 +1313,16 @@
 													"type": "number",
 													"format": "double"
 												},
-												"total": {},
-												"data": {}
+												"total": {
+													"type": "number",
+													"format": "double"
+												},
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/Category"
+													},
+													"type": "array"
+												}
 											},
 											"required": [
 												"totalPages",
@@ -883,7 +1386,9 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"$ref": "#/components/schemas/CartEntity"
+										},
 										"message": {
 											"type": "string"
 										}
@@ -927,7 +1432,9 @@
 									"properties": {
 										"data": {
 											"properties": {
-												"itemsToRemove": {}
+												"itemsToRemove": {
+													"$ref": "#/components/schemas/CartItemEntity"
+												}
 											},
 											"required": [
 												"itemsToRemove"
@@ -986,7 +1493,9 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"$ref": "#/components/schemas/CartItemEntity"
+										},
 										"message": {
 											"type": "string"
 										}
@@ -1041,7 +1550,25 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"anyOf": [
+												{
+													"$ref": "#/components/schemas/CartEntity"
+												},
+												{
+													"properties": {
+														"cartItems": {
+															"items": {},
+															"type": "array"
+														}
+													},
+													"required": [
+														"cartItems"
+													],
+													"type": "object"
+												}
+											]
+										},
 										"message": {
 											"type": "string"
 										}
@@ -1441,8 +1968,12 @@
 									"properties": {
 										"data": {
 											"properties": {
-												"fullName": {},
-												"email": {}
+												"fullName": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												}
 											},
 											"required": [
 												"fullName",
@@ -1607,7 +2138,9 @@
 											"properties": {
 												"user": {
 													"properties": {
-														"fullName": {},
+														"fullName": {
+															"type": "string"
+														},
 														"email": {
 															"type": "string"
 														}
@@ -1769,7 +2302,9 @@
 									"properties": {
 										"data": {
 											"properties": {
-												"email": {}
+												"email": {
+													"type": "string"
+												}
 											},
 											"required": [
 												"email"

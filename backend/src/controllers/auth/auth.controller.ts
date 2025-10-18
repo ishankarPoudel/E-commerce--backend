@@ -11,7 +11,7 @@ import {
 } from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
-import { AppDataSource } from "../../config/data-source/data-source";
+
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
 import { Request as ExpressRequest } from "express";
@@ -26,6 +26,7 @@ import bcrypt from "bcrypt";
 import { TokensService } from "../../services/tokens/tokens.service";
 import rateLimit from "express-rate-limit";
 import { LoginValidator } from "../../validators/auth/login.validator";
+import AppDataSource from "../../config/data-source/data-source";
 
 export interface UserResponseData {
   email: string;
