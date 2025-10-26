@@ -864,6 +864,36 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsBagController_getBagsByCategoryId: Record<string, TsoaRoute.ParameterSchema> = {
+                categoryId: {"in":"query","name":"categoryId","required":true,"dataType":"string"},
+        };
+        app.get('/bag/categorized-bags',
+            ...(fetchMiddlewares<RequestHandler>(BagController)),
+            ...(fetchMiddlewares<RequestHandler>(BagController.prototype.getBagsByCategoryId)),
+
+            async function BagController_getBagsByCategoryId(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsBagController_getBagsByCategoryId, request, response });
+
+                const controller = new BagController();
+
+              await templateService.apiHandler({
+                methodName: 'getBagsByCategoryId',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_verifyOtp: Record<string, TsoaRoute.ParameterSchema> = {
                 undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true},"otp":{"dataType":"string","required":true}}},
         };

@@ -91,4 +91,14 @@ export class BagController extends Controller {
       data: bags,
     };
   }
+
+  @Get("/categorized-bags")
+  async getBagsByCategoryId(@Query() categoryId: string) {
+    const bags = await new BagService().getBagsByCategoryId(categoryId);
+    return {
+      success: true,
+      message: "Bags with category retrieved successfully",
+      data: bags,
+    };
+  }
 }

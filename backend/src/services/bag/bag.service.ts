@@ -168,4 +168,19 @@ export class BagService {
       .limit(20)
       .getMany();
   }
+
+  async getBagsByCategoryId(categoryId: string) {
+    const bags = await AppDataSource.getRepository(BagEntity)
+      .createQueryBuilder("bag")
+      .innerJoin("bag.categories", "category", "category.id = :categoryId", {
+        categoryId,
+      })
+      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .leftJoinAndSelect("bag.categories", "categories")
+      .getMany();
+    if (bags.length === 0) {
+      return [];
+    }
+    return bags;
+  }
 }

@@ -8,10 +8,10 @@ const AppDataSource = new DataSource({
   username: "postgres",
   password: "classmate",
   database: "ecommerce",
-  synchronize: false,
-  // logging: true,
+  synchronize: true,
+  logging: false,
   entities: ["src/entities/**/*.ts"],
-  migrations: [join(__dirname, "../../migrations/**/*.{ts,js}")],
+  migrations: [ "../../migrations/**/*.{ts,js}"],
   subscribers: [],
 });
 export default AppDataSource;
