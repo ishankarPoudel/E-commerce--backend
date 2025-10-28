@@ -8,9 +8,9 @@ import { UserController } from './../controllers/user/user.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { OrderController } from './../controllers/order/order.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { OpenAiController } from './../controllers/openai/openai.controller';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MediaController } from './../controllers/media/media.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { GeminiController } from './../controllers/gemini/gemini.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CheckOutController } from './../controllers/checkout/checkout.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -399,37 +399,6 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsOpenAiController_chatWithAi: Record<string, TsoaRoute.ParameterSchema> = {
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
-        };
-        app.post('/openai/chatWithAI',
-            ...(fetchMiddlewares<RequestHandler>(OpenAiController)),
-            ...(fetchMiddlewares<RequestHandler>(OpenAiController.prototype.chatWithAi)),
-
-            async function OpenAiController_chatWithAi(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsOpenAiController_chatWithAi, request, response });
-
-                const controller = new OpenAiController();
-
-              await templateService.apiHandler({
-                methodName: 'chatWithAi',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsMediaController_uploadMedia: Record<string, TsoaRoute.ParameterSchema> = {
                 bagId: {"in":"formData","name":"bagId","required":true,"dataType":"string"},
                 file: {"in":"formData","name":"file","required":true,"dataType":"file"},
@@ -456,6 +425,36 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'uploadMedia',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsGeminiController_searchBags: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"userMessage":{"dataType":"string","required":true}}},
+        };
+        app.post('/gemini/search-bags',
+            ...(fetchMiddlewares<RequestHandler>(GeminiController)),
+            ...(fetchMiddlewares<RequestHandler>(GeminiController.prototype.searchBags)),
+
+            async function GeminiController_searchBags(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsGeminiController_searchBags, request, response });
+
+                const controller = new GeminiController();
+
+              await templateService.apiHandler({
+                methodName: 'searchBags',
                 controller,
                 response,
                 next,

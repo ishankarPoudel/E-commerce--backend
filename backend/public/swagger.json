@@ -1017,88 +1017,6 @@
 				"parameters": []
 			}
 		},
-		"/openai/chatWithAI": {
-			"post": {
-				"operationId": "ChatWithAi",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"anyOf": [
-										{
-											"type": "string"
-										},
-										{
-											"properties": {
-												"data": {},
-												"message": {
-													"type": "string"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"message",
-												"success"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"data": {
-													"items": {
-														"$ref": "#/components/schemas/BagEntity"
-													},
-													"type": "array"
-												},
-												"message": {
-													"type": "string"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"data",
-												"message",
-												"success"
-											],
-											"type": "object"
-										}
-									]
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"OpenAI"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"message": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"message"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/media/upload": {
 			"post": {
 				"operationId": "UploadMedia",
@@ -1174,6 +1092,89 @@
 									"bagId",
 									"file"
 								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/gemini/search-bags": {
+			"post": {
+				"operationId": "SearchBags",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"intent": {},
+												"data": {},
+												"message": {},
+												"sucess": {},
+												"error": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"error"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"error": {},
+												"intent": {
+													"type": "string"
+												},
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/BagEntity"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												},
+												"sucess": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"intent",
+												"data",
+												"message",
+												"sucess"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Gemini"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userMessage": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"userMessage"
+								],
+								"type": "object"
 							}
 						}
 					}
