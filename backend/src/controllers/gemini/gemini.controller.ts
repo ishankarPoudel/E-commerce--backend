@@ -9,7 +9,6 @@ export class GeminiController extends Controller {
   @Post("/search")
   public async search(
     @Body() requestBody: { userMessage: string },
-    @Res() notFoundResponse: TsoaResponse<404, { message: string }>,
     @Res() serverErrorResponse: TsoaResponse<500, { message: string }>
   ) {
     const { userMessage } = requestBody;
@@ -25,16 +24,11 @@ export class GeminiController extends Controller {
         userMessage
       );
 
-      if (result.bags.length === 0) {
-        return notFoundResponse(404, {
-          message: result.reply,
-        });
-      }
-
+      this.setStatus(200);
       return {
         success: true,
         reply: result.reply,
-        bags: result.bags,
+        bags: result.bags || [],
         intent: result.intent,
       };
     } catch (error) {

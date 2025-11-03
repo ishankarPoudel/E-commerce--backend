@@ -63,7 +63,7 @@ export const summarizeResults = async (
   bags: BagEntity[]
 ): Promise<string> => {
   if (bags.length === 0) {
-    return "I couldn't find any bags that match your search. Would you like to try a different description?";
+    return "Seems like we ran out of stock for that bag. Please try searching for something else!";
   }
 
   // Build a summary of the bags found
