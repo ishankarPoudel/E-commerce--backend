@@ -1098,59 +1098,50 @@
 				}
 			}
 		},
-		"/gemini/search-bags": {
+		"/gemini/search": {
 			"post": {
-				"operationId": "SearchBags",
+				"operationId": "Search",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
 								"schema": {
-									"anyOf": [
-										{
-											"properties": {
-												"intent": {},
-												"data": {},
-												"message": {},
-												"sucess": {},
-												"error": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"error"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"error": {},
-												"intent": {
-													"type": "string"
-												},
-												"data": {
-													"items": {
-														"$ref": "#/components/schemas/BagEntity"
-													},
-													"type": "array"
-												},
-												"message": {
-													"type": "string"
-												},
-												"sucess": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"intent",
-												"data",
-												"message",
-												"sucess"
-											],
-											"type": "object"
+									"properties": {
+										"message": {
+											"type": "string"
 										}
-									]
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
 								}
 							}
 						}

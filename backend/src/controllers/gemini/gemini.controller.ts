@@ -1,26 +1,47 @@
-import { Body, Controller, Post, Route, Tags } from "tsoa";
+import { Body, Controller, Post, Route, Tags, Res, TsoaResponse } from "tsoa";
 import { GeminiSearchService } from "../../services/gemini/gemini-search.service";
-import { GeminiService } from "../../services/gemini/gemini.service";
 
 @Route("gemini")
 @Tags("Gemini")
 export class GeminiController extends Controller {
   private geminiSearchService = new GeminiSearchService();
-  private geminiService = new GeminiService();
 
-  @Post("/search-bags")
-  async searchBags(@Body() requestBody: { userMessage: string }) {
+  @Post("/search")
+  public async search(
+    @Body() requestBody: { userMessage: string },
+    @Res() notFoundResponse: TsoaResponse<404, { message: string }>,
+    @Res() serverErrorResponse: TsoaResponse<500, { message: string }>
+  ) {
     const { userMessage } = requestBody;
-    const result = await this.geminiSearchService.handleUserQuery(userMessage);
-    if (!result) {
-      this.setStatus(500);
-      return { error: "Failed to process the request" };
+    console.log("Received userMessage:", userMessage);
+
+    if (!userMessage) {
+      this.setStatus(400);
+      return { message: "userMessage is required." };
     }
-    return {
-      sucess: true,
-      message: result.reply,
-      data: result.bags,
-      intent: result.userMessage,
-    };
+
+    try {
+      const result = await this.geminiSearchService.handleSearchQuery(
+        userMessage
+      );
+
+      if (result.bags.length === 0) {
+        return notFoundResponse(404, {
+          message: result.reply,
+        });
+      }
+
+      return {
+        success: true,
+        reply: result.reply,
+        bags: result.bags,
+        intent: result.intent,
+      };
+    } catch (error) {
+      console.error("Error in GeminiController search:", error);
+      return serverErrorResponse(500, {
+        message: "An error occurred while processing your search.",
+      });
+    }
   }
 }
