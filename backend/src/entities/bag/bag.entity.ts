@@ -7,7 +7,7 @@ import { MediaEntity } from "../media/media.entity";
 @Entity()
 @Index("idx_bag_name", ["name"])
 @Index("idx_bag_price", ["price"])
-@Index("idx_bag_search_vector", ["search_vector"])
+@Index("idx_bag_search_vector", { synchronize: false })
 export class BagEntity extends CommonEntity {
   @Column()
   name: string;
