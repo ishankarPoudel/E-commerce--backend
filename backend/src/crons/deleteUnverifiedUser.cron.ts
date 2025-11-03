@@ -2,9 +2,10 @@ import cron from "node-cron";
 import { UserEntity } from "../entities/user/userInfo/user.userInfo.entity";
 import { LessThan } from "typeorm";
 import AppDataSource from "../config/data-source/data-source";
+import { UNVERIFIED_USER_RETENTION_HOURS } from "../config/constants";
 
-// Add a delay or check if DataSource is initialized
-cron.schedule("*/10 * * * * *", async () => {
+// Run once per day at 2 AM to delete unverified users
+cron.schedule("0 2 * * *", async () => {
   try {
     // Check if DataSource is initialized
     if (!AppDataSource.isInitialized) {
@@ -13,7 +14,9 @@ cron.schedule("*/10 * * * * *", async () => {
     }
 
     const userRepo = AppDataSource.getRepository(UserEntity);
-    const cutOff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const cutOff = new Date(
+      Date.now() - UNVERIFIED_USER_RETENTION_HOURS * 60 * 60 * 1000
+    );
 
     const usersToDelete = await userRepo.find({
       where: {

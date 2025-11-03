@@ -5,6 +5,7 @@ import { ApiError } from "../../utils/apiError";
 import { Tokens } from "../../utils/token.util";
 import bcrypt from "bcrypt";
 import AppDataSource from "../../config/data-source/data-source";
+import { BCRYPT_ROUNDS } from "../../config/constants";
 
 export class TokensService {
   private userRepo = AppDataSource.getRepository(UserEntity);
@@ -15,7 +16,7 @@ export class TokensService {
     const refreshToken = new Tokens().signRefreshToken(payload);
 
     //stored hashed refresh token in DB
-    user.refreshToken = await bcrypt.hash(refreshToken, 10);
+    user.refreshToken = await bcrypt.hash(refreshToken, BCRYPT_ROUNDS);
     await this.userRepo.save(user);
 
     return { accessToken, refreshToken };
@@ -51,7 +52,7 @@ export class TokensService {
     const newAccessToken = new Tokens().signAccessToken({ userId: user.id });
     const newRefreshToken = new Tokens().signRefreshToken({ userId: user.id });
 
-    user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
+    user.refreshToken = await bcrypt.hash(newRefreshToken, BCRYPT_ROUNDS);
     await this.userRepo.save(user);
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };

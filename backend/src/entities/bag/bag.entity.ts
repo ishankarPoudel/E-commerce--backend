@@ -1,10 +1,13 @@
-import { Column, Entity, JoinTable, OneToMany } from "typeorm";
+import { Column, Entity, Index, JoinTable, OneToMany } from "typeorm";
 import { CommonEntity } from "../common/common.entity";
 import { ManyToMany } from "typeorm";
 import { Category } from "../category/category.entity";
 import { MediaEntity } from "../media/media.entity";
 
 @Entity()
+@Index("idx_bag_name", ["name"])
+@Index("idx_bag_price", ["price"])
+@Index("idx_bag_search_vector", ["search_vector"])
 export class BagEntity extends CommonEntity {
   @Column()
   name: string;

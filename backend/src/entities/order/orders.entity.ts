@@ -1,10 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { CommonEntity } from "../common/common.entity";
 import { UserEntity } from "../user/userInfo/user.userInfo.entity";
 import { CartItemEntity } from "../cart/cartItem.entity";
 import { OrderItemEntity } from "./orderItems.entity";
 
 @Entity({ name: "orders" })
+@Index("idx_order_user_id", ["user"])
+@Index("idx_order_status", ["status"])
+@Index("idx_order_created_at", ["createdAt"])
+@Index("idx_order_stripe_payment_intent", ["stripePaymentIntentId"])
 export class OrderEntity extends CommonEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn({ name: "user_id" })

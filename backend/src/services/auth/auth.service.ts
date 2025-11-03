@@ -13,6 +13,7 @@ import {
   OTPValidator,
 } from "./../../validators/auth/login.validator";
 import { DeviceInfoEntity } from "../../entities/user/deviceInfo/user.deveiceInfo.entity";
+import { BCRYPT_ROUNDS, OTP_EXPIRY_MINUTES } from "../../config/constants";
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(UserEntity);
@@ -35,7 +36,7 @@ export class AuthService {
       existingUser = this.userRepo.create({
         email: user.email,
         fullName: user.fullName,
-        password: await bcrypt.hash(user.password, 10),
+        password: await bcrypt.hash(user.password, BCRYPT_ROUNDS),
         isOauth: false,
         provider: "local",
         isEmailVerified: false,
@@ -44,14 +45,14 @@ export class AuthService {
       // Only update if not already set
       if (!existingUser.fullName) existingUser.fullName = user.fullName;
       if (!existingUser.password)
-        existingUser.password = await bcrypt.hash(user.password, 10);
+        existingUser.password = await bcrypt.hash(user.password, BCRYPT_ROUNDS);
     }
 
     const otp = new GenerateRandomToken().mailToken();
     existingUser.emailVerificationToken = otp;
     existingUser.emailVerificationTokenExpiresAt = new Date(
-      Date.now() + 15 * 60 * 1000
-    ); // 15 minutes from now
+      Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
+    );
 
     await this.userRepo.save(existingUser);
 
@@ -97,8 +98,8 @@ export class AuthService {
     const otp = new GenerateRandomToken().mailToken();
     user.emailVerificationToken = otp;
     user.emailVerificationTokenExpiresAt = new Date(
-      Date.now() + 15 * 60 * 1000
-    ); // 15 minutes from now
+      Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
+    );
     await this.userRepo.save(user);
     await new MailService().sendVerificationEmail(user.email, otp);
   }
@@ -149,7 +150,14 @@ export class AuthService {
       location,
     });
 
-    return this.generateTokens(user);
+    const tokens = await this.generateTokens(user);
+    return {
+      ...tokens,
+      user: {
+        email: user.email,
+        fullName: user.fullName,
+      },
+    };
   }
 
   async resetPassword(email: string) {
@@ -177,7 +185,7 @@ export class AuthService {
     if (!user || !payload)
       throw new ApiError(401, "Invalid or expired reset token");
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    user.password = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
     await this.userRepo.save(user);
     return { email: user.email };
   }
@@ -188,7 +196,7 @@ export class AuthService {
     const refreshToken = new Tokens().signRefreshToken(payload);
 
     //stored hashed refresh token in DB
-    user.refreshToken = await bcrypt.hash(refreshToken, 10);
+    user.refreshToken = await bcrypt.hash(refreshToken, BCRYPT_ROUNDS);
     await this.userRepo.save(user);
 
     return { accessToken, refreshToken };

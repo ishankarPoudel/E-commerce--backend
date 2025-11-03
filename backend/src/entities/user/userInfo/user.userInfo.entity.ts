@@ -1,10 +1,12 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, Index, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { CommonEntity } from "../../common/common.entity";
 import { DeviceInfoEntity } from "../deviceInfo/user.deveiceInfo.entity";
 import { CartEntity } from "../../cart/cart.entity";
 import { OrderEntity } from "../../order/orders.entity";
 
 @Entity()
+@Index("idx_user_email", ["email"])
+@Index("idx_user_email_verification_token", ["emailVerificationToken"])
 export class UserEntity extends CommonEntity {
   @Column({ nullable: true })
   googleId: string;
@@ -38,14 +40,14 @@ export class UserEntity extends CommonEntity {
 
   @OneToOne(() => DeviceInfoEntity, {
     cascade: true,
-    eager: true,
+    eager: false,
   })
   @JoinColumn()
   deviceInfo: DeviceInfoEntity;
 
   @OneToOne(() => CartEntity, {
     cascade: true,
-    eager: true,
+    eager: false,
   })
   @JoinColumn()
   cart: CartEntity;

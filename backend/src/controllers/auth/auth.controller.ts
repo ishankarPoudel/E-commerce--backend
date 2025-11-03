@@ -27,6 +27,7 @@ import { TokensService } from "../../services/tokens/tokens.service";
 import rateLimit from "express-rate-limit";
 import { LoginValidator } from "../../validators/auth/login.validator";
 import AppDataSource from "../../config/data-source/data-source";
+import { BCRYPT_ROUNDS } from "../../config/constants";
 
 export interface UserResponseData {
   email: string;
@@ -102,24 +103,19 @@ export class AuthController extends Controller {
   @Post("/login")
   @Middlewares(rateLimiter)
   async loginUser(@Body() user: LoginValidator) {
-    const { email } = user;
-    const { accessToken, refreshToken } = await new AuthService().loginUser(
-      user
-    );
+    const result = await new AuthService().loginUser(user);
 
     this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
-      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
+      `accessToken=${result.accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
+      `refreshToken=${result.refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
     ]);
     return {
       success: true,
       message: "Login successful",
       data: {
         user: {
-          email,
-          fullName:
-            (await AppDataSource.getRepository(UserEntity).findOneBy({ email }))
-              ?.fullName || "",
+          email: result.user.email,
+          fullName: result.user.fullName,
         },
       },
     };
@@ -234,7 +230,7 @@ export class AuthController extends Controller {
               userId: user.id,
             });
             const userRepo = AppDataSource.getRepository(UserEntity);
-            user.refreshToken = await bcrypt.hash(refreshToken, 10);
+            user.refreshToken = await bcrypt.hash(refreshToken, BCRYPT_ROUNDS);
             await userRepo.save(user);
 
             // Set cookies using TSOA's setHeader
