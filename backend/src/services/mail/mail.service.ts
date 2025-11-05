@@ -110,6 +110,27 @@ export class MailService {
     }
   }
 
+  async sendPasswordChangeConfirmationEmail(email: string) {
+    try {
+      await mailTransport.sendMail({
+        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "Your Password Has Been Changed",
+        html: ` <p style="font-size: 16px; color: #555;">Hi there,</p>
+        <p style="font-size: 16px; color: #555;">
+        This is a confirmation that your password has been successfully changed. If you did not make this change, please contact our support team immediately.
+        </p>
+        <p style="font-size: 16px; color: #555;">
+        Thank you for being a valued member of Avisekh Bag Pashal!
+        </p>
+        <p style="font-size: 16px; color: #555;">Best regards,<br/>The Avisekh Bag Pashal Team</p>
+        `,
+      });
+    } catch (err) {
+      console.error("Error sending email:", err);
+    }
+  }
+
   async sendOrderConfirmationEmail(email: string, order: any) {
     try {
       type OrderItem = { name: string; price: number; quantity: number };

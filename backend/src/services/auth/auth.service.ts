@@ -179,6 +179,8 @@ export class AuthService {
 
     user.password = await bcrypt.hash(newPassword, 10);
     await this.userRepo.save(user);
+
+    await new MailService().sendPasswordChangeConfirmationEmail(user.email);
     return { email: user.email };
   }
 
