@@ -3,6 +3,7 @@ import { CommonEntity } from "../common/common.entity";
 import { ManyToMany } from "typeorm";
 import { Category } from "../category/category.entity";
 import { MediaEntity } from "../media/media.entity";
+import { IsObject, IsOptional } from "class-validator";
 
 export enum BagType {
   HANDBAG = "handbag",
@@ -58,6 +59,7 @@ export class BagEntity extends CommonEntity {
   })
   categories: Category[];
 
+  @IsOptional()
   @Column({ type: "jsonb", nullable: true })
   features: Record<string, boolean>;
 

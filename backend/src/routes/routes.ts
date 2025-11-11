@@ -105,6 +105,7 @@ const models: TsoaRoute.Models = {
             "capacityLiters": {"dataType":"double","required":true},
             "isFeatured": {"dataType":"boolean","required":true},
             "categories": {"dataType":"array","array":{"dataType":"refObject","ref":"Category"},"required":true},
+            "features": {"ref":"Record_string.boolean_","required":true},
             "images": {"dataType":"array","array":{"dataType":"refObject","ref":"MediaEntity"},"required":true},
             "search_vector": {"dataType":"string","required":true},
         },
@@ -122,6 +123,11 @@ const models: TsoaRoute.Models = {
             "bags": {"dataType":"array","array":{"dataType":"refObject","ref":"BagEntity"},"required":true},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Record_string.boolean_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"boolean"},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "MediaEntity": {
@@ -211,6 +217,15 @@ const models: TsoaRoute.Models = {
             "price": {"dataType":"double","required":true},
             "description": {"dataType":"string","required":true},
             "categories": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "brand": {"dataType":"string","required":true},
+            "material": {"dataType":"string","required":true},
+            "colors": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "sizes": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "weightKg": {"dataType":"double","required":true},
+            "capacityLiters": {"dataType":"double","required":true},
+            "isFeatured": {"dataType":"boolean","required":true},
+            "type": {"ref":"BagType","required":true},
+            "features": {"ref":"Record_string.boolean_","required":true},
         },
         "additionalProperties": false,
     },

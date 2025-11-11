@@ -12,8 +12,17 @@ export class BagService {
   async addBag(bag: addBagValidator) {
     const newBag = new BagEntity();
     newBag.name = bag.name;
+    newBag.type = bag.type;
     newBag.price = bag.price;
     newBag.description = bag.description;
+    newBag.brand = bag.brand;
+    newBag.material = bag.material;
+    newBag.colors = bag.colors;
+    newBag.sizes = bag.sizes;
+    newBag.weightKg = bag.weightKg;
+    newBag.capacityLiters = bag.capacityLiters;
+    newBag.isFeatured = bag.isFeatured || false;
+    newBag.features = bag.features || {};
 
     const categoryRepo = AppDataSource.getRepository(Category);
     newBag.categories = await categoryRepo.find({

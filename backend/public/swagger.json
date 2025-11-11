@@ -252,6 +252,9 @@
 						},
 						"type": "array"
 					},
+					"features": {
+						"$ref": "#/components/schemas/Record_string.boolean_"
+					},
 					"images": {
 						"items": {
 							"$ref": "#/components/schemas/MediaEntity"
@@ -279,6 +282,7 @@
 					"capacityLiters",
 					"isFeatured",
 					"categories",
+					"features",
 					"images",
 					"search_vector"
 				],
@@ -323,6 +327,14 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"Record_string.boolean_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "boolean"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
 			},
 			"MediaEntity": {
 				"properties": {
@@ -568,13 +580,57 @@
 							"type": "string"
 						},
 						"type": "array"
+					},
+					"brand": {
+						"type": "string"
+					},
+					"material": {
+						"type": "string"
+					},
+					"colors": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"sizes": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"weightKg": {
+						"type": "number",
+						"format": "double"
+					},
+					"capacityLiters": {
+						"type": "number",
+						"format": "double"
+					},
+					"isFeatured": {
+						"type": "boolean"
+					},
+					"type": {
+						"$ref": "#/components/schemas/BagType"
+					},
+					"features": {
+						"$ref": "#/components/schemas/Record_string.boolean_"
 					}
 				},
 				"required": [
 					"name",
 					"price",
 					"description",
-					"categories"
+					"categories",
+					"brand",
+					"material",
+					"colors",
+					"sizes",
+					"weightKg",
+					"capacityLiters",
+					"isFeatured",
+					"type",
+					"features"
 				],
 				"type": "object",
 				"additionalProperties": false
