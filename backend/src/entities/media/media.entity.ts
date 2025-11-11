@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { CommonEntity } from "../common/common.entity";
 import { BagEntity } from "../bag/bag.entity";
 
@@ -10,6 +10,9 @@ export class MediaEntity extends CommonEntity {
   @Column({ nullable: true })
   altText?: string;
 
-  @ManyToOne(() => BagEntity, (bag) => bag.bagImages, { onDelete: "CASCADE" })
+  @ManyToOne(() => BagEntity, (bag) => bag.images, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "products" })
   bag: BagEntity;
 }

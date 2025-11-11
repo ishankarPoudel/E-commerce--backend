@@ -171,6 +171,21 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"BagType": {
+				"enum": [
+					"handbag",
+					"backpack",
+					"duffel",
+					"tote",
+					"crossbody",
+					"laptop_bag",
+					"luggage",
+					"suitcase",
+					"travel_set",
+					"school_bag"
+				],
+				"type": "string"
+			},
 			"BagEntity": {
 				"properties": {
 					"id": {
@@ -192,6 +207,9 @@
 					"name": {
 						"type": "string"
 					},
+					"type": {
+						"$ref": "#/components/schemas/BagType"
+					},
 					"price": {
 						"type": "number",
 						"format": "double"
@@ -199,13 +217,42 @@
 					"description": {
 						"type": "string"
 					},
+					"brand": {
+						"type": "string"
+					},
+					"material": {
+						"type": "string"
+					},
+					"colors": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"sizes": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"weightKg": {
+						"type": "number",
+						"format": "double"
+					},
+					"capacityLiters": {
+						"type": "number",
+						"format": "double"
+					},
+					"isFeatured": {
+						"type": "boolean"
+					},
 					"categories": {
 						"items": {
 							"$ref": "#/components/schemas/Category"
 						},
 						"type": "array"
 					},
-					"bagImages": {
+					"images": {
 						"items": {
 							"$ref": "#/components/schemas/MediaEntity"
 						},
@@ -221,10 +268,18 @@
 					"updatedAt",
 					"deletedAt",
 					"name",
+					"type",
 					"price",
 					"description",
+					"brand",
+					"material",
+					"colors",
+					"sizes",
+					"weightKg",
+					"capacityLiters",
+					"isFeatured",
 					"categories",
-					"bagImages",
+					"images",
 					"search_vector"
 				],
 				"type": "object",
@@ -329,7 +384,7 @@
 					"cart": {
 						"$ref": "#/components/schemas/CartEntity"
 					},
-					"bag": {
+					"product": {
 						"$ref": "#/components/schemas/BagEntity"
 					},
 					"quantity": {
@@ -343,7 +398,7 @@
 					"updatedAt",
 					"deletedAt",
 					"cart",
-					"bag",
+					"product",
 					"quantity"
 				],
 				"type": "object",
@@ -910,24 +965,7 @@
 																	"properties": {
 																		"bag": {
 																			"properties": {
-																				"images": {
-																					"items": {
-																						"properties": {
-																							"url": {
-																								"type": "string"
-																							},
-																							"id": {
-																								"type": "string"
-																							}
-																						},
-																						"required": [
-																							"url",
-																							"id"
-																						],
-																						"type": "object"
-																					},
-																					"type": "array"
-																				},
+																				"images": {},
 																				"price": {
 																					"type": "number",
 																					"format": "double"

@@ -12,8 +12,8 @@ export class CartItemEntity extends CommonEntity {
   cart: CartEntity;
 
   @ManyToOne(() => BagEntity)
-  @JoinColumn({ name: "bag_id" })
-  bag: BagEntity;
+  @JoinColumn({ name: "product_id" })
+  product: BagEntity;
 
   @Column({ type: "int" })
   quantity: number;

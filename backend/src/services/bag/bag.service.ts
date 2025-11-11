@@ -41,7 +41,7 @@ export class BagService {
     const queryBuilder = await AppDataSource.getRepository(BagEntity)
       .createQueryBuilder("bag")
       .leftJoinAndSelect("bag.categories", "categories")
-      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .leftJoinAndSelect("bag.images", "images")
       .orderBy("bag.createdAt", "DESC")
       .skip(offset)
       .take(limit || 10);
@@ -80,7 +80,7 @@ export class BagService {
     const bag = await AppDataSource.getRepository(BagEntity)
       .createQueryBuilder("bags")
       .innerJoinAndSelect("bags.categories", "categories")
-      .innerJoinAndSelect("bags.bagImages", "bagImages")
+      .innerJoinAndSelect("bags.images", "images")
       .where("bags.id = :id", { id })
       .getOne();
     if (!bag) {
@@ -95,7 +95,7 @@ export class BagService {
 
     const existingBag = await bagRepo.findOne({
       where: { id },
-      relations: { bagImages: true },
+      relations: { images: true },
     });
     if (!existingBag) throw new ApiError(404, "Bag not found.");
 
@@ -105,7 +105,7 @@ export class BagService {
       });
 
       // Find images to remove (those currently linked but not in newBagImages)
-      const imagesToRemove = existingBag.bagImages.filter(
+      const imagesToRemove = existingBag.images.filter(
         (img) => !(bag.bagImages ?? []).includes(img.id)
       );
 
@@ -114,7 +114,7 @@ export class BagService {
         await bagImageRepo.remove(imagesToRemove);
       }
 
-      existingBag.bagImages = newBagImages;
+      existingBag.images = newBagImages;
     }
 
     await bagRepo.save(existingBag);

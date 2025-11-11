@@ -81,6 +81,11 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BagType": {
+        "dataType": "refEnum",
+        "enums": ["handbag","backpack","duffel","tote","crossbody","laptop_bag","luggage","suitcase","travel_set","school_bag"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "BagEntity": {
         "dataType": "refObject",
         "properties": {
@@ -89,10 +94,18 @@ const models: TsoaRoute.Models = {
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
             "name": {"dataType":"string","required":true},
+            "type": {"ref":"BagType","required":true},
             "price": {"dataType":"double","required":true},
             "description": {"dataType":"string","required":true},
+            "brand": {"dataType":"string","required":true},
+            "material": {"dataType":"string","required":true},
+            "colors": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "sizes": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "weightKg": {"dataType":"double","required":true},
+            "capacityLiters": {"dataType":"double","required":true},
+            "isFeatured": {"dataType":"boolean","required":true},
             "categories": {"dataType":"array","array":{"dataType":"refObject","ref":"Category"},"required":true},
-            "bagImages": {"dataType":"array","array":{"dataType":"refObject","ref":"MediaEntity"},"required":true},
+            "images": {"dataType":"array","array":{"dataType":"refObject","ref":"MediaEntity"},"required":true},
             "search_vector": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -133,7 +146,7 @@ const models: TsoaRoute.Models = {
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
             "cart": {"ref":"CartEntity","required":true},
-            "bag": {"ref":"BagEntity","required":true},
+            "product": {"ref":"BagEntity","required":true},
             "quantity": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
