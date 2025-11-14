@@ -30,20 +30,6 @@ const multer = require('multer');
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "DeviceInfoEntity": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "os": {"dataType":"string","required":true},
-            "browser": {"dataType":"string","required":true},
-            "device": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserEntity": {
         "dataType": "refObject",
         "properties": {
@@ -64,6 +50,22 @@ const models: TsoaRoute.Models = {
             "deviceInfo": {"ref":"DeviceInfoEntity","required":true},
             "cart": {"ref":"CartEntity","required":true},
             "orders": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderEntity"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DeviceInfoEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "os": {"dataType":"string","required":true},
+            "browser": {"dataType":"string","required":true},
+            "device": {"dataType":"string","required":true},
+            "location": {"dataType":"string","required":true},
+            "user": {"ref":"UserEntity","required":true},
         },
         "additionalProperties": false,
     },
@@ -355,6 +357,40 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateUserById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_getAllUsers: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                page: {"in":"query","name":"page","dataType":"double"},
+                pageSize: {"in":"query","name":"pageSize","dataType":"double"},
+                search: {"in":"query","name":"search","dataType":"string"},
+                sort: {"in":"query","name":"sort","dataType":"string"},
+        };
+        app.get('/user/all-users',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getAllUsers)),
+
+            async function UserController_getAllUsers(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_getAllUsers, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'getAllUsers',
                 controller,
                 response,
                 next,

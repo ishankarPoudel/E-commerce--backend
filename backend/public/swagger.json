@@ -7,46 +7,6 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"DeviceInfoEntity": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"os": {
-						"type": "string"
-					},
-					"browser": {
-						"type": "string"
-					},
-					"device": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"os",
-					"browser",
-					"device"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"UserEntity": {
 				"properties": {
 					"id": {
@@ -128,6 +88,54 @@
 					"deviceInfo",
 					"cart",
 					"orders"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DeviceInfoEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"os": {
+						"type": "string"
+					},
+					"browser": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"os",
+					"browser",
+					"device",
+					"location",
+					"user"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -904,6 +912,95 @@
 						}
 					}
 				}
+			}
+		},
+		"/user/all-users": {
+			"get": {
+				"operationId": "GetAllUsers",
+				"responses": {
+					"200": {
+						"description": "Users retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"total": {
+													"type": "number",
+													"format": "double"
+												},
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/UserEntity"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"total",
+												"data"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "pageSize",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sort",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/order/get-order-by-id": {

@@ -131,22 +131,39 @@ export class AuthService {
     );
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
     const deviceInfo = AppDataSource.getRepository(DeviceInfoEntity);
-    const device = deviceInfo.create({
-      device: credentials.device,
-      os: credentials.os,
-      browser: credentials.browser,
-    });
+
+    let device: DeviceInfoEntity;
+    if (user.deviceInfo) {
+      // Update existing device info
+      device = user.deviceInfo;
+      device.os = credentials.os;
+      device.browser = credentials.browser;
+      device.device = credentials.device;
+      device.location = credentials.location;
+    } else {
+      // Create new device info
+      device = deviceInfo.create({
+        os: credentials.os,
+        browser: credentials.browser,
+        device: credentials.device,
+        location: credentials.location,
+      });
+    }
     const location =
       typeof credentials.location === "string"
         ? JSON.parse(credentials.location)
         : credentials.location;
 
     await deviceInfo.save(device);
+
+    user.deviceInfo = device;
+    await this.userRepo.save(user);
+
     await new MailService().sendLoginDetectedEmail(user.email, {
       os: credentials.os,
       browser: credentials.browser,
       device: credentials.device,
-      location,
+      location: location,
     });
 
     return this.generateTokens(user);

@@ -2,21 +2,28 @@ import {
   Body,
   Controller,
   Get,
+  Middlewares,
   Patch,
+  Path,
   Put,
+  Query,
   Request,
   Route,
   SuccessResponse,
   Tags,
 } from "tsoa";
 import { UserService } from "../../services/user/user.service";
-import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
+import {
+  AuthenticatedRequest,
+  authenticateToken,
+} from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
 
 @Route("/user")
 @Tags("User")
 export class UserController extends Controller {
   @Get("/me")
+  @Middlewares(authenticateToken)
   @SuccessResponse("200", "User retrieved successfully")
   async getUserById(@Request() req: AuthenticatedRequest) {
     const userId = req?.user?.id;
@@ -44,6 +51,28 @@ export class UserController extends Controller {
       success: true,
       message: "User updated successfully",
       data: updatedUser,
+    };
+  }
+
+  @SuccessResponse("200", "Users retrieved successfully")
+  @Get("/all-users")
+  async getAllUsers(
+    @Request() req: AuthenticatedRequest,
+    @Query() page?: number,
+    @Query() pageSize?: number,
+    @Query() search?: string,
+    @Query() sort?: string
+  ) {
+    const users = await new UserService().getAllUsers(
+      page,
+      pageSize,
+      search,
+      sort
+    );
+    return {
+      success: true,
+      message: "Users retrieved successfully",
+      data: users,
     };
   }
 }

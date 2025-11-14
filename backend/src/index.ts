@@ -5,11 +5,9 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./routes/routes";
 import * as swaggerDocument from "../public/swagger.json";
-
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { rateLimit } from "express-rate-limit";
 import "./crons/index.ts";
 import { authMiddlewareWithExclusions } from "./middlewares/authExclude.middleware";
 import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
@@ -49,7 +47,7 @@ app.use(errorHandler);
 
 AppDataSource.initialize()
   .then(() => {
-    console.log("✅ Database connection initialized");
+    console.log("Database connection initialized");
 
     app.listen(8000, () => {
       console.log(` Server is running on http://localhost:${8000}`);

@@ -36,9 +36,10 @@ export class UserEntity extends CommonEntity {
   @Column({ nullable: true, type: "varchar", length: 255 })
   refreshToken: string;
 
-  @OneToOne(() => DeviceInfoEntity, {
+  @OneToOne(() => DeviceInfoEntity, (deviceInfo) => deviceInfo.user, {
     cascade: true,
     eager: true,
+    nullable: true,
   })
   @JoinColumn()
   deviceInfo: DeviceInfoEntity;
