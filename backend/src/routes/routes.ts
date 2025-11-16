@@ -373,7 +373,8 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 page: {"in":"query","name":"page","dataType":"double"},
                 pageSize: {"in":"query","name":"pageSize","dataType":"double"},
                 search: {"in":"query","name":"search","dataType":"string"},
-                sort: {"in":"query","name":"sort","dataType":"string"},
+                sortBy: {"in":"query","name":"sortBy","dataType":"union","subSchemas":[{"dataType":"enum","enums":["name"]},{"dataType":"enum","enums":["joinedAt"]}]},
+                order: {"in":"query","name":"order","dataType":"union","subSchemas":[{"dataType":"enum","enums":["asc"]},{"dataType":"enum","enums":["desc"]}]},
         };
         app.get('/user/all-users',
             ...(fetchMiddlewares<RequestHandler>(UserController)),

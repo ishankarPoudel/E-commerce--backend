@@ -61,13 +61,15 @@ export class UserController extends Controller {
     @Query() page?: number,
     @Query() pageSize?: number,
     @Query() search?: string,
-    @Query() sort?: string
+    @Query() sortBy?: "name" | "joinedAt",
+    @Query() order?: "asc" | "desc"
   ) {
     const users = await new UserService().getAllUsers(
       page,
       pageSize,
       search,
-      sort
+      sortBy,
+      order
     );
     return {
       success: true,

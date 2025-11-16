@@ -42,9 +42,10 @@ export class UserService {
     page?: number,
     pageSize: number = 10,
     search?: string,
-    sort?: string
+    sortBy: "name" | "joinedAt" = "name",
+    order: "asc" | "desc" = "asc"
   ) {
-    const queryBuilder = this.userRepo
+    const qb = this.userRepo
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.deviceInfo", "deviceInfo")
       .select([
@@ -64,28 +65,32 @@ export class UserService {
         "deviceInfo.updatedAt",
       ]);
 
+    // Search
     if (search) {
-      queryBuilder.andWhere(
-        new Brackets((qb) => {
-          qb.where("user.email ILIKE :search", {
-            search: `%${search}%`,
-          }).orWhere("user.fullName ILIKE :search", { search: `%${search}%` });
+      qb.andWhere(
+        new Brackets((qb2) => {
+          qb2
+            .where("user.email ILIKE :search", { search: `%${search}%` })
+            .orWhere("user.fullName ILIKE :search", { search: `%${search}%` });
         })
       );
     }
 
-    const nameSort = sort?.toUpperCase() === "DESC" ? "DESC" : "ASC";
-    queryBuilder.orderBy("user.fullName", nameSort);
+    // Sorting logic
+    const sortMap: Record<string, string> = {
+      name: "user.fullName",
+      joinedAt: "user.createdAt",
+    };
 
+    qb.orderBy(sortMap[sortBy], order.toUpperCase() as "ASC" | "DESC");
+
+    // Pagination
     if (page) {
-      const offset = (page - 1) * (pageSize || 10);
-      queryBuilder.skip(offset).take(pageSize || 10);
+      qb.skip((page - 1) * pageSize).take(pageSize);
     }
 
-    const [users, total] = await queryBuilder.getManyAndCount();
-    if (!users.length) {
-      return { data: [], total: 0 };
-    }
+    const [users, total] = await qb.getManyAndCount();
+
     return { data: users, total };
   }
 }

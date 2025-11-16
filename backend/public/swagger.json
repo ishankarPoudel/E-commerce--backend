@@ -994,10 +994,26 @@
 					},
 					{
 						"in": "query",
-						"name": "sort",
+						"name": "sortBy",
 						"required": false,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"enum": [
+								"name",
+								"joinedAt"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "order",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"asc",
+								"desc"
+							]
 						}
 					}
 				]
