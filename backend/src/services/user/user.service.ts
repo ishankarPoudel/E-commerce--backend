@@ -39,7 +39,7 @@ export class UserService {
 
   // admin fn to get all users
   async getAllUsers(
-    page?: number,
+    page: number = 1,
     pageSize: number = 10,
     search?: string,
     sortBy: "name" | "joinedAt" = "name",
@@ -91,6 +91,12 @@ export class UserService {
 
     const [users, total] = await qb.getManyAndCount();
 
-    return { data: users, total };
+    return {
+      data: users,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 }

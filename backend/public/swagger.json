@@ -926,6 +926,18 @@
 									"properties": {
 										"data": {
 											"properties": {
+												"totalPages": {
+													"type": "number",
+													"format": "double"
+												},
+												"pageSize": {
+													"type": "number",
+													"format": "double"
+												},
+												"page": {
+													"type": "number",
+													"format": "double"
+												},
 												"total": {
 													"type": "number",
 													"format": "double"
@@ -938,6 +950,9 @@
 												}
 											},
 											"required": [
+												"totalPages",
+												"pageSize",
+												"page",
 												"total",
 												"data"
 											],
