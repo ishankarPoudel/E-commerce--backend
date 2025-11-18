@@ -1,5 +1,4 @@
 import { TokenExpiredError } from "jsonwebtoken";
-
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
 import { Tokens } from "../../utils/token.util";
@@ -10,7 +9,7 @@ export class TokensService {
   private userRepo = AppDataSource.getRepository(UserEntity);
 
   async generateTokens(user: UserEntity) {
-    const payload = { userId: user.id };
+    const payload = { userId: user.id, tokenVersion: user.tokenVersion };
     const accessToken = new Tokens().signAccessToken(payload);
     const refreshToken = new Tokens().signRefreshToken(payload);
 
@@ -41,6 +40,10 @@ export class TokensService {
     if (!user || !user.refreshToken)
       throw new ApiError(401, "User not found or refresh token missing");
 
+    if (payload.tokenVersion !== user.tokenVersion) {
+      throw new ApiError(401, "Session has been revoked by administrator");
+    }
+
     const isRefreshTokenValid = await bcrypt.compare(
       refreshToken,
       user.refreshToken
@@ -48,12 +51,19 @@ export class TokensService {
     if (!isRefreshTokenValid) throw new ApiError(401, "Invalid Refresh Token");
 
     // Generate new tokens
-    const newAccessToken = new Tokens().signAccessToken({ userId: user.id });
+    const newAccessToken = new Tokens().signAccessToken({
+      userId: user.id,
+      tokenVersion: user.tokenVersion,
+    });
     const newRefreshToken = new Tokens().signRefreshToken({ userId: user.id });
 
     user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
     await this.userRepo.save(user);
 
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    return {
+      accessToken: newAccessToken,
+      tokenVersion: user.tokenVersion,
+      refreshToken: newRefreshToken,
+    };
   }
 }

@@ -27,15 +27,6 @@ export class UserEntity extends CommonEntity {
   @Column({ default: false })
   isEmailVerified: boolean;
 
-  @Column({ nullable: true })
-  emailVerificationToken: string;
-
-  @Column({ type: "timestamp", nullable: true })
-  emailVerificationTokenExpiresAt: Date | null;
-
-  @Column({ nullable: true, type: "varchar", length: 255 })
-  refreshToken: string;
-
   @OneToOne(() => DeviceInfoEntity, (deviceInfo) => deviceInfo.user, {
     cascade: true,
     eager: true,
@@ -53,4 +44,16 @@ export class UserEntity extends CommonEntity {
 
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders!: OrderEntity[];
+
+  @Column({ nullable: true })
+  emailVerificationToken: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  emailVerificationTokenExpiresAt: Date | null;
+
+  @Column({ nullable: true, type: "varchar", length: 255 })
+  refreshToken: string;
+
+  @Column({ type: "int", default: 0 })
+  tokenVersion: number;
 }
