@@ -30,6 +30,22 @@ const multer = require('multer');
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "DeviceInfoEntity": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "os": {"dataType":"string","required":true},
+            "browser": {"dataType":"string","required":true},
+            "device": {"dataType":"string","required":true},
+            "location": {"dataType":"string","required":true},
+            "user": {"ref":"UserEntity","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserEntity": {
         "dataType": "refObject",
         "properties": {
@@ -50,22 +66,6 @@ const models: TsoaRoute.Models = {
             "deviceInfo": {"ref":"DeviceInfoEntity","required":true},
             "cart": {"ref":"CartEntity","required":true},
             "orders": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderEntity"},"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DeviceInfoEntity": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-            "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "os": {"dataType":"string","required":true},
-            "browser": {"dataType":"string","required":true},
-            "device": {"dataType":"string","required":true},
-            "location": {"dataType":"string","required":true},
-            "user": {"ref":"UserEntity","required":true},
         },
         "additionalProperties": false,
     },

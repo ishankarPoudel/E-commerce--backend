@@ -7,6 +7,54 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"DeviceInfoEntity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"os": {
+						"type": "string"
+					},
+					"browser": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserEntity"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"deletedAt",
+					"os",
+					"browser",
+					"device",
+					"location",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserEntity": {
 				"properties": {
 					"id": {
@@ -88,54 +136,6 @@
 					"deviceInfo",
 					"cart",
 					"orders"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DeviceInfoEntity": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"os": {
-						"type": "string"
-					},
-					"browser": {
-						"type": "string"
-					},
-					"device": {
-						"type": "string"
-					},
-					"location": {
-						"type": "string"
-					},
-					"user": {
-						"$ref": "#/components/schemas/UserEntity"
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"deletedAt",
-					"os",
-					"browser",
-					"device",
-					"location",
-					"user"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -800,6 +800,13 @@
 									"properties": {
 										"data": {
 											"properties": {
+												"orders": {
+													"type": "number",
+													"format": "double"
+												},
+												"deviceInfo": {
+													"$ref": "#/components/schemas/DeviceInfoEntity"
+												},
 												"updatedAt": {
 													"type": "string",
 													"format": "date-time"
@@ -825,6 +832,8 @@
 												}
 											},
 											"required": [
+												"orders",
+												"deviceInfo",
 												"updatedAt",
 												"createdAt",
 												"provider",
