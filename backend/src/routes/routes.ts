@@ -44,12 +44,13 @@ const models: TsoaRoute.Models = {
             "isOauth": {"dataType":"boolean","required":true},
             "provider": {"dataType":"string","required":true},
             "isEmailVerified": {"dataType":"boolean","required":true},
-            "emailVerificationToken": {"dataType":"string","required":true},
-            "emailVerificationTokenExpiresAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "refreshToken": {"dataType":"string","required":true},
             "deviceInfo": {"ref":"DeviceInfoEntity","required":true},
             "cart": {"ref":"CartEntity","required":true},
             "orders": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderEntity"},"required":true},
+            "emailVerificationToken": {"dataType":"string","required":true},
+            "emailVerificationTokenExpiresAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
+            "refreshToken": {"dataType":"string","required":true},
+            "tokenVersion": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -1221,6 +1222,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'refreshToken',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_revokeUserSession: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"userId":{"dataType":"string","required":true}}},
+        };
+        app.post('/auth/revoke-session',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.revokeUserSession)),
+
+            async function AuthController_revokeUserSession(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_revokeUserSession, request, response });
+
+                const controller = new AuthController();
+
+              await templateService.apiHandler({
+                methodName: 'revokeUserSession',
                 controller,
                 response,
                 next,

@@ -1,4 +1,3 @@
-import { TokenExpiredError } from "jsonwebtoken";
 import AppDataSource from "../../config/data-source/data-source";
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
@@ -8,10 +7,7 @@ import { MailService } from "../mail/mail.service";
 import { RegisterUserDto } from "./../../validators/registerUser.validator";
 import bcrypt from "bcrypt";
 import { MoreThan } from "typeorm";
-import {
-  LoginValidator,
-  OTPValidator,
-} from "./../../validators/auth/login.validator";
+import { LoginValidator } from "./../../validators/auth/login.validator";
 import { DeviceInfoEntity } from "../../entities/user/deviceInfo/user.deveiceInfo.entity";
 
 export class AuthService {
@@ -202,7 +198,7 @@ export class AuthService {
   }
 
   async generateTokens(user: UserEntity) {
-    const payload = { userId: user.id };
+    const payload = { userId: user.id, tokenVersion: user.tokenVersion };
     const accessToken = new Tokens().signAccessToken(payload);
     const refreshToken = new Tokens().signRefreshToken(payload);
 
@@ -219,5 +215,13 @@ export class AuthService {
     user.refreshToken = "";
     await this.userRepo.save(user);
     return;
+  }
+
+  async revokeUserSession(userId: string) {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new ApiError(404, "User not found");
+    user.tokenVersion += 1;
+    user.refreshToken = "";
+    await this.userRepo.save(user);
   }
 }

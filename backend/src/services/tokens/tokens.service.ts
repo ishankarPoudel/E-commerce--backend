@@ -55,7 +55,10 @@ export class TokensService {
       userId: user.id,
       tokenVersion: user.tokenVersion,
     });
-    const newRefreshToken = new Tokens().signRefreshToken({ userId: user.id });
+    const newRefreshToken = new Tokens().signRefreshToken({
+      userId: user.id,
+      tokenVersion: user.tokenVersion,
+    });
 
     user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
     await this.userRepo.save(user);

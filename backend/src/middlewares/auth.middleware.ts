@@ -38,6 +38,14 @@ export const authenticateToken = async (
       });
     }
 
+    if (payload.tokenVersion !== user.tokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: "Session has been revoked. Please login again.",
+        forceLogout: true,
+      });
+    }
+
     req.user = user;
     next();
   } catch (error) {

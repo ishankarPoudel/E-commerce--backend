@@ -46,17 +46,6 @@
 					"isEmailVerified": {
 						"type": "boolean"
 					},
-					"emailVerificationToken": {
-						"type": "string"
-					},
-					"emailVerificationTokenExpiresAt": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"refreshToken": {
-						"type": "string"
-					},
 					"deviceInfo": {
 						"$ref": "#/components/schemas/DeviceInfoEntity"
 					},
@@ -68,6 +57,21 @@
 							"$ref": "#/components/schemas/OrderEntity"
 						},
 						"type": "array"
+					},
+					"emailVerificationToken": {
+						"type": "string"
+					},
+					"emailVerificationTokenExpiresAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"refreshToken": {
+						"type": "string"
+					},
+					"tokenVersion": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -82,12 +86,13 @@
 					"isOauth",
 					"provider",
 					"isEmailVerified",
+					"deviceInfo",
+					"cart",
+					"orders",
 					"emailVerificationToken",
 					"emailVerificationTokenExpiresAt",
 					"refreshToken",
-					"deviceInfo",
-					"cart",
-					"orders"
+					"tokenVersion"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2718,6 +2723,58 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/auth/revoke-session": {
+			"post": {
+				"operationId": "RevokeUserSession",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"userId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/auth/google": {

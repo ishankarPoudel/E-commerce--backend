@@ -11,7 +11,6 @@ import {
 } from "tsoa";
 import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
-
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
 import { Request as ExpressRequest } from "express";
@@ -203,6 +202,22 @@ export class AuthController extends Controller {
     };
   }
 
+  @Post("/revoke-session")
+  async revokeUserSession(
+    @Request() req: AuthenticatedRequest,
+    @Body() body: { userId: string }
+  ) {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    await new AuthService().revokeUserSession(body.userId);
+    return {
+      success: true,
+      message: "User session revoked successfully",
+    };
+  }
+
   @Get("/google")
   async googleAuth(@Request() req: ExpressRequest) {
     passport.authenticate("google", {
@@ -227,15 +242,8 @@ export class AuthController extends Controller {
               return resolve();
             }
 
-            const accessToken = new Tokens().signAccessToken({
-              userId: user.id,
-            });
-            const refreshToken = new Tokens().signRefreshToken({
-              userId: user.id,
-            });
-            const userRepo = AppDataSource.getRepository(UserEntity);
-            user.refreshToken = await bcrypt.hash(refreshToken, 10);
-            await userRepo.save(user);
+            const { accessToken, refreshToken } =
+              await new TokensService().generateTokens(user);
 
             // Set cookies using TSOA's setHeader
             this.setHeader("Set-Cookie", [
