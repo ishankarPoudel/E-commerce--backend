@@ -55,6 +55,7 @@ export class UserService {
         "user.isEmailVerified",
         "user.isOauth",
         "user.provider",
+        "user.isBanned",
         "user.createdAt",
         "user.updatedAt",
         "deviceInfo.os",

@@ -56,4 +56,7 @@ export class UserEntity extends CommonEntity {
 
   @Column({ type: "int", default: 0 })
   tokenVersion: number;
+
+  @Column({ nullable: false, default: false })
+  isBanned: boolean;
 }

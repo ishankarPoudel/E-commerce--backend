@@ -126,6 +126,10 @@ export class AuthService {
       user.password
     );
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
+
+    if (user.isBanned) {
+      throw new ApiError(403, "Your account has been banned. Contact support.");
+    }
     const deviceInfo = AppDataSource.getRepository(DeviceInfoEntity);
 
     let device: DeviceInfoEntity;
@@ -215,13 +219,5 @@ export class AuthService {
     user.refreshToken = "";
     await this.userRepo.save(user);
     return;
-  }
-
-  async revokeUserSession(userId: string) {
-    const user = await this.userRepo.findOneBy({ id: userId });
-    if (!user) throw new ApiError(404, "User not found");
-    user.tokenVersion += 1;
-    user.refreshToken = "";
-    await this.userRepo.save(user);
   }
 }

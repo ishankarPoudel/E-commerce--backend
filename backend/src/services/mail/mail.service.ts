@@ -259,4 +259,42 @@ export class MailService {
       console.error("Error sending email:", err);
     }
   }
+
+  async sendAccoutBanNotificationEmail(email: string) {
+    try {
+      await mailTransport.sendMail({
+        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "Account Ban Notification",
+        html: `
+        <p>Dear User,</p>
+        <p>We regret to inform you that your account has been banned due to violations of our terms of service.</p>
+        <p>If you believe this is a mistake or have any questions, please contact our support team for further assistance.</p>
+        <p>Thank you for your understanding.</p>
+        <p>Best regards,<br/>The Avisekh Bag Pashal Team</p>
+        `,
+      });
+    } catch (err) {
+      console.error("Error sending email:", err);
+    }
+  }
+
+  async sendAccountUnbanNotificationEmail(email: string) {
+    try {
+      await mailTransport.sendMail({
+        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "Account Unban Notification",
+        html: `
+        <p>Dear User,</p>
+        <p>We are pleased to inform you that your account has been unbanned and is now active.</p>
+        <p>Thank you for your patience during this process. If you have any questions or need further assistance, please feel free to reach out to our support team.</p>
+        <p>Welcome back!</p>
+        <p>Best regards,<br/>The Avisekh Bag Pashal Team</p>
+        `,
+      });
+    } catch (err) {
+      console.error("Error sending email:", err);
+    }
+  }
 }

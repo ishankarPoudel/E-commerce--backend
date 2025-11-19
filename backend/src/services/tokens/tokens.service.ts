@@ -37,9 +37,13 @@ export class TokensService {
         id: payload.userId,
       },
     });
+
     if (!user || !user.refreshToken)
       throw new ApiError(401, "User not found or refresh token missing");
 
+    if (user.isBanned) {
+      throw new ApiError(403, "Your account has been banned. Contact support.");
+    }
     if (payload.tokenVersion !== user.tokenVersion) {
       throw new ApiError(401, "Session has been revoked by administrator");
     }

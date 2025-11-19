@@ -3,7 +3,6 @@ import {
   Controller,
   Post,
   Request,
-  Res,
   Route,
   Tags,
   Get,
@@ -20,13 +19,10 @@ import {
   AuthenticatedRequest,
 } from "../../middlewares/auth.middleware";
 import passport from "../../config/passport/passport.config";
-import { Tokens } from "../../utils/token.util";
-import bcrypt from "bcrypt";
 import { TokensService } from "../../services/tokens/tokens.service";
 import rateLimit from "express-rate-limit";
 import { LoginValidator } from "../../validators/auth/login.validator";
 import AppDataSource from "../../config/data-source/data-source";
-import { DeviceInfoEntity } from "../../entities/user/deviceInfo/user.deveiceInfo.entity";
 
 export interface UserResponseData {
   email: string;
@@ -200,22 +196,6 @@ export class AuthController extends Controller {
     return {
       success: true,
       message: "Tokens refreshed Successfully",
-    };
-  }
-
-  @Post("/revoke-session")
-  async revokeUserSession(
-    @Request() req: AuthenticatedRequest,
-    @Body() body: { userId: string }
-  ) {
-    if (!req.user) {
-      throw new ApiError(401, "Unauthorized");
-    }
-
-    await new AuthService().revokeUserSession(body.userId);
-    return {
-      success: true,
-      message: "User session revoked successfully",
     };
   }
 

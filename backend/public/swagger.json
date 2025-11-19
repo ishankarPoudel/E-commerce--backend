@@ -72,6 +72,9 @@
 					"tokenVersion": {
 						"type": "number",
 						"format": "double"
+					},
+					"isBanned": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -92,7 +95,8 @@
 					"emailVerificationToken",
 					"emailVerificationTokenExpiresAt",
 					"refreshToken",
-					"tokenVersion"
+					"tokenVersion",
+					"isBanned"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2725,58 +2729,6 @@
 				"parameters": []
 			}
 		},
-		"/auth/revoke-session": {
-			"post": {
-				"operationId": "RevokeUserSession",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"message",
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Auth"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"userId": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"userId"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/auth/google": {
 			"get": {
 				"operationId": "GoogleAuth",
@@ -2805,6 +2757,174 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/auth/admin/revoke-session": {
+			"post": {
+				"operationId": "RevokeUserSession",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"forceLogout": {
+											"type": "boolean"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"forceLogout",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"userId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/admin/ban-user": {
+			"post": {
+				"operationId": "BanUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"forceLogout": {
+											"type": "boolean"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"forceLogout",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"userId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/admin/unban-user": {
+			"post": {
+				"operationId": "UnbanUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"forceLogout": {
+											"type": "boolean"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"forceLogout",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"userId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		}
 	},
