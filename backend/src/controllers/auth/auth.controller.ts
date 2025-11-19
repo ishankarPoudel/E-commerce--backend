@@ -26,6 +26,7 @@ import { TokensService } from "../../services/tokens/tokens.service";
 import rateLimit from "express-rate-limit";
 import { LoginValidator } from "../../validators/auth/login.validator";
 import AppDataSource from "../../config/data-source/data-source";
+import { DeviceInfoEntity } from "../../entities/user/deviceInfo/user.deveiceInfo.entity";
 
 export interface UserResponseData {
   email: string;
@@ -233,7 +234,6 @@ export class AuthController extends Controller {
         async (err: Error, user: any, info: any) => {
           try {
             if (err || !user) {
-              // Set redirect header using TSOA's method
               this.setHeader(
                 "Location",
                 `${process.env.FRONTEND_BASE_URL}/auth/login?error=oauth_failed`
@@ -242,16 +242,31 @@ export class AuthController extends Controller {
               return resolve();
             }
 
+            //Capture device info for OAuth users too!
+            const userAgent = req.headers["user-agent"] || "";
+            const ip =
+              req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+            // Update user with device info
+            const userRepo = AppDataSource.getRepository(UserEntity);
+            user.deviceInfo = {
+              device: this.getDeviceType(userAgent),
+              browser: this.getBrowser(userAgent),
+              os: this.getOS(userAgent),
+              location: await this.getLocation(ip as string),
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            };
+            await userRepo.save(user);
+
             const { accessToken, refreshToken } =
               await new TokensService().generateTokens(user);
 
-            // Set cookies using TSOA's setHeader
             this.setHeader("Set-Cookie", [
               `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
               `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
             ]);
 
-            // Set redirect header using TSOA's method
             this.setHeader(
               "Location",
               `${process.env.FRONTEND_BASE_URL}/auth/login?success=oauth_success`
@@ -265,5 +280,39 @@ export class AuthController extends Controller {
         }
       )(req, req.res as ExpressResponse);
     });
+  }
+
+  // Helper methods
+  private getDeviceType(userAgent: string): string {
+    if (/mobile/i.test(userAgent)) return "Mobile";
+    if (/tablet/i.test(userAgent)) return "Tablet";
+    return "Desktop";
+  }
+
+  private getBrowser(userAgent: string): string {
+    if (/chrome/i.test(userAgent)) return "Chrome";
+    if (/safari/i.test(userAgent)) return "Safari";
+    if (/firefox/i.test(userAgent)) return "Firefox";
+    if (/edge/i.test(userAgent)) return "Edge";
+    return "Unknown";
+  }
+
+  private getOS(userAgent: string): string {
+    if (/windows/i.test(userAgent)) return "Windows";
+    if (/mac/i.test(userAgent)) return "macOS";
+    if (/linux/i.test(userAgent)) return "Linux";
+    if (/android/i.test(userAgent)) return "Android";
+    if (/ios/i.test(userAgent)) return "iOS";
+    return "Unknown";
+  }
+
+  private async getLocation(ip: string): Promise<string> {
+    try {
+      const response = await fetch(`http://ip-api.com/json/${ip}`);
+      const data = await response.json();
+      return JSON.stringify(data);
+    } catch {
+      return "{}";
+    }
   }
 }
