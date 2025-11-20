@@ -1,3 +1,4 @@
+import { Brackets } from "typeorm";
 import AppDataSource from "../../config/data-source/data-source";
 import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
@@ -20,7 +21,7 @@ export class OrderService {
   async getAllOrders(userId: string) {
     const orders = await this.orderRepo.find({
       where: { user: { id: userId } },
-      relations: ["items", "items.bag", "items.bag.bagImages"],
+      relations: ["items", "items.bag", "items.bag.images"],
       order: { createdAt: "DESC" },
     });
 
@@ -40,7 +41,7 @@ export class OrderService {
             id: it.bag.id,
             name: it.bag.name,
             price: it.bag.price,
-            images: it.bag.bagImages?.map((img) => ({
+            images: it.bag.images?.map((img) => ({
               id: img.id,
               url: img.image,
             })),
@@ -50,5 +51,55 @@ export class OrderService {
     });
 
     return { orders: sanitizedOrders };
+  }
+
+  //admin: get all orders , server side pagination
+
+  async getAllOrdersForAdmin(
+    page: number = 1,
+    pageSize: number = 10,
+    search?: string,
+    sortBy: "date" | "totalAmount" | "orderStatus" | "deliveryMethod" = "date"
+  ) {
+    const qb = this.orderRepo
+      .createQueryBuilder("order")
+      .leftJoinAndSelect("order.user", "user")
+      .leftJoinAndSelect("order.items", "items")
+      .leftJoinAndSelect("items.bag", "bag");
+
+    if (search) {
+      qb.andWhere(
+        new Brackets((qb2) => {
+          qb2
+            .where("user.fullName ILIKE :search", { search: `%${search}%` })
+            .orWhere("user.email ILIKE :search", { search: `%${search}%` })
+            .orWhere("bag.name ILIKE :search", { search: `%${search}%` });
+        })
+      );
+    }
+    // Sorting logic
+    const sortMap: Record<string, string> = {
+      date: "order.createdAt",
+      totalAmount: "order.totalAmount",
+      orderStatus: "order.orderStatus",
+      deliveryMethod: "order.deliveryMethod",
+    };
+
+    qb.orderBy(sortMap[sortBy], "DESC");
+
+    // Pagination
+    if (page) {
+      qb.skip((page - 1) * pageSize).take(pageSize);
+    }
+
+    const [orders, total] = await qb.getManyAndCount();
+
+    return {
+      data: orders,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 }

@@ -463,6 +463,15 @@
 							"refunded"
 						]
 					},
+					"orderStatus": {
+						"type": "string",
+						"enum": [
+							"new",
+							"processed",
+							"cancelled",
+							"completed"
+						]
+					},
 					"deliveryMethod": {
 						"type": "string",
 						"enum": [
@@ -498,6 +507,7 @@
 					"deletedAt",
 					"user",
 					"status",
+					"orderStatus",
 					"deliveryMethod",
 					"currency",
 					"amount"
@@ -928,7 +938,7 @@
 				"operationId": "GetAllUsers",
 				"responses": {
 					"200": {
-						"description": "Users retrieved successfully",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1141,6 +1151,15 @@
 																	"pickup"
 																]
 															},
+															"orderStatus": {
+																"type": "string",
+																"enum": [
+																	"new",
+																	"processed",
+																	"cancelled",
+																	"completed"
+																]
+															},
 															"status": {
 																"type": "string",
 																"enum": [
@@ -1158,7 +1177,24 @@
 																	"properties": {
 																		"bag": {
 																			"properties": {
-																				"images": {},
+																				"images": {
+																					"items": {
+																						"properties": {
+																							"url": {
+																								"type": "string"
+																							},
+																							"id": {
+																								"type": "string"
+																							}
+																						},
+																						"required": [
+																							"url",
+																							"id"
+																						],
+																						"type": "object"
+																					},
+																					"type": "array"
+																				},
 																				"price": {
 																					"type": "number",
 																					"format": "double"
@@ -1209,6 +1245,7 @@
 															"amount",
 															"currency",
 															"deliveryMethod",
+															"orderStatus",
 															"status",
 															"user",
 															"items"
@@ -1246,6 +1283,116 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/order/admin/get-all-orders": {
+			"get": {
+				"operationId": "GetAllOrdersForAdmin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"totalPages": {
+													"type": "number",
+													"format": "double"
+												},
+												"pageSize": {
+													"type": "number",
+													"format": "double"
+												},
+												"page": {
+													"type": "number",
+													"format": "double"
+												},
+												"total": {
+													"type": "number",
+													"format": "double"
+												},
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/OrderEntity"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"totalPages",
+												"pageSize",
+												"page",
+												"total",
+												"data"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Order"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "pageSize",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sortBy",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"date",
+								"totalAmount",
+								"orderStatus",
+								"deliveryMethod"
+							]
+						}
+					}
+				]
 			}
 		},
 		"/media/upload": {

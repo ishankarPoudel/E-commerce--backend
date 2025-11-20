@@ -13,6 +13,9 @@ export class OrderEntity extends CommonEntity {
   @Column({ default: "pending" })
   status!: "pending" | "paid" | "failed" | "refunded";
 
+  @Column({ default: "new" })
+  orderStatus!: "new" | "processed" | "cancelled" | "completed";
+
   @Column({ default: "delivery" })
   deliveryMethod!: "delivery" | "pickup";
 

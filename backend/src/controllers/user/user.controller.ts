@@ -54,7 +54,6 @@ export class UserController extends Controller {
     };
   }
 
-  @SuccessResponse("200", "Users retrieved successfully")
   @Get("/all-users")
   async getAllUsers(
     @Request() req: AuthenticatedRequest,
