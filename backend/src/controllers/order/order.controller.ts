@@ -48,14 +48,20 @@ export class OrderController extends Controller {
     @Query() page?: number,
     @Query() pageSize?: number,
     @Query() search?: string,
-    @Query() sortBy?: "date" | "totalAmount" | "orderStatus" | "deliveryMethod"
+    @Query() sortBy?: "date" | "totalAmount" | "orderStatus" | "deliveryMethod",
+    @Query() deliveryMethod?: "delivery" | "pickup",
+    @Query() status?: "new" | "processing" | "completed" | "cancelled",
+    @Query() sortOrder?: "ASC" | "DESC"
   ) {
-    const orders = await new OrderService().getAllOrdersForAdmin(
+    const orders = await new OrderService().getAllOrdersForAdmin({
       page,
       pageSize,
       search,
-      sortBy
-    );
+      sortBy,
+      deliveryMethod,
+      status,
+      sortOrder,
+    });
     return {
       success: true,
       message: "Orders retrieved successfully",

@@ -10,8 +10,8 @@ export class OrderItemEntity extends CommonEntity {
   order!: OrderEntity;
 
   @ManyToOne(() => BagEntity, { eager: true })
-  @JoinColumn({ name: "bag_id" })
-  bag!: BagEntity;
+  @JoinColumn({ name: "product_id" })
+  product!: BagEntity;
 
   @Column({ type: "int" })
   quantity!: number;

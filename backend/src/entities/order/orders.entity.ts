@@ -8,22 +8,22 @@ import { OrderItemEntity } from "./orderItems.entity";
 export class OrderEntity extends CommonEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn({ name: "user_id" })
-  user!: UserEntity;
+  user: UserEntity;
 
   @Column({ default: "pending" })
-  status!: "pending" | "paid" | "failed" | "refunded";
+  status: "pending" | "paid" | "failed" | "refunded";
 
   @Column({ default: "new" })
-  orderStatus!: "new" | "processed" | "cancelled" | "completed";
+  orderStatus: "new" | "processed" | "cancelled" | "completed";
 
   @Column({ default: "delivery" })
-  deliveryMethod!: "delivery" | "pickup";
+  deliveryMethod: "delivery" | "pickup";
 
   @Column({ default: "USD" })
-  currency!: string;
+  currency: string;
 
   @Column({ type: "integer" })
-  amount!: number;
+  amount: number;
 
   @OneToMany(() => OrderItemEntity, (item) => item.order, { cascade: true })
   items?: OrderItemEntity[];

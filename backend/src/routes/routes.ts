@@ -193,7 +193,7 @@ const models: TsoaRoute.Models = {
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
             "order": {"ref":"OrderEntity","required":true},
-            "bag": {"ref":"BagEntity","required":true},
+            "product": {"ref":"BagEntity","required":true},
             "quantity": {"dataType":"double","required":true},
             "unitPrice": {"dataType":"double","required":true},
         },
@@ -475,6 +475,9 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 pageSize: {"in":"query","name":"pageSize","dataType":"double"},
                 search: {"in":"query","name":"search","dataType":"string"},
                 sortBy: {"in":"query","name":"sortBy","dataType":"union","subSchemas":[{"dataType":"enum","enums":["date"]},{"dataType":"enum","enums":["totalAmount"]},{"dataType":"enum","enums":["orderStatus"]},{"dataType":"enum","enums":["deliveryMethod"]}]},
+                deliveryMethod: {"in":"query","name":"deliveryMethod","dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}]},
+                status: {"in":"query","name":"status","dataType":"union","subSchemas":[{"dataType":"enum","enums":["new"]},{"dataType":"enum","enums":["processing"]},{"dataType":"enum","enums":["completed"]},{"dataType":"enum","enums":["cancelled"]}]},
+                sortOrder: {"in":"query","name":"sortOrder","dataType":"union","subSchemas":[{"dataType":"enum","enums":["ASC"]},{"dataType":"enum","enums":["DESC"]}]},
         };
         app.get('/order/admin/get-all-orders',
             ...(fetchMiddlewares<RequestHandler>(OrderController)),

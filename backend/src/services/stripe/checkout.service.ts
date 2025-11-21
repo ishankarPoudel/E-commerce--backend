@@ -20,8 +20,8 @@ export class CheckOutService {
         where: { user: { id: userId } },
         relations: [
           "cartItems",
-          "cartItems.bag",
-          "cartItems.bag.bagImages",
+          "cartItems.product",
+          "cartItems.product.images",
           "user",
         ],
       });
@@ -29,8 +29,8 @@ export class CheckOutService {
         throw new ApiError(400, "Cart is empty");
 
       const amount = cart.cartItems.reduce((sum, ci) => {
-        if (!ci.bag) return sum;
-        return sum + Math.round(Number(ci.bag.price) * 100) * ci.quantity;
+        if (!ci.product) return sum;
+        return sum + Math.round(Number(ci.product.price) * 100) * ci.quantity;
       }, 0);
       if (amount <= 0) throw new ApiError(400, "Invalid cart amount");
 
@@ -41,11 +41,11 @@ export class CheckOutService {
         currency: "USD",
         deliveryMethod,
         itemsSnapShot: cart.cartItems.map((ci) => ({
-          bagId: ci.bag?.id,
-          name: ci.bag?.name,
-          price: ci.bag?.price,
+          bagId: ci.product?.id,
+          name: ci.product?.name,
+          price: ci.product?.price,
           quantity: ci.quantity,
-          image: ci.bag?.bagImages?.[0]?.image || null,
+          image: ci.product?.images?.[0]?.image || null,
         })),
       });
       await orderRepo.save(order);

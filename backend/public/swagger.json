@@ -536,7 +536,7 @@
 					"order": {
 						"$ref": "#/components/schemas/OrderEntity"
 					},
-					"bag": {
+					"product": {
 						"$ref": "#/components/schemas/BagEntity"
 					},
 					"quantity": {
@@ -554,7 +554,7 @@
 					"updatedAt",
 					"deletedAt",
 					"order",
-					"bag",
+					"product",
 					"quantity",
 					"unitPrice"
 				],
@@ -1175,7 +1175,7 @@
 															"items": {
 																"items": {
 																	"properties": {
-																		"bag": {
+																		"product": {
 																			"properties": {
 																				"images": {
 																					"items": {
@@ -1227,7 +1227,7 @@
 																		}
 																	},
 																	"required": [
-																		"bag",
+																		"product",
 																		"unitPrice",
 																		"quantity",
 																		"id"
@@ -1389,6 +1389,44 @@
 								"totalAmount",
 								"orderStatus",
 								"deliveryMethod"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "deliveryMethod",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"delivery",
+								"pickup"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"new",
+								"processing",
+								"completed",
+								"cancelled"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "sortOrder",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"ASC",
+								"DESC"
 							]
 						}
 					}

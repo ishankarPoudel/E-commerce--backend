@@ -9,7 +9,7 @@ export class OrderService {
   async getOrderById(userId: string, orderId: string) {
     const order = await this.orderRepo.findOne({
       where: { id: orderId, user: { id: userId } },
-      relations: ["items", "items.bag", "items.bag.bagImages"],
+      relations: ["items", "items.product", "items.product.images"],
     });
     if (!order) {
       throw new ApiError(400, "Order not found");
@@ -37,11 +37,11 @@ export class OrderService {
           id: it.id,
           quantity: it.quantity,
           unitPrice: it.unitPrice,
-          bag: {
-            id: it.bag.id,
-            name: it.bag.name,
-            price: it.bag.price,
-            images: it.bag.images?.map((img) => ({
+          product: {
+            id: it.product.id,
+            name: it.product.name,
+            price: it.product.price,
+            images: it.product.images?.map((img) => ({
               id: img.id,
               url: img.image,
             })),
@@ -55,17 +55,28 @@ export class OrderService {
 
   //admin: get all orders , server side pagination
 
-  async getAllOrdersForAdmin(
-    page: number = 1,
-    pageSize: number = 10,
-    search?: string,
-    sortBy: "date" | "totalAmount" | "orderStatus" | "deliveryMethod" = "date"
-  ) {
+  async getAllOrdersForAdmin({
+    page = 1,
+    pageSize = 10,
+    search,
+    deliveryMethod,
+    status,
+    sortBy = "date",
+    sortOrder = "DESC",
+  }: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    deliveryMethod?: "delivery" | "pickup";
+    status?: "new" | "processing" | "completed" | "cancelled";
+    sortBy?: "date" | "totalAmount" | "orderStatus" | "deliveryMethod";
+    sortOrder?: "ASC" | "DESC";
+  }) {
     const qb = this.orderRepo
       .createQueryBuilder("order")
       .leftJoinAndSelect("order.user", "user")
       .leftJoinAndSelect("order.items", "items")
-      .leftJoinAndSelect("items.bag", "bag");
+      .leftJoinAndSelect("items.product", "product");
 
     if (search) {
       qb.andWhere(
@@ -73,24 +84,33 @@ export class OrderService {
           qb2
             .where("user.fullName ILIKE :search", { search: `%${search}%` })
             .orWhere("user.email ILIKE :search", { search: `%${search}%` })
-            .orWhere("bag.name ILIKE :search", { search: `%${search}%` });
+            .orWhere("product.name ILIKE :search", { search: `%${search}%` });
         })
       );
     }
-    // Sorting logic
-    const sortMap: Record<string, string> = {
+
+    if (deliveryMethod) {
+      qb.andWhere("order.deliveryMethod = :deliveryMethod", { deliveryMethod });
+    }
+
+    if (status) {
+      qb.andWhere("order.orderStatus = :status", { status });
+    }
+
+    const sortMap = {
       date: "order.createdAt",
       totalAmount: "order.totalAmount",
       orderStatus: "order.orderStatus",
       deliveryMethod: "order.deliveryMethod",
     };
 
-    qb.orderBy(sortMap[sortBy], "DESC");
-
-    // Pagination
-    if (page) {
-      qb.skip((page - 1) * pageSize).take(pageSize);
+    if (sortBy && sortMap[sortBy]) {
+      qb.orderBy(sortMap[sortBy], sortOrder);
+    } else {
+      qb.orderBy("order.createdAt", "DESC"); // default
     }
+
+    qb.skip((page - 1) * pageSize).take(pageSize);
 
     const [orders, total] = await qb.getManyAndCount();
 

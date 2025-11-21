@@ -32,7 +32,7 @@ export class CartService {
         let existingItem = await cartItemRepo.findOne({
           where: {
             cart: { id: cart.id },
-            bag: { id: bagId },
+            product: { id: bagId },
           },
         });
 
@@ -42,7 +42,7 @@ export class CartService {
         } else {
           const newItem = cartItemRepo.create({
             cart: { id: cart.id },
-            bag: { id: bagId },
+            product: { id: bagId },
             quantity,
           });
           await cartItemRepo.save(newItem);
@@ -51,7 +51,11 @@ export class CartService {
         // STEP 3: Reload the full cart to return the final state
         return await cartRepo.findOne({
           where: { id: cart.id },
-          relations: ["cartItems", "cartItems.bag"],
+          relations: [
+            "cartItems",
+            "cartItems.product",
+            "cartItems.product.images",
+          ],
         });
       }
     );
@@ -98,7 +102,7 @@ export class CartService {
       where: {
         user: { id: userId },
       },
-      relations: ["cartItems", "cartItems.bag", "cartItems.bag.bagImages"],
+      relations: ["cartItems", "cartItems.product", "cartItems.product.images"],
     });
     if (!cart) {
       return { cart: { cartItems: [] } };
