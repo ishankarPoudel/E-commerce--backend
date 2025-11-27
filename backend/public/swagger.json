@@ -467,7 +467,7 @@
 						"type": "string",
 						"enum": [
 							"new",
-							"processed",
+							"processing",
 							"cancelled",
 							"completed"
 						]
@@ -1155,7 +1155,7 @@
 																"type": "string",
 																"enum": [
 																	"new",
-																	"processed",
+																	"processing",
 																	"cancelled",
 																	"completed"
 																]
@@ -1431,6 +1431,119 @@
 						}
 					}
 				]
+			}
+		},
+		"/order/admin/get-order-details/{orderId}": {
+			"get": {
+				"operationId": "GetOrderDetailsByOrderIdForAdmin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/OrderEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Order"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "orderId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/order/admin/update-order-status": {
+			"post": {
+				"operationId": "UpdateOrderStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/OrderEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Order"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"status": {
+										"type": "string",
+										"enum": [
+											"new",
+											"processing",
+											"completed",
+											"cancelled"
+										]
+									},
+									"orderId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"status",
+									"orderId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/media/upload": {

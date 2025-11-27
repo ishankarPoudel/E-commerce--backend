@@ -68,4 +68,37 @@ export class OrderController extends Controller {
       data: orders,
     };
   }
+
+  //admin: get order details by orderID
+  @Get("/admin/get-order-details/:orderId")
+  async getOrderDetailsByOrderIdForAdmin(@Query() orderId: string) {
+    const order = await new OrderService().getOrderDetailsByOrderIdForAdmin(
+      orderId
+    );
+    return {
+      success: true,
+      message: "Order details retrieved successfully",
+      data: order,
+    };
+  }
+
+  //admin: update oerder status
+  @Post("/admin/update-order-status")
+  async updateOrderStatus(
+    @Body()
+    body: {
+      orderId: string;
+      status: "new" | "processing" | "completed" | "cancelled";
+    }
+  ) {
+    const order = await new OrderService().updateOrderStatusForAdmin(
+      body.orderId,
+      body.status
+    );
+    return {
+      success: true,
+      message: "Order status updated successfully",
+      data: order,
+    };
+  }
 }

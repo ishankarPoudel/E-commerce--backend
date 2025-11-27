@@ -173,7 +173,7 @@ const models: TsoaRoute.Models = {
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
             "user": {"ref":"UserEntity","required":true},
             "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["pending"]},{"dataType":"enum","enums":["paid"]},{"dataType":"enum","enums":["failed"]},{"dataType":"enum","enums":["refunded"]}],"required":true},
-            "orderStatus": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["new"]},{"dataType":"enum","enums":["processed"]},{"dataType":"enum","enums":["cancelled"]},{"dataType":"enum","enums":["completed"]}],"required":true},
+            "orderStatus": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["new"]},{"dataType":"enum","enums":["processing"]},{"dataType":"enum","enums":["cancelled"]},{"dataType":"enum","enums":["completed"]}],"required":true},
             "deliveryMethod": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}],"required":true},
             "currency": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
@@ -495,6 +495,66 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'getAllOrdersForAdmin',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsOrderController_getOrderDetailsByOrderIdForAdmin: Record<string, TsoaRoute.ParameterSchema> = {
+                orderId: {"in":"query","name":"orderId","required":true,"dataType":"string"},
+        };
+        app.get('/order/admin/get-order-details/:orderId',
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.getOrderDetailsByOrderIdForAdmin)),
+
+            async function OrderController_getOrderDetailsByOrderIdForAdmin(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsOrderController_getOrderDetailsByOrderIdForAdmin, request, response });
+
+                const controller = new OrderController();
+
+              await templateService.apiHandler({
+                methodName: 'getOrderDetailsByOrderIdForAdmin',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsOrderController_updateOrderStatus: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"status":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["new"]},{"dataType":"enum","enums":["processing"]},{"dataType":"enum","enums":["completed"]},{"dataType":"enum","enums":["cancelled"]}],"required":true},"orderId":{"dataType":"string","required":true}}},
+        };
+        app.post('/order/admin/update-order-status',
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.updateOrderStatus)),
+
+            async function OrderController_updateOrderStatus(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsOrderController_updateOrderStatus, request, response });
+
+                const controller = new OrderController();
+
+              await templateService.apiHandler({
+                methodName: 'updateOrderStatus',
                 controller,
                 response,
                 next,

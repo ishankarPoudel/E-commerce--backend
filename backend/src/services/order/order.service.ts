@@ -2,6 +2,8 @@ import { Brackets } from "typeorm";
 import AppDataSource from "../../config/data-source/data-source";
 import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
+import Mail from "nodemailer/lib/mailer";
+import { MailService } from "../mail/mail.service";
 
 export class OrderService {
   private orderRepo = AppDataSource.getRepository(OrderEntity);
@@ -10,6 +12,18 @@ export class OrderService {
     const order = await this.orderRepo.findOne({
       where: { id: orderId, user: { id: userId } },
       relations: ["items", "items.product", "items.product.images"],
+    });
+    if (!order) {
+      throw new ApiError(400, "Order not found");
+    }
+    return order;
+  }
+
+  //get ordder details by orderId for admin
+  async getOrderDetailsByOrderIdForAdmin(orderId: string) {
+    const order = await this.orderRepo.findOne({
+      where: { id: orderId },
+      relations: ["user", "items", "items.product", "items.product.images"],
     });
     if (!order) {
       throw new ApiError(400, "Order not found");
@@ -54,7 +68,6 @@ export class OrderService {
   }
 
   //admin: get all orders , server side pagination
-
   async getAllOrdersForAdmin({
     page = 1,
     pageSize = 10,
@@ -121,5 +134,31 @@ export class OrderService {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+  }
+
+  //admin: update order status
+  async updateOrderStatusForAdmin(
+    orderId: string,
+    newStatus: "new" | "processing" | "completed" | "cancelled"
+  ) {
+    const order = await this.orderRepo.findOne({
+      where: { id: orderId },
+      relations: ["user"],
+    });
+    if (!order) {
+      throw new ApiError(400, "Order not found");
+    }
+    if (!order.user)
+      throw new ApiError(500, "User information not found for the order");
+    order.orderStatus = newStatus;
+
+    await this.orderRepo.save(order);
+    console.log("order.user.email", order.user.email);
+    await new MailService().sendOrderStatusEmail(
+      order.user.email,
+      order.id,
+      newStatus
+    );
+    return order;
   }
 }

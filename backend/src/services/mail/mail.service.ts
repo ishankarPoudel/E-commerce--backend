@@ -297,4 +297,103 @@ export class MailService {
       console.error("Error sending email:", err);
     }
   }
+
+  async sendOrderStatusEmail(
+    email: string,
+    orderId: string,
+    newStatus: string
+  ) {
+    try {
+      await mailTransport.sendMail({
+        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "Order Status Update",
+        html: `
+  <div style="font-family: Arial, sans-serif; background-color: #f5f6f8; padding: 40px 0;">
+    <div style="max-width: 550px; margin: auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
+
+      <!-- Header -->
+      <div style="background: #111827; padding: 20px 30px;">
+        <h1 style="color: white; margin: 0; font-size: 20px; font-weight: 600;">
+          Avisekh Bag Pashal
+        </h1>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 28px 30px; color: #333;">
+        <p style="font-size: 15px;">
+          Hello,
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.6;">
+          We wanted to let you know that the status of your order 
+          <strong>#${orderId}</strong> has been updated.
+        </p>
+
+        <!-- Status Badge -->
+        <div style="
+          margin: 18px 0;
+          display: inline-block;
+          background: #eef2ff;
+          color: #4338ca;
+          padding: 6px 14px;
+          font-size: 13px;
+          border-radius: 8px;
+          font-weight: 600;
+          border: 1px solid #d8dafe;
+        ">
+          ${newStatus.toUpperCase()}
+        </div>
+
+        <p style="font-size: 15px; line-height: 1.6; margin-top: 12px;">
+          We will continue to keep you informed as your order progresses.
+        </p>
+
+        <!-- Divider -->
+        <div style="height: 1px; background: #e5e7eb; margin: 22px 0;"></div>
+
+        <p style="font-size: 15px; line-height: 1.6;">
+          If you have any questions or need assistance, feel free to contact our support team anytime.
+        </p>
+
+        <!-- CTA Button -->
+        <a
+          href="#"
+          style="
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 18px;
+            background: #111827;
+            color: white;
+            font-size: 14px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+          "
+        >
+          Contact Support
+        </a>
+
+        <p style="font-size: 14px; margin-top: 24px; color: #555;">
+          Thank you for shopping with <strong>Avisekh Bag Pashal</strong>.
+        </p>
+
+        <p style="font-size: 14px; color: #555; margin-top: 4px;">
+          We appreciate your trust in our products.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #f3f4f6; padding: 18px 30px; text-align: center; color: #777; font-size: 12px;">
+        © ${new Date().getFullYear()} Avisekh Bag Pashal. All rights reserved.
+      </div>
+
+    </div>
+  </div>
+`,
+      });
+    } catch (err) {
+      console.error("Error sending email:", err);
+    }
+  }
 }
