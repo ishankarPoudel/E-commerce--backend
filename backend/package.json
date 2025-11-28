@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start:dev": "tsoa spec-and-routes && nodemon --transpile-only src/index.ts"
+    "start:dev": "tsoa spec-and-routes && nodemon --transpile-only src/index.ts",
+    "seed": "ts-node --transpile-only src/config/seed/seed.ts"
   },
   "keywords": [],
   "author": "",
