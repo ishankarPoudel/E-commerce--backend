@@ -566,6 +566,36 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsOrderController_getAllOrdersOfUserForAdmin: Record<string, TsoaRoute.ParameterSchema> = {
+                userId: {"in":"query","name":"userId","required":true,"dataType":"string"},
+        };
+        app.get('/order/admin/get-user-orders/:userId',
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.getAllOrdersOfUserForAdmin)),
+
+            async function OrderController_getAllOrdersOfUserForAdmin(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsOrderController_getAllOrdersOfUserForAdmin, request, response });
+
+                const controller = new OrderController();
+
+              await templateService.apiHandler({
+                methodName: 'getAllOrdersOfUserForAdmin',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsMediaController_uploadMedia: Record<string, TsoaRoute.ParameterSchema> = {
                 bagId: {"in":"formData","name":"bagId","required":true,"dataType":"string"},
                 file: {"in":"formData","name":"file","required":true,"dataType":"file"},

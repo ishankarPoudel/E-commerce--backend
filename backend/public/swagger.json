@@ -1546,6 +1546,64 @@
 				}
 			}
 		},
+		"/order/admin/get-user-orders/{userId}": {
+			"get": {
+				"operationId": "GetAllOrdersOfUserForAdmin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"orders": {
+													"items": {
+														"$ref": "#/components/schemas/OrderEntity"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"orders"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Order"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/media/upload": {
 			"post": {
 				"operationId": "UploadMedia",

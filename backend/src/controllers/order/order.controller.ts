@@ -101,4 +101,15 @@ export class OrderController extends Controller {
       data: order,
     };
   }
+
+  //admin: get all orders of a specific user
+  @Get("/admin/get-user-orders/:userId")
+  async getAllOrdersOfUserForAdmin(@Query() userId: string) {
+    const orders = await new OrderService().getAllOrdersForUserAdmin(userId);
+    return {
+      success: true,
+      message: "User orders retrieved successfully",
+      data: orders,
+    };
+  }
 }

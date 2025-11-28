@@ -161,4 +161,17 @@ export class OrderService {
     );
     return order;
   }
+
+  //admin: get all orders for a specific user
+  async getAllOrdersForUserAdmin(userId: string) {
+    const orders = await this.orderRepo.find({
+      where: { user: { id: userId } },
+      relations: ["items", "items.product", "items.product.images", "user"],
+      order: { createdAt: "DESC" },
+    });
+    if (!orders.length) {
+      return { orders: [] };
+    }
+    return { orders };
+  }
 }
