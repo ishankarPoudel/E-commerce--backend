@@ -87,10 +87,10 @@ export class BagService {
 
   async getBagById(id: string) {
     const bag = await AppDataSource.getRepository(BagEntity)
-      .createQueryBuilder("bags")
-      .innerJoinAndSelect("bags.categories", "categories")
-      .innerJoinAndSelect("bags.images", "images")
-      .where("bags.id = :id", { id })
+      .createQueryBuilder("product")
+      .innerJoinAndSelect("product.categories", "categories")
+      .innerJoinAndSelect("product.images", "images")
+      .where("product.id = :id", { id })
       .getOne();
     if (!bag) {
       throw new ApiError(404, "Bag not found.");

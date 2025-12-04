@@ -45,10 +45,10 @@ export class UserEntity extends CommonEntity {
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders!: OrderEntity[];
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
   emailVerificationToken: string;
 
-  @Column({ type: "timestamp", nullable: true, select: false })
+  @Column({ type: "timestamp", nullable: true })
   emailVerificationTokenExpiresAt: Date | null;
 
   @Column({ nullable: true, type: "varchar", length: 255 })

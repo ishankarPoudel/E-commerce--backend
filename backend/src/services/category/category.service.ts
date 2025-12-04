@@ -49,8 +49,8 @@ export class CategoryService {
   async getCategoriesWithBags(page: number, limit: number) {
     const [categories, total] = await this.categoryRepo
       .createQueryBuilder("category")
-      .innerJoinAndSelect("category.bags", "bag")
-      .leftJoinAndSelect("bag.images", "images")
+      .innerJoinAndSelect("category.bags", "product")
+      .leftJoinAndSelect("product.images", "images")
       .skip((page - 1) * limit)
       .take(limit)
       .orderBy("category.createdAt", "DESC")

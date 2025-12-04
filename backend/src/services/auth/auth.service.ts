@@ -59,18 +59,28 @@ export class AuthService {
   async verifyOtp({ email, otp }: { email: string; otp: string }) {
     const user = await this.userRepo.findOne({
       where: {
-        emailVerificationToken: otp,
         email: email,
-        emailVerificationTokenExpiresAt: MoreThan(new Date()),
       },
     });
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    console.log("Stored OTP:", user.emailVerificationToken);
+    console.log("Provided OTP:", otp);
+    console.log("OTP types:", typeof user.emailVerificationToken, typeof otp);
+    console.log("Expiry:", user.emailVerificationTokenExpiresAt);
+    console.log("Current time:", new Date());
+    //check if otp matches
+    if (!user.emailVerificationToken || user.emailVerificationToken !== otp) {
+      throw new ApiError(400, "Invalid OTP");
+    }
+    //check if otp is expired
     if (
-      !user ||
-      user.emailVerificationToken !== otp ||
       !user.emailVerificationTokenExpiresAt ||
       user.emailVerificationTokenExpiresAt < new Date()
     ) {
-      throw new ApiError(400, "Invalid or expired OTP");
+      throw new ApiError(400, "OTP has expired.Please request a new one.");
     }
 
     user.isEmailVerified = true;

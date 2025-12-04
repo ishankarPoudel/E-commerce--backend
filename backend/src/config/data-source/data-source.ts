@@ -12,6 +12,8 @@ const AppDataSource = new DataSource({
   logging: false,
   entities: ["src/entities/**/*.ts"],
   migrations: ["../../migrations/**/*.{ts,js}"],
+  schema: "public",
+  migrationsRun: false,
   subscribers: [],
 });
 export default AppDataSource;
