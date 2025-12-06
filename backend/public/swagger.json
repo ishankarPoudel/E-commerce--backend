@@ -419,6 +419,12 @@
 					"quantity": {
 						"type": "number",
 						"format": "double"
+					},
+					"color": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -428,7 +434,9 @@
 					"deletedAt",
 					"cart",
 					"product",
-					"quantity"
+					"quantity",
+					"color",
+					"size"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -498,7 +506,8 @@
 					"stripeChargeId": {
 						"type": "string"
 					},
-					"itemsSnapShot": {}
+					"itemsSnapShot": {},
+					"shippingAddress": {}
 				},
 				"required": [
 					"id",
@@ -581,6 +590,12 @@
 					"quantity": {
 						"type": "number",
 						"format": "double"
+					},
+					"color": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1136,6 +1151,7 @@
 															"id": {
 																"type": "string"
 															},
+															"shippingAddress": {},
 															"itemsSnapShot": {},
 															"amount": {
 																"type": "number",

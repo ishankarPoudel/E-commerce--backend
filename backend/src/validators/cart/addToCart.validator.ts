@@ -1,4 +1,11 @@
-import { IsInt, IsNotEmpty, IsNumber, Min } from "class-validator";
+import {
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from "class-validator";
 
 export class AddToCartValidator {
   @IsNotEmpty()
@@ -9,4 +16,10 @@ export class AddToCartValidator {
   @Min(1, { message: "Quantity must be at least 1" })
   @IsInt({ message: "Quantity must be a positive number" })
   quantity: number;
+
+  @IsOptional()
+  color?: string;
+
+  @IsOptional()
+  size?: string;
 }

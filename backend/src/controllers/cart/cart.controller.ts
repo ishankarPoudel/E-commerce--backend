@@ -33,7 +33,9 @@ export class CartController extends Controller {
     const cartService = await new CartService().addToCart(
       userId,
       cart.bagId,
-      cart.quantity
+      cart.quantity,
+      cart.color,
+      cart.size
     );
     return {
       message: "Item added to cart successfully",

@@ -7,7 +7,13 @@ export class CartService {
   private cartRepo = AppDataSource.getRepository(CartEntity);
   private cartItemRepo = AppDataSource.getRepository(CartItemEntity);
 
-  async addToCart(userId: string, bagId: string, quantity: number) {
+  async addToCart(
+    userId: string,
+    bagId: string,
+    quantity: number,
+    color?: string,
+    size?: string
+  ) {
     if (!quantity || quantity <= 0) throw new ApiError(400, "Invalid quantity");
 
     return await AppDataSource.transaction(
@@ -41,10 +47,12 @@ export class CartService {
           await cartItemRepo.save(existingItem);
         } else {
           const newItem = cartItemRepo.create({
-            cart: { id: cart.id },
-            product: { id: bagId },
-            quantity,
+            quantity: quantity ? quantity : 1,
+            color: color ? color : undefined,
+            size: size ? size : undefined,
           });
+          newItem.cart = cart;
+          newItem.product = { id: bagId } as any;
           await cartItemRepo.save(newItem);
         }
 

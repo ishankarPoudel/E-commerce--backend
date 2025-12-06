@@ -17,4 +17,10 @@ export class CartItemEntity extends CommonEntity {
 
   @Column({ type: "int" })
   quantity: number;
+
+  @Column({ type: "varchar", nullable: true })
+  color: string;
+
+  @Column({ type: "varchar", nullable: true })
+  size: string;
 }

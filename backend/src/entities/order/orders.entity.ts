@@ -36,4 +36,7 @@ export class OrderEntity extends CommonEntity {
 
   @Column({ type: "jsonb", nullable: true })
   itemsSnapShot?: unknown;
+
+  @Column({ type: "jsonb", nullable: false })
+  shippingAddress?: unknown;
 }
