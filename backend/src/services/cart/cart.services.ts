@@ -110,7 +110,7 @@ export class CartService {
       where: {
         user: { id: userId },
       },
-      relations: ["cartItems", "cartItems.product", "cartItems.product.images"],
+      relations: ["cartItems", "cartItems.product.images"],
     });
     if (!cart) {
       return { cart: { cartItems: [] } };

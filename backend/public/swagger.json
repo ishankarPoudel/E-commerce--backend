@@ -507,7 +507,9 @@
 						"type": "string"
 					},
 					"itemsSnapShot": {},
-					"shippingAddress": {}
+					"shippingAddress": {
+						"type": "string"
+					}
 				},
 				"required": [
 					"id",
@@ -1151,7 +1153,9 @@
 															"id": {
 																"type": "string"
 															},
-															"shippingAddress": {},
+															"shippingAddress": {
+																"type": "string"
+															},
 															"itemsSnapShot": {},
 															"amount": {
 																"type": "number",
@@ -1848,6 +1852,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"shippingAddress": {
+										"type": "string"
+									},
 									"deliveryMethod": {
 										"type": "string",
 										"enum": [

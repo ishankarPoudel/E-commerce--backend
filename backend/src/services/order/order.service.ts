@@ -2,7 +2,6 @@ import { Brackets } from "typeorm";
 import AppDataSource from "../../config/data-source/data-source";
 import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
-import Mail from "nodemailer/lib/mailer";
 import { MailService } from "../mail/mail.service";
 
 export class OrderService {

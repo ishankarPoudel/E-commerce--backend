@@ -183,7 +183,7 @@ const models: TsoaRoute.Models = {
             "stripePaymentIntentId": {"dataType":"string"},
             "stripeChargeId": {"dataType":"string"},
             "itemsSnapShot": {"dataType":"any"},
-            "shippingAddress": {"dataType":"any"},
+            "shippingAddress": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -671,7 +671,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCheckOutController_createPaymentIntent: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"deliveryMethod":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}]}}},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"shippingAddress":{"dataType":"string"},"deliveryMethod":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}]}}},
         };
         app.post('/checkout/create-payment-intent',
             ...(fetchMiddlewares<RequestHandler>(CheckOutController)),

@@ -17,14 +17,22 @@ export class CheckOutController extends Controller {
   @Post("/create-payment-intent")
   async createPaymentIntent(
     @Request() req: AuthenticatedRequest,
-    @Body() body: { deliveryMethod?: "delivery" | "pickup" }
+    @Body()
+    body: { deliveryMethod?: "delivery" | "pickup"; shippingAddress?: string }
   ) {
     const userId = req.user?.id;
-
     if (!userId) throw new ApiError(401, "Unauthorized");
+
+    if (body.deliveryMethod === "delivery" && !body.shippingAddress) {
+      throw new ApiError(
+        400,
+        "Shipping address is required for delivery method"
+      );
+    }
     const checkoutIntent = await new CheckOutService().createPaymentIntent(
       userId,
-      body.deliveryMethod
+      body.deliveryMethod,
+      body.shippingAddress
     );
     return {
       success: true,

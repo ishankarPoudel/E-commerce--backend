@@ -8,7 +8,8 @@ import { MailService } from "../mail/mail.service";
 export class CheckOutService {
   async createPaymentIntent(
     userId: string,
-    deliveryMethod: "delivery" | "pickup" = "delivery"
+    deliveryMethod: "delivery" | "pickup" = "delivery",
+    shippingAddress?: string
   ) {
     const mailer = new MailService();
 
@@ -40,6 +41,7 @@ export class CheckOutService {
         amount,
         currency: "USD",
         deliveryMethod,
+        shippingAddress,
         itemsSnapShot: cart.cartItems.map((ci) => ({
           bagId: ci.product?.id,
           name: ci.product?.name,
