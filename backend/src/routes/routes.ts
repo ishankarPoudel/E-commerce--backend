@@ -199,6 +199,8 @@ const models: TsoaRoute.Models = {
             "product": {"ref":"BagEntity","required":true},
             "quantity": {"dataType":"double","required":true},
             "unitPrice": {"dataType":"double","required":true},
+            "color": {"dataType":"string","required":true},
+            "size": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },

@@ -150,7 +150,7 @@ export class BagService {
 
     return bagRepo
       .createQueryBuilder("bag")
-      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .leftJoinAndSelect("bag.images", "images")
       .leftJoinAndSelect("bag.categories", "categories")
       .where(
         `
@@ -184,7 +184,7 @@ export class BagService {
       .innerJoin("bag.categories", "category", "category.id = :categoryId", {
         categoryId,
       })
-      .leftJoinAndSelect("bag.bagImages", "bagImages")
+      .leftJoinAndSelect("bag.images", "images")
       .leftJoinAndSelect("bag.categories", "categories")
       .getMany();
     if (bags.length === 0) {

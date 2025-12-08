@@ -557,6 +557,12 @@
 					"unitPrice": {
 						"type": "number",
 						"format": "double"
+					},
+					"color": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -567,7 +573,9 @@
 					"order",
 					"product",
 					"quantity",
-					"unitPrice"
+					"unitPrice",
+					"color",
+					"size"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1153,9 +1161,6 @@
 															"id": {
 																"type": "string"
 															},
-															"shippingAddress": {
-																"type": "string"
-															},
 															"itemsSnapShot": {},
 															"amount": {
 																"type": "number",
@@ -1234,6 +1239,12 @@
 																			],
 																			"type": "object"
 																		},
+																		"size": {
+																			"type": "string"
+																		},
+																		"color": {
+																			"type": "string"
+																		},
 																		"unitPrice": {
 																			"type": "number",
 																			"format": "double"
@@ -1248,6 +1259,8 @@
 																	},
 																	"required": [
 																		"product",
+																		"size",
+																		"color",
 																		"unitPrice",
 																		"quantity",
 																		"id"
@@ -1255,6 +1268,9 @@
 																	"type": "object"
 																},
 																"type": "array"
+															},
+															"shippingAddress": {
+																"type": "string"
 															}
 														},
 														"required": [
@@ -1268,7 +1284,8 @@
 															"orderStatus",
 															"status",
 															"user",
-															"items"
+															"items",
+															"shippingAddress"
 														],
 														"type": "object"
 													},

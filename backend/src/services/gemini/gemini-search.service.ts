@@ -64,7 +64,7 @@ User Request: "${userMessage}"`;
     const queryBuilder = this.bagRepository
       .createQueryBuilder("bag")
       .leftJoinAndSelect("bag.categories", "category")
-      .leftJoinAndSelect("bag.bagImages", "bagImages");
+      .leftJoinAndSelect("bag.images", "images");
 
     let hasConditions = false;
 
@@ -114,7 +114,7 @@ User Request: "${userMessage}"`;
     return this.bagRepository.find({
       take: limit,
       order: { price: "DESC" },
-      relations: ["categories", "bagImages"],
+      relations: ["categories", "images"],
     });
   }
 
@@ -131,7 +131,7 @@ User Request: "${userMessage}"`;
     return this.bagRepository.find({
       take: 6,
       order: { createdAt: "DESC" },
-      relations: ["categories", "bagImages"],
+      relations: ["categories", "images"],
     });
   }
 
@@ -233,7 +233,7 @@ Provide a helpful, friendly response (max 80 words). If they're asking about pro
         intent,
       };
     } catch (error) {
-      console.error("❌ Error in handleSearchQuery:", error);
+      console.error("Error in handleSearchQuery:", error);
       return {
         reply:
           "I apologize, but I encountered an error. Could you please try rephrasing your question?",

@@ -59,11 +59,7 @@ export class CartService {
         // STEP 3: Reload the full cart to return the final state
         return await cartRepo.findOne({
           where: { id: cart.id },
-          relations: [
-            "cartItems",
-            "cartItems.product",
-            "cartItems.product.images",
-          ],
+          relations: ["cartItems.product", "cartItems.product.images"],
         });
       }
     );

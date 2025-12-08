@@ -34,7 +34,12 @@ export class OrderService {
   async getAllOrders(userId: string) {
     const orders = await this.orderRepo.find({
       where: { user: { id: userId } },
-      relations: ["items", "items.bag", "items.bag.images"],
+      relations: [
+        "items",
+        "items.product",
+        "items.product.images",
+        "items.order",
+      ],
       order: { createdAt: "DESC" },
     });
 
@@ -46,10 +51,13 @@ export class OrderService {
 
       return {
         ...rest,
+        shippingAddress: order.shippingAddress,
         items: items?.map((it) => ({
           id: it.id,
           quantity: it.quantity,
           unitPrice: it.unitPrice,
+          color: it.color,
+          size: it.size,
           product: {
             id: it.product.id,
             name: it.product.name,

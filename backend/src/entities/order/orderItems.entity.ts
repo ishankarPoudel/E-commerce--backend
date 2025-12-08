@@ -18,4 +18,10 @@ export class OrderItemEntity extends CommonEntity {
 
   @Column({ type: "int" })
   unitPrice!: number;
+
+  @Column({ type: "text", nullable: true })
+  color!: string;
+
+  @Column({ type: "text", nullable: true })
+  size!: string;
 }

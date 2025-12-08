@@ -47,6 +47,8 @@ export class CheckOutService {
           name: ci.product?.name,
           price: ci.product?.price,
           quantity: ci.quantity,
+          color: ci.color,
+          size: ci.size,
           image: ci.product?.images?.[0]?.image || null,
         })),
       });
