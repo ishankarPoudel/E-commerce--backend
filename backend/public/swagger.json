@@ -1764,6 +1764,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"sessionId": {
+										"type": "string"
+									},
 									"userMessage": {
 										"type": "string"
 									}

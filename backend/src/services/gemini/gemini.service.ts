@@ -1,15 +1,37 @@
-import { genAI } from "../../config/gemini/gemini.config";
+import { genAI, conversationManager } from "../../config/gemini/gemini.config";
 import { BagEntity } from "../../entities/bag/bag.entity";
 
 export class GeminiService {
-  async generateText(prompt: string): Promise<string> {
+  //  Generate text with conversation history
+  async generateText(prompt: string, sessionId?: string): Promise<string> {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash-lite",
+      });
 
-      const text = response.text();
-      return text;
+      if (sessionId) {
+        // Use chat session with history
+        const history = conversationManager.getHistory(sessionId);
+        const chat = model.startChat({
+          history: history.map((h) => ({
+            role: h.role,
+            parts: [{ text: h.parts }],
+          })),
+        });
+
+        const result = await chat.sendMessage(prompt);
+        const response = result.response.text();
+
+        // Store the conversation
+        conversationManager.addMessage(sessionId, "user", prompt);
+        conversationManager.addMessage(sessionId, "model", response);
+
+        return response;
+      } else {
+        // Single message without history
+        const result = await model.generateContent(prompt);
+        return result.response.text();
+      }
     } catch (error) {
       console.error("Error in generateText:", error);
       throw new Error("Failed to generate text from Gemini API.");
@@ -21,20 +43,21 @@ export class GeminiService {
       const jsonPrompt = `${prompt}
 
 CRITICAL: Respond with ONLY a valid JSON object.
- No markdown code blocks, no \`\`\`json, no explanations.
-  Just the raw JSON object starting with { and ending with }.`;
+No markdown code blocks, no \`\`\`json, no explanations.
+Just the raw JSON object starting with { and ending with }.`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash-lite",
+      });
       const result = await model.generateContent(jsonPrompt);
-      const response = result.response;
-      let rawText = response.text();
+      let rawText = result.response.text();
 
       if (!rawText) {
         throw new Error("Received empty response from AI.");
       }
       rawText = rawText.trim();
 
-      // Remove ```json and ``` markers i
+      // Remove ```json and ``` markers
       if (rawText.includes("```")) {
         rawText = rawText
           .replace(/```json\s*/gi, "")
@@ -48,8 +71,6 @@ CRITICAL: Respond with ONLY a valid JSON object.
         rawText = jsonMatch[0];
       }
 
-      console.log("Cleaned JSON text:", rawText);
-
       return JSON.parse(rawText);
     } catch (error) {
       console.error("Error in generateJSON:", error);
@@ -58,45 +79,76 @@ CRITICAL: Respond with ONLY a valid JSON object.
   }
 }
 
+// ✅ Enhanced summarize with bag details
 export const summarizeResults = async (
   userMessage: string,
-  bags: BagEntity[]
+  bags: BagEntity[],
+  sessionId?: string
 ): Promise<string> => {
   if (bags.length === 0) {
-    return "Seems like we ran out of stock for that bag. Please try searching for something else!";
+    return "I couldn't find any bags matching your request. Would you like me to show you our bestsellers or trending items instead? 😊";
   }
 
-  // Build a summary of the bags found
+  // ✅ Build detailed bag summary with ALL entity properties
   const bagSummary = bags
-    .slice(0, 5) // Only summarize top 5
+    .slice(0, 5)
     .map((bag) => {
       const categoryNames =
-        bag.categories?.map((c) => c.categoryName).join(", ") ||
-        "Uncategorized";
-      return `- ${bag.name} (${categoryNames}) at $${bag.price.toFixed(2)}`;
+        bag.categories?.map((c) => c.categoryName).join(", ") || "General";
+      const colors = bag.colors?.join(", ") || "Various colors";
+      const sizes = bag.sizes?.join(", ") || "Standard size";
+      const features = bag.features
+        ? Object.entries(bag.features)
+            .filter(([_, value]) => value === true)
+            .map(([key]) => key)
+            .join(", ")
+        : "No special features";
+
+      return `
+- **${bag.name}** 
+  Category: ${categoryNames}
+  Price: $${bag.price.toFixed(2)}
+  Material: ${bag.material || "Not specified"}
+  Colors: ${colors}
+  Sizes: ${sizes}
+  Weight: ${bag.weightKg}kg
+  ${bag.capacityLiters ? `Capacity: ${bag.capacityLiters}L` : ""}
+  Features: ${features}
+  ${
+    bag.description
+      ? `Description: ${bag.description.substring(0, 100)}...`
+      : ""
+  }
+      `.trim();
     })
-    .join("\n");
+    .join("\n\n");
 
-  const prompt = `You are a friendly and helpful shopping assistant.
-A user has searched for bags, and we found the following options. 
-Your task is to provide a concise and helpful summary based on their original request.
+  const prompt = `You are Emma, a friendly and knowledgeable shopping assistant at Avisekh Bag Pashal. 
+You have a warm, conversational tone and love helping customers find their perfect bag.
 
-User's original request: "${userMessage}"
+**Context of conversation:**
+User originally asked: "${userMessage}"
 
-Available bag options:
+**Available options we found:**
 ${bagSummary}
 
-Please write a short and friendly reply (max 60 words). If there are several options, suggest the top 2 or 3 best matches. 
-End with a clear call to action, like encouraging them to look at the results below.`;
+**Your task:**
+Write a natural, friendly response (max 50 words) that:
+1. Acknowledges their specific request
+2. Highlights 2-3 best matches from the list with specific details (mention colors, sizes, materials, or features)
+3. Sounds conversational and helpful (use "I found", "You might love", "Perfect for", etc.)
+4. Ends with an encouraging call-to-action
+
+Be specific about bag features and details. Don't just list bags - explain WHY they're good matches.`;
 
   try {
     const geminiService = new GeminiService();
-    const response = await geminiService.generateText(prompt);
+    const response = await geminiService.generateText(prompt, sessionId);
     return response;
   } catch (error) {
-    console.error("Error summarizing results with Gemini API:", error);
-    return `I found ${bags.length} great ${
-      bags.length === 1 ? "option" : "options"
-    } for you! Have a look at the bags below.`;
+    console.error("Error summarizing results:", error);
+    return `Great news! I found ${bags.length} awesome ${
+      bags.length === 1 ? "bag" : "bags"
+    } that match what you're looking for! Take a look below and let me know if you'd like more details about any of them. 😊`;
   }
 };

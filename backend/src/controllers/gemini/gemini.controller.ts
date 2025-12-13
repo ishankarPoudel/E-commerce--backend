@@ -8,12 +8,12 @@ export class GeminiController extends Controller {
 
   @Post("/search")
   public async search(
-    @Body() requestBody: { userMessage: string },
+    @Body() requestBody: { userMessage: string; sessionId?: string },
     @Res() serverErrorResponse: TsoaResponse<500, { message: string }>
   ) {
-    const { userMessage } = requestBody;
+    const { userMessage, sessionId } = requestBody;
     console.log("Received userMessage:", userMessage);
-
+    console.log("Received sessionId:", sessionId);
     if (!userMessage) {
       this.setStatus(400);
       return { message: "userMessage is required." };
@@ -21,7 +21,8 @@ export class GeminiController extends Controller {
 
     try {
       const result = await this.geminiSearchService.handleSearchQuery(
-        userMessage
+        userMessage,
+        sessionId
       );
 
       this.setStatus(200);
