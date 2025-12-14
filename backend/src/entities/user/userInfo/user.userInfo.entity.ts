@@ -4,6 +4,12 @@ import { DeviceInfoEntity } from "../deviceInfo/user.deveiceInfo.entity";
 import { CartEntity } from "../../cart/cart.entity";
 import { OrderEntity } from "../../order/orders.entity";
 
+export enum UserRole {
+  GUEST = "guest",
+  USER = "user",
+  ADMIN = "admin",
+}
+
 @Entity()
 export class UserEntity extends CommonEntity {
   @Column({ nullable: true })
@@ -15,7 +21,17 @@ export class UserEntity extends CommonEntity {
   @Column({ nullable: true })
   fullName: string;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
+
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: false })

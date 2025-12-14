@@ -9,7 +9,11 @@ export class TokensService {
   private userRepo = AppDataSource.getRepository(UserEntity);
 
   async generateTokens(user: UserEntity) {
-    const payload = { userId: user.id, tokenVersion: user.tokenVersion };
+    const payload = {
+      userId: user.id,
+      tokenVersion: user.tokenVersion,
+      role: user.role,
+    };
     const accessToken = new Tokens().signAccessToken(payload);
     const refreshToken = new Tokens().signRefreshToken(payload);
 
@@ -58,6 +62,7 @@ export class TokensService {
     const newAccessToken = new Tokens().signAccessToken({
       userId: user.id,
       tokenVersion: user.tokenVersion,
+      role: user.role,
     });
     const newRefreshToken = new Tokens().signRefreshToken({
       userId: user.id,

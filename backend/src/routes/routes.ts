@@ -32,6 +32,11 @@ const multer = require('multer');
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "UserRole": {
+        "dataType": "refEnum",
+        "enums": ["guest","user","admin"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserEntity": {
         "dataType": "refObject",
         "properties": {
@@ -42,6 +47,8 @@ const models: TsoaRoute.Models = {
             "googleId": {"dataType":"string","required":true},
             "email": {"dataType":"string","required":true},
             "fullName": {"dataType":"string","required":true},
+            "phone": {"dataType":"string","required":true},
+            "role": {"ref":"UserRole","required":true},
             "password": {"dataType":"string","required":true},
             "isOauth": {"dataType":"boolean","required":true},
             "provider": {"dataType":"string","required":true},
@@ -283,6 +290,7 @@ const models: TsoaRoute.Models = {
             "fullName": {"dataType":"string","required":true},
             "email": {"dataType":"string","required":true},
             "password": {"dataType":"string","required":true},
+            "phone": {"dataType":"double"},
         },
         "additionalProperties": false,
     },

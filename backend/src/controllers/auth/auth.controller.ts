@@ -38,16 +38,16 @@ interface RegisterResponse {
   };
 }
 
-const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
-  message: { message: "Too many requests, please try again later." },
-});
+// const rateLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 5, // Limit each IP to 5 requests per windowMs
+//   message: { message: "Too many requests, please try again later." },
+// });
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
   @Post("/verify-otp")
-  @Middlewares(rateLimiter)
+  // @Middlewares(rateLimiter)
   async verifyOtp(@Body() { otp, email }: { otp: string; email: string }) {
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp({ otp, email });
@@ -96,7 +96,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/login")
-  @Middlewares(rateLimiter)
+  // @Middlewares(rateLimiter)
   async loginUser(@Body() user: LoginValidator) {
     const { email } = user;
     const { accessToken, refreshToken } = await new AuthService().loginUser(
@@ -140,7 +140,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/reset-password")
-  @Middlewares(rateLimiter)
+  // @Middlewares(rateLimiter)
   async resetPassword(@Body() { email }: { email: string }) {
     const { email: userEmail } = await new AuthService().resetPassword(email);
 
@@ -154,7 +154,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/recover-password")
-  @Middlewares(rateLimiter)
+  // @Middlewares(rateLimiter)
   async recoverPassword(
     @Body()
     { newPassword, resetToken }: { newPassword: string; resetToken: string }

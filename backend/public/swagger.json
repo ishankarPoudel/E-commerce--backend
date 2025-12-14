@@ -7,6 +7,14 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"UserRole": {
+				"enum": [
+					"guest",
+					"user",
+					"admin"
+				],
+				"type": "string"
+			},
 			"UserEntity": {
 				"properties": {
 					"id": {
@@ -33,6 +41,12 @@
 					},
 					"fullName": {
 						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/UserRole"
 					},
 					"password": {
 						"type": "string"
@@ -85,6 +99,8 @@
 					"googleId",
 					"email",
 					"fullName",
+					"phone",
+					"role",
 					"password",
 					"isOauth",
 					"provider",
@@ -775,6 +791,10 @@
 					},
 					"password": {
 						"type": "string"
+					},
+					"phone": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [

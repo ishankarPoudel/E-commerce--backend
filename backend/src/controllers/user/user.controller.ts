@@ -16,14 +16,17 @@ import { UserService } from "../../services/user/user.service";
 import {
   AuthenticatedRequest,
   authenticateToken,
+  authorizeRoles,
+  revalidateUser,
 } from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("/user")
 @Tags("User")
 export class UserController extends Controller {
   @Get("/me")
-  @Middlewares(authenticateToken)
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.USER))
   @SuccessResponse("200", "User retrieved successfully")
   async getUserById(@Request() req: AuthenticatedRequest) {
     const userId = req?.user?.id;

@@ -2,10 +2,19 @@ import { Request, Response, NextFunction } from "express";
 import { Tokens } from "../utils/token.util";
 import { ApiError } from "../utils/apiError";
 import AppDataSource from "../config/data-source/data-source";
-import { UserEntity } from "../entities/user/userInfo/user.userInfo.entity";
+import {
+  UserEntity,
+  UserRole,
+} from "../entities/user/userInfo/user.userInfo.entity";
+
+export interface AuthUser {
+  id: string;
+  role: UserRole;
+  tokenVersion: number;
+}
 
 export interface AuthenticatedRequest extends Request {
-  user?: UserEntity;
+  user?: AuthUser;
 }
 
 export const authenticateToken = async (
@@ -15,6 +24,7 @@ export const authenticateToken = async (
 ) => {
   try {
     const accessToken = req.cookies?.accessToken;
+    console.log("Access Token from cookie:", accessToken);
 
     if (!accessToken) {
       return res.status(401).json({
@@ -23,36 +33,73 @@ export const authenticateToken = async (
       });
     }
 
-    const tokenUtil = new Tokens();
-    const payload = tokenUtil.verifyAccessToken(accessToken) as any;
+    const payload = new Tokens().verifyAccessToken(accessToken) as any;
 
-    const userRepo = AppDataSource.getRepository(UserEntity);
-    const user = await userRepo.findOne({
-      where: { id: payload.userId },
-    });
+    req.user = {
+      id: payload.userId,
+      role: payload.role,
+      tokenVersion: payload.tokenVersion,
+    };
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    if (payload.tokenVersion !== user.tokenVersion) {
-      return res.status(401).json({
-        success: false,
-        message: "Session has been revoked. Please login again.",
-        forceLogout: true,
-      });
-    }
-
-    req.user = user;
     next();
   } catch (error) {
-    console.log("Authentication errorsss:", error);
+    console.error("Authentication error:", error);
     return res.status(401).json({
       success: false,
       message: "Invalid or expired access token",
     });
   }
+};
+
+export const authorizeRoles = (...allowedRoles: UserRole[]) => {
+  return async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+      });
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden",
+      });
+    }
+
+    next();
+  };
+};
+
+export const revalidateUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userRepo = AppDataSource.getRepository(UserEntity);
+
+  const user = await userRepo.findOne({
+    where: { id: req.user!.id },
+  });
+
+  if (!user) {
+    return res.status(401).json({ message: "User not found" });
+  }
+
+  if (user.isBanned) {
+    return res.status(403).json({ message: "Account banned" });
+  }
+
+  if (user.tokenVersion !== req.user!.tokenVersion) {
+    return res.status(401).json({
+      message: "Session revoked",
+      forceLogout: true,
+    });
+  }
+
+  next();
 };

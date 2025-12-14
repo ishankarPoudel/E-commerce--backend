@@ -1,5 +1,8 @@
 import AppDataSource from "../../config/data-source/data-source";
-import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
+import {
+  UserEntity,
+  UserRole,
+} from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
 import { GenerateRandomToken } from "../../utils/emailToken/randomToken";
 import { Tokens } from "../../utils/token.util";
@@ -9,6 +12,7 @@ import bcrypt from "bcrypt";
 import { MoreThan } from "typeorm";
 import { LoginValidator } from "./../../validators/auth/login.validator";
 import { DeviceInfoEntity } from "../../entities/user/deviceInfo/user.deveiceInfo.entity";
+import { TokensService } from "../tokens/tokens.service";
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(UserEntity);
@@ -35,6 +39,7 @@ export class AuthService {
         isOauth: false,
         provider: "local",
         isEmailVerified: false,
+        role: UserRole.USER,
       });
     } else {
       // Only update if not already set
@@ -66,11 +71,6 @@ export class AuthService {
       throw new ApiError(404, "User not found");
     }
 
-    console.log("Stored OTP:", user.emailVerificationToken);
-    console.log("Provided OTP:", otp);
-    console.log("OTP types:", typeof user.emailVerificationToken, typeof otp);
-    console.log("Expiry:", user.emailVerificationTokenExpiresAt);
-    console.log("Current time:", new Date());
     //check if otp matches
     if (!user.emailVerificationToken || user.emailVerificationToken !== otp) {
       throw new ApiError(400, "Invalid OTP");
@@ -89,7 +89,7 @@ export class AuthService {
     await this.userRepo.save(user);
 
     const { accessToken, refreshToken } =
-      await new AuthService().generateTokens(user);
+      await new TokensService().generateTokens(user);
 
     return { user, accessToken, refreshToken };
   }
@@ -131,6 +131,7 @@ export class AuthService {
         "Email not verified. Please verify your email first."
       );
     }
+
     const isPasswordValid = await bcrypt.compare(
       credentials.password,
       user.password
@@ -176,7 +177,7 @@ export class AuthService {
       location: location,
     });
 
-    return this.generateTokens(user);
+    return new TokensService().generateTokens(user);
   }
 
   async resetPassword(email: string) {
@@ -211,17 +212,21 @@ export class AuthService {
     return { email: user.email };
   }
 
-  async generateTokens(user: UserEntity) {
-    const payload = { userId: user.id, tokenVersion: user.tokenVersion };
-    const accessToken = new Tokens().signAccessToken(payload);
-    const refreshToken = new Tokens().signRefreshToken(payload);
+  // async generateTokens(user: UserEntity) {
+  //   const payload = {
+  //     userId: user.id,
+  //     tokenVersion: user.tokenVersion,
+  //     role: user.role,
+  //   };
+  //   const accessToken = new Tokens().signAccessToken(payload);
+  //   const refreshToken = new Tokens().signRefreshToken(payload);
 
-    //stored hashed refresh token in DB
-    user.refreshToken = await bcrypt.hash(refreshToken, 10);
-    await this.userRepo.save(user);
+  //   //stored hashed refresh token in DB
+  //   user.refreshToken = await bcrypt.hash(refreshToken, 10);
+  //   await this.userRepo.save(user);
 
-    return { accessToken, refreshToken };
-  }
+  //   return { accessToken, refreshToken };
+  // }
 
   async logoutUser(userId: string) {
     const user = await this.userRepo.findOneBy({ id: userId });
