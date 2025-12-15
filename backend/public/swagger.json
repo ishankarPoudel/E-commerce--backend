@@ -3178,6 +3178,82 @@
 				"parameters": []
 			}
 		},
+		"/auth/admin/admin-login": {
+			"post": {
+				"operationId": "AdminLogin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"role": {
+													"$ref": "#/components/schemas/UserRole"
+												},
+												"fullName": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"role",
+												"fullName",
+												"email"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"password",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/auth/admin/revoke-session": {
 			"post": {
 				"operationId": "RevokeUserSession",

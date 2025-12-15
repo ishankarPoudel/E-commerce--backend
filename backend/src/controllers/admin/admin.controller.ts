@@ -21,6 +21,16 @@ import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 @Tags("Admin")
 @Middlewares(authenticateToken, revalidateUser, authorizeRoles(UserRole.ADMIN))
 export class AdminController extends Controller {
+  @Post("/admin-login")
+  async adminLogin(@Body() body: { email: string; password: string }) {
+    const adminService = await new AdminService().adminLogin(body);
+    return {
+      success: true,
+      message: "Admin logged in successfully",
+      data: adminService,
+    };
+  }
+
   @Post("/revoke-session")
   async revokeUserSession(
     @Request() req: AuthenticatedRequest,

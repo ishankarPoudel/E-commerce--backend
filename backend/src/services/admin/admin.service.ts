@@ -39,6 +39,25 @@ export class AdminService {
     };
   }
 
+  async adminLogin(data: { email: string; password: string }) {
+    const adminUser = await this.userRepo.findOne({
+      where: { email: data.email, role: UserRole.ADMIN },
+    });
+    if (!adminUser) throw new ApiError(404, "Admin account not found");
+    const isPasswordValid = await bcrypt.compare(
+      data.password,
+      adminUser.password
+    );
+    if (!isPasswordValid)
+      throw new ApiError(401, "Invalid email or password for admin");
+
+    return {
+      email: adminUser.email,
+      fullName: adminUser.fullName,
+      role: adminUser.role,
+    };
+  }
+
   async revokeUserSession(userId: string) {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) throw new ApiError(404, "User not found");
