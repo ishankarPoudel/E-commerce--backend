@@ -58,7 +58,11 @@ export class AuthService {
 
     await new MailService().sendVerificationEmail(existingUser.email, otp);
 
-    return existingUser;
+    return {
+      email: existingUser.email,
+      fullName: existingUser.fullName,
+      role: existingUser.role,
+    };
   }
 
   async verifyOtp({ email, otp }: { email: string; otp: string }) {
@@ -91,7 +95,15 @@ export class AuthService {
     const { accessToken, refreshToken } =
       await new TokensService().generateTokens(user);
 
-    return { user, accessToken, refreshToken };
+    return {
+      user: {
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+      },
+      accessToken,
+      refreshToken,
+    };
   }
 
   async resendOtp(email: string) {

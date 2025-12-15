@@ -1,10 +1,25 @@
-import { Body, Controller, Post, Request, Route, Tags } from "tsoa";
-import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
+import {
+  Body,
+  Controller,
+  Middlewares,
+  Post,
+  Request,
+  Route,
+  Tags,
+} from "tsoa";
+import {
+  AuthenticatedRequest,
+  authenticateToken,
+  authorizeRoles,
+  revalidateUser,
+} from "../../middlewares/auth.middleware";
 import { AdminService } from "../../services/admin/admin.service";
 import { ApiError } from "../../utils/apiError";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("auth/admin")
 @Tags("Admin")
+@Middlewares(authenticateToken, revalidateUser, authorizeRoles(UserRole.ADMIN))
 export class AdminController extends Controller {
   @Post("/revoke-session")
   async revokeUserSession(
@@ -24,6 +39,11 @@ export class AdminController extends Controller {
   }
 
   @Post("/ban-user")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.ADMIN)
+  )
   async banUser(@Body() body: { userId: string }) {
     const adminService = await new AdminService().banUser(body.userId);
     return {
@@ -34,6 +54,11 @@ export class AdminController extends Controller {
   }
 
   @Post("/unban-user")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.ADMIN)
+  )
   async unbanUser(@Body() body: { userId: string }) {
     const adminService = await new AdminService().unbanUser(body.userId);
     return {

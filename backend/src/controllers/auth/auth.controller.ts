@@ -113,6 +113,7 @@ export class AuthController extends Controller {
       data: {
         user: {
           email,
+
           fullName:
             (await AppDataSource.getRepository(UserEntity).findOneBy({ email }))
               ?.fullName || "",

@@ -14,13 +14,17 @@ import {
 import { addBagValidator } from "../../validators/addBag.validator";
 import { BagService } from "../../services/bag/bag.service";
 import { updateBagValidator } from "../../validators/updateBag.validator";
-import { authenticateToken } from "../../middlewares/auth.middleware";
+import {
+  authenticateToken,
+  authorizeRoles,
+} from "../../middlewares/auth.middleware";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("/bag")
 @Tags("Bag")
 export class BagController extends Controller {
   @Post("/add-bag")
-  @Middlewares(authenticateToken)
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   async addBag(@Body() bag: addBagValidator) {
     const newBag = await new BagService().addBag(bag);
     return { success: true, message: "Bag added successfully", data: newBag };

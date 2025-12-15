@@ -12,6 +12,7 @@ import "./crons/index.ts";
 import { authMiddlewareWithExclusions } from "./middlewares/authExclude.middleware";
 import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
 import AppDataSource from "./config/data-source/data-source";
+import { seedInitialAdmin } from "./seeders/seed-initial-admin";
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use(errorHandler);
 AppDataSource.initialize()
   .then(() => {
     console.log("Database connection initialized");
+    seedInitialAdmin();
 
     app.listen(8000, () => {
       console.log(` Server is running on http://localhost:${8000}`);

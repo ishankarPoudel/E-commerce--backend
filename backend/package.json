@@ -6,7 +6,8 @@
   "scripts": {
     "start:dev": "tsoa spec-and-routes && nodemon --transpile-only src/index.ts",
     "seed": "ts-node --transpile-only src/config/seed/seed.ts",
-    "migrate": "ts-node --transpile-only src/migrations/1760238694191-UpdateBagSearchVectorTrigger.ts"
+    "migrate": "ts-node --transpile-only src/migrations/1760238694191-UpdateBagSearchVectorTrigger.ts",
+    "create-admin": "ts-node src/scripts/create-admin.ts"
   },
   "keywords": [],
   "author": "",
