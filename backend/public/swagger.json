@@ -516,6 +516,27 @@
 						},
 						"type": "array"
 					},
+					"paymentProvider": {
+						"type": "string",
+						"enum": [
+							"stripe",
+							"esewa"
+						]
+					},
+					"esewaTransactionUuid": {
+						"type": "string"
+					},
+					"esewaRefId": {
+						"type": "string"
+					},
+					"esewaStatus": {
+						"type": "string",
+						"enum": [
+							"PENDING",
+							"COMPLETE",
+							"FAILED"
+						]
+					},
 					"stripePaymentIntentId": {
 						"type": "string"
 					},
@@ -1182,6 +1203,27 @@
 																"type": "string"
 															},
 															"itemsSnapShot": {},
+															"esewaStatus": {
+																"type": "string",
+																"enum": [
+																	"PENDING",
+																	"COMPLETE",
+																	"FAILED"
+																]
+															},
+															"esewaRefId": {
+																"type": "string"
+															},
+															"esewaTransactionUuid": {
+																"type": "string"
+															},
+															"paymentProvider": {
+																"type": "string",
+																"enum": [
+																	"stripe",
+																	"esewa"
+																]
+															},
 															"amount": {
 																"type": "number",
 																"format": "double"
@@ -1795,6 +1837,206 @@
 									"userMessage"
 								],
 								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/payment/esewa/initiate": {
+			"post": {
+				"operationId": "InitiateEsewaPayment",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {
+													"properties": {
+														"params": {
+															"properties": {
+																"signature": {},
+																"signed_field_names": {
+																	"type": "string"
+																},
+																"failure_url": {
+																	"type": "string"
+																},
+																"success_url": {
+																	"type": "string"
+																},
+																"product_delivery_charge": {
+																	"type": "number",
+																	"format": "double"
+																},
+																"product_service_charge": {
+																	"type": "number",
+																	"format": "double"
+																},
+																"product_code": {
+																	"type": "string"
+																},
+																"transaction_uuid": {
+																	"type": "string"
+																},
+																"total_amount": {},
+																"tax_amount": {
+																	"type": "number",
+																	"format": "double"
+																},
+																"amount": {}
+															},
+															"required": [
+																"signature",
+																"signed_field_names",
+																"failure_url",
+																"success_url",
+																"product_delivery_charge",
+																"product_service_charge",
+																"product_code",
+																"transaction_uuid",
+																"total_amount",
+																"tax_amount",
+																"amount"
+															],
+															"type": "object"
+														},
+														"formUrl": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"params",
+														"formUrl"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"eSewa Payment"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"shippingAddress": {
+										"type": "string"
+									},
+									"deliveryMethod": {
+										"type": "string",
+										"enum": [
+											"delivery",
+											"pickup"
+										]
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/payment/esewa/payment-verify": {
+			"post": {
+				"operationId": "VerifyEsewaPayment",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"esewaStatus": {
+													"type": "string",
+													"enum": [
+														"PENDING",
+														"COMPLETE",
+														"FAILED"
+													]
+												},
+												"ref_id": {
+													"type": "string"
+												},
+												"status": {
+													"type": "string",
+													"enum": [
+														"pending",
+														"paid",
+														"failed",
+														"refunded"
+													]
+												}
+											},
+											"required": [
+												"esewaStatus",
+												"ref_id",
+												"status"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"eSewa Payment"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "string"
 							}
 						}
 					}

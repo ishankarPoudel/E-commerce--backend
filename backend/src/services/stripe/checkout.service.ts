@@ -42,6 +42,7 @@ export class CheckOutService {
         currency: "USD",
         deliveryMethod,
         shippingAddress,
+        paymentProvider: "stripe",
         itemsSnapShot: cart.cartItems.map((ci) => ({
           bagId: ci.product?.id,
           name: ci.product?.name,

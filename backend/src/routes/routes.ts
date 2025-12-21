@@ -12,6 +12,8 @@ import { MediaController } from './../controllers/media/media.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { GeminiController } from './../controllers/gemini/gemini.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { EsewaController } from './../controllers/esewa/esewa.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CheckOutController } from './../controllers/checkout/checkout.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CategoryController } from './../controllers/category/category.controller';
@@ -187,6 +189,10 @@ const models: TsoaRoute.Models = {
             "currency": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
             "items": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderItemEntity"}},
+            "paymentProvider": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["stripe"]},{"dataType":"enum","enums":["esewa"]}]},
+            "esewaTransactionUuid": {"dataType":"string"},
+            "esewaRefId": {"dataType":"string"},
+            "esewaStatus": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["COMPLETE"]},{"dataType":"enum","enums":["FAILED"]}]},
             "stripePaymentIntentId": {"dataType":"string"},
             "stripeChargeId": {"dataType":"string"},
             "itemsSnapShot": {"dataType":"any"},
@@ -668,6 +674,68 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'search',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsEsewaController_initiateEsewaPayment: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"shippingAddress":{"dataType":"string"},"deliveryMethod":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["delivery"]},{"dataType":"enum","enums":["pickup"]}]}}},
+        };
+        app.post('/payment/esewa/initiate',
+            ...(fetchMiddlewares<RequestHandler>(EsewaController)),
+            ...(fetchMiddlewares<RequestHandler>(EsewaController.prototype.initiateEsewaPayment)),
+
+            async function EsewaController_initiateEsewaPayment(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsEsewaController_initiateEsewaPayment, request, response });
+
+                const controller = new EsewaController();
+
+              await templateService.apiHandler({
+                methodName: 'initiateEsewaPayment',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsEsewaController_verifyEsewaPayment: Record<string, TsoaRoute.ParameterSchema> = {
+                orderId: {"in":"body","name":"orderId","required":true,"dataType":"string"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
+        app.post('/payment/esewa/payment-verify',
+            ...(fetchMiddlewares<RequestHandler>(EsewaController)),
+            ...(fetchMiddlewares<RequestHandler>(EsewaController.prototype.verifyEsewaPayment)),
+
+            async function EsewaController_verifyEsewaPayment(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsEsewaController_verifyEsewaPayment, request, response });
+
+                const controller = new EsewaController();
+
+              await templateService.apiHandler({
+                methodName: 'verifyEsewaPayment',
                 controller,
                 response,
                 next,

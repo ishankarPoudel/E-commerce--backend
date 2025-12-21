@@ -29,6 +29,18 @@ export class OrderEntity extends CommonEntity {
   items?: OrderItemEntity[];
 
   @Column({ nullable: true })
+  paymentProvider?: "stripe" | "esewa";
+
+  @Column({ nullable: true, unique: true })
+  esewaTransactionUuid?: string;
+
+  @Column({ nullable: true })
+  esewaRefId?: string;
+
+  @Column({ nullable: true })
+  esewaStatus?: "PENDING" | "COMPLETE" | "FAILED";
+
+  @Column({ nullable: true })
   stripePaymentIntentId?: string;
 
   @Column({ nullable: true })
