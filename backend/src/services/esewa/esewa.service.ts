@@ -86,14 +86,6 @@ export class EsewaService {
       process.env.ESEWA_PRODUCT_CODE!
     );
     const formUrl = process.env.ESEWA_PAYMENT_URL!;
-    console.log("ESEWA INIT PAYLOAD", {
-      formUrl,
-      total_amount: totalAmount,
-      transaction_uuid: esewaTransactionUuid,
-      product_code: process.env.ESEWA_PRODUCT_CODE!,
-      signed_field_names: signedFields,
-      signature,
-    });
 
     // form to be submitted by frontend , form is hidden and auto submitted
     return {
@@ -178,7 +170,7 @@ export class EsewaService {
           try {
             await new MailService().sendOrderConfirmationEmail(
               order.user.email,
-              order.id
+              order
             );
             emailSent = true;
           } catch (emailError) {
