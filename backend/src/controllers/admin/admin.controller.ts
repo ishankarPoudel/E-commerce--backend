@@ -19,11 +19,23 @@ import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("auth/admin")
 @Tags("Admin")
-@Middlewares(authenticateToken, revalidateUser, authorizeRoles(UserRole.ADMIN))
 export class AdminController extends Controller {
   @Post("/admin-login")
   async adminLogin(@Body() body: { email: string; password: string }) {
-    const adminService = await new AdminService().adminLogin(body);
+    const { accessToken, refreshToken } = await new AdminService().adminLogin({
+      email: body.email,
+      password: body.password,
+    });
+
+    this.setHeader("Set-Cookie", [
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=900;`,
+      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
+    ]);
+
+    const adminService = {
+      email: body.email,
+      role: UserRole.ADMIN,
+    };
     return {
       success: true,
       message: "Admin logged in successfully",
@@ -32,6 +44,11 @@ export class AdminController extends Controller {
   }
 
   @Post("/revoke-session")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.ADMIN)
+  )
   async revokeUserSession(
     @Request() req: AuthenticatedRequest,
     @Body() body: { userId: string }

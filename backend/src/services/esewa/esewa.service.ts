@@ -6,6 +6,7 @@ import { ApiError } from "../../utils/apiError";
 import { CartService } from "../cart/cart.services";
 import axios from "axios";
 import { ref } from "process";
+import { MailService } from "../mail/mail.service";
 
 export class EsewaService {
   private orderRepo = AppDataSource.getRepository(OrderEntity);
@@ -99,8 +100,8 @@ export class EsewaService {
       formUrl: process.env.ESEWA_FORM_URL!,
       params: {
         amount: amount,
-        tax_amount: taxAmount,
-        total_amount: totalAmount,
+        tax_amount: taxAmount || 0,
+        total_amount: totalAmount || 0,
         transaction_uuid: esewaTransactionUuid,
         product_code: process.env.ESEWA_PRODUCT_CODE!,
         product_service_charge: 0,
@@ -113,16 +114,25 @@ export class EsewaService {
     };
   }
 
-  async verifyEsewaPayment(orderId: string, retries = 3, delayMs = 2000) {
-    const order = await this.orderRepo.findOne({ where: { id: orderId } });
-    if (!order) throw new ApiError(404, "Order not found");
+  async verifyEsewaPayment(
+    esewaTransactionUuid: string,
+    retries = 3,
+    delayMs = 2000
+  ) {
+    const order = await this.orderRepo.findOne({
+      where: { esewaTransactionUuid },
+      relations: ["user"],
+    });
+    if (!order) throw new ApiError(404, "Order not found for this transaction");
 
     const verifyUrl = `${process.env.ESEWA_VERIFY_URL}?product_code=${process.env.ESEWA_PRODUCT_CODE}&total_amount=${order.amount}&transaction_uuid=${order.esewaTransactionUuid}`;
 
+    let emailSent = false;
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         const response = await axios.get(verifyUrl);
         const { status, ref_id } = response.data;
+        const oldEsewaStatus = order.esewaStatus;
 
         switch (status) {
           case "COMPLETE":
@@ -160,7 +170,27 @@ export class EsewaService {
 
         await this.orderRepo.save(order);
 
-        if (status === "PENDING" && attempt < retries) {
+        if (
+          order.esewaStatus === "COMPLETE" &&
+          oldEsewaStatus !== "COMPLETE" &&
+          !emailSent
+        ) {
+          try {
+            await new MailService().sendOrderConfirmationEmail(
+              order.user.email,
+              order.id
+            );
+            emailSent = true;
+          } catch (emailError) {
+            console.error(
+              `Failed to send order confirmation email:`,
+              emailError
+            );
+          }
+        }
+        const shouldRetry = status === "PENDING" && attempt < retries;
+
+        if (shouldRetry) {
           await new Promise((res) => setTimeout(res, delayMs)); // wait before retry
           continue;
         }
@@ -169,6 +199,8 @@ export class EsewaService {
           status: order.status,
           ref_id: order.esewaRefId,
           esewaStatus: order.esewaStatus,
+          shouldRetry: false,
+          orderId: order.id,
         };
       } catch (err) {
         if (attempt === retries)

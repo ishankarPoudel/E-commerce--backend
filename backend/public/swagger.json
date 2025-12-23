@@ -1984,6 +1984,12 @@
 									"properties": {
 										"data": {
 											"properties": {
+												"orderId": {
+													"type": "string"
+												},
+												"shouldRetry": {
+													"type": "boolean"
+												},
 												"esewaStatus": {
 													"type": "string",
 													"enum": [
@@ -2006,6 +2012,8 @@
 												}
 											},
 											"required": [
+												"orderId",
+												"shouldRetry",
 												"esewaStatus",
 												"ref_id",
 												"status"
@@ -2036,7 +2044,15 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "string"
+								"properties": {
+									"esewaTransactionUuid": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"esewaTransactionUuid"
+								],
+								"type": "object"
 							}
 						}
 					}
@@ -3435,16 +3451,12 @@
 												"role": {
 													"$ref": "#/components/schemas/UserRole"
 												},
-												"fullName": {
-													"type": "string"
-												},
 												"email": {
 													"type": "string"
 												}
 											},
 											"required": [
 												"role",
-												"fullName",
 												"email"
 											],
 											"type": "object"

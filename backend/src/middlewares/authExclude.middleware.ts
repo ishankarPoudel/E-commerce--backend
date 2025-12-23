@@ -4,6 +4,8 @@ import { Request, Response, NextFunction } from "express";
 //list of rouutes to exclude from authenciation
 const excludedRoutes: { path: string; method: string }[] = [
   { path: "/auth/login", method: "POST" },
+  { path: "/auth/logout", method: "POST" },
+  { path: "/auth/admin/admin-login", method: "POST" },
   { path: "/auth/register", method: "POST" },
   { path: "/auth/verify-otp", method: "POST" },
   { path: "/auth/resend-otp", method: "POST" },

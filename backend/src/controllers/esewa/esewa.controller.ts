@@ -54,17 +54,18 @@ export class EsewaController extends Controller {
   @Post("/payment-verify")
   @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN, UserRole.USER))
   async verifyEsewaPayment(
-    @Body() orderId: string,
+    @Body() body: { esewaTransactionUuid: string },
     @Request() request: AuthenticatedRequest
   ) {
-    const userId = request.user!.id;
+    const { esewaTransactionUuid } = body;
 
-    const order = await new OrderService().getOrderById(userId, orderId);
-    if (order.user.id !== userId && request.user!.role !== UserRole.ADMIN) {
-      throw new ApiError(403, "Forbidden: Cannot verify another user's order");
-    }
+    console.log(
+      "Verifying eSewa payment for transaction UUID:",
+      esewaTransactionUuid
+    );
+
     const verificationResult = await this.esewaService.verifyEsewaPayment(
-      orderId
+      esewaTransactionUuid
     );
     return {
       message: "eSewa payment verification completed",

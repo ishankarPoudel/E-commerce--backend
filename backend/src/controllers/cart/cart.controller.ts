@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Middlewares,
   Patch,
   Post,
   Request,
@@ -11,7 +12,11 @@ import {
 } from "tsoa";
 import { AddToCartValidator } from "../../validators/cart/addToCart.validator";
 import { CartService } from "../../services/cart/cart.services";
-import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
+import {
+  AuthenticatedRequest,
+  authenticateToken,
+  revalidateUser,
+} from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
 
 @Route("/cart")
@@ -25,6 +30,7 @@ export class CartController extends Controller {
     return userId;
   }
   @Post("/add-to-cart")
+  @Middlewares(authenticateToken, revalidateUser)
   async addToCart(
     @Body() cart: AddToCartValidator,
     @Request() req: AuthenticatedRequest

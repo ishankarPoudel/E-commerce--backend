@@ -140,22 +140,24 @@ export class MailService {
       const currency = order.currency || "USD";
       const deliveryMethod = order.deliveryMethod || "delivery";
       const status = order.status || "pending";
+      const paymentProvider = order.paymentProvider; // "esewa" | "stripe"
+      const esewaRefId = order.esewaRefId;
 
       // Generate item rows
       const rows = items
         .map((it) => {
           const lineTotal = (it.price || 0) * (it.quantity || 0);
           return `
-          <tr>
-            <td style="padding:8px;font-size:14px;color:#555;">${it.name}</td>
-            <td align="center" style="padding:8px;font-size:14px;color:#555;">
-              ${it.quantity}
-            </td>
-            <td align="right" style="padding:8px;font-size:14px;color:#555;">
-              ${lineTotal.toFixed(2)} ${currency.toUpperCase()}
-            </td>
-          </tr>
-        `;
+        <tr>
+          <td style="padding:8px;font-size:14px;color:#555;">${it.name}</td>
+          <td align="center" style="padding:8px;font-size:14px;color:#555;">
+            ${it.quantity}
+          </td>
+          <td align="right" style="padding:8px;font-size:14px;color:#555;">
+            ${lineTotal.toFixed(2)} ${currency.toUpperCase()}
+          </td>
+        </tr>
+      `;
         })
         .join("");
 
@@ -171,92 +173,172 @@ export class MailService {
       const deliveryTitle = isPickup ? "🏪 Store Pickup" : "🚚 Home Delivery";
       const deliveryMessage = isPickup
         ? `
-        <p style="font-size: 14px; color: #555; text-align: center; margin: 8px 0;">
-          Your order will be ready for <strong>pickup at our store</strong>.
-          Please pay at the counter when you collect your order.
-        </p>
-      `
+      <p style="font-size: 14px; color: #555; text-align: center; margin: 8px 0;">
+        Your order will be ready for <strong>pickup at our store</strong>.
+        ${
+          paymentProvider === "esewa" && status === "paid"
+            ? "Payment completed via eSewa."
+            : "Please pay at the counter when you collect your order."
+        }
+      </p>
+    `
         : `
-        <p style="font-size: 14px; color: #555; text-align: center; margin: 8px 0;">
-          Your order will be <strong>delivered to your address</strong> soon.
-          We'll notify you once it's on the way!
-        </p>
-      `;
+      <p style="font-size: 14px; color: #555; text-align: center; margin: 8px 0;">
+        Your order will be <strong>delivered to your address</strong> soon.
+        We'll notify you once it's on the way!
+      </p>
+    `;
 
-      // Optional payment note
-      const paymentNote = isPickup
-        ? `<p style="font-size: 13px; color: #888; text-align: center; margin-top: 8px;">💵 Payment to be made in-store upon pickup.</p>`
-        : `<p style="font-size: 13px; color: #888; text-align: center; margin-top: 8px;">💳 Payment completed online.</p>`;
+      // ✅ Payment method display
+      const paymentMethodHtml =
+        paymentProvider === "esewa"
+          ? `
+        <div style="background-color: #f0f9ff; border-left: 4px solid #60a917; padding: 16px; margin: 16px 0; border-radius: 8px;">
+          <h3 style="color: #60a917; margin: 0 0 8px 0; font-size: 16px;">
+            💳 Payment via eSewa
+          </h3>
+          <p style="font-size: 14px; color: #555; margin: 4px 0;">
+            Payment Method: <strong>eSewa Digital Wallet</strong>
+          </p>
+          ${
+            esewaRefId
+              ? `
+            <p style="font-size: 14px; color: #555; margin: 4px 0;">
+              eSewa Reference ID: <strong>${esewaRefId}</strong>
+            </p>
+          `
+              : ""
+          }
+          <p style="font-size: 14px; color: #555; margin: 4px 0;">
+            Payment Status: <strong style="color: ${statusColor};">${
+              status === "paid" ? "Completed ✓" : status.toUpperCase()
+            }</strong>
+          </p>
+        </div>
+      `
+          : paymentProvider === "stripe"
+          ? `
+        <div style="background-color: #f0f9ff; border-left: 4px solid #635bff; padding: 16px; margin: 16px 0; border-radius: 8px;">
+          <h3 style="color: #635bff; margin: 0 0 8px 0; font-size: 16px;">
+            💳 Payment via Stripe
+          </h3>
+          <p style="font-size: 14px; color: #555; margin: 4px 0;">
+            Payment Method: <strong>Credit/Debit Card</strong>
+          </p>
+          <p style="font-size: 14px; color: #555; margin: 4px 0;">
+            Payment Status: <strong style="color: ${statusColor};">${
+              status === "paid" ? "Completed ✓" : status.toUpperCase()
+            }</strong>
+          </p>
+        </div>
+      `
+          : isPickup
+          ? `
+        <div style="background-color: #fff3cd; border-left: 4px solid #f39c12; padding: 16px; margin: 16px 0; border-radius: 8px;">
+          <h3 style="color: #f39c12; margin: 0 0 8px 0; font-size: 16px;">
+            💵 Cash Payment at Store
+          </h3>
+          <p style="font-size: 14px; color: #555; margin: 4px 0;">
+            Please pay <strong>${
+              order.amount || 0
+            } ${currency.toUpperCase()}</strong> when you pick up your order.
+          </p>
+        </div>
+      `
+          : "";
 
       const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
-        <h2 style="color: #2c3e50; text-align: center; margin-bottom: 12px;">
-          👜 Order Confirmation
-        </h2>
-        <p style="color: #555; text-align: center; font-size: 15px; margin-top: 0;">
-          Thank you for your purchase! Your order has been received.
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
+      <h2 style="color: #2c3e50; text-align: center; margin-bottom: 12px;">
+        👜 Order Confirmation
+      </h2>
+      <p style="color: #555; text-align: center; font-size: 15px; margin-top: 0;">
+        Thank you for your purchase! Your order has been received.
+      </p>
+
+      ${deliveryMessage}
+
+      <div style="margin-top: 24px;">
+        <h3 style="color: #2c3e50; margin-bottom: 8px;">Order Details</h3>
+        <p style="font-size: 14px; color: #555; margin: 4px 0;">Order ID: <strong>#${
+          order.id
+        }</strong></p>
+        <p style="font-size: 14px; color: #555; margin: 4px 0;">
+          Order Status:
+          <strong style="color: ${statusColor};">${status.toUpperCase()}</strong>
         </p>
-
-        ${deliveryMessage}
-
-        <div style="margin-top: 24px;">
-          <h3 style="color: #2c3e50; margin-bottom: 8px;">Order Details</h3>
-          <p style="font-size: 14px; color: #555; margin: 4px 0;">Order ID: <strong>#${
-            order.id
-          }</strong></p>
-          <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Status:
-            <strong style="color: ${statusColor};">${status}</strong>
-          </p>
-          <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Delivery Method: <strong>${deliveryTitle}</strong>
-          </p>
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
-          <thead>
-            <tr>
-              <th align="left" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Item</th>
-              <th align="center" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Qty</th>
-              <th align="right" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${
-              rows ||
-              `<tr><td colspan="3" style="padding:8px;color:#999;font-size:14px;">No items to display</td></tr>`
-            }
-          </tbody>
-        </table>
-
-        <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
-          <p style="font-size: 15px; color: #333; margin: 4px 0; text-align: right;">
-            <strong>Total:</strong>
-            <span style="color: #27ae60; font-size: 16px;">
-              ${order.amount || 0} ${currency.toUpperCase()}
-            </span>
-          </p>
-        </div>
-
-        ${paymentNote}
-
-        <div style="margin-top: 32px; text-align: center; color: #888; font-size: 13px;">
-          <p style="margin: 4px 0;">Thank you for shopping with <strong>Avisekh Bag Pashal</strong> 👜</p>
-          <p style="margin: 4px 0;">We truly appreciate your trust and support.</p>
-        </div>
+        <p style="font-size: 14px; color: #555; margin: 4px 0;">
+          Delivery Method: <strong>${deliveryTitle}</strong>
+        </p>
       </div>
-    `;
+
+      ${paymentMethodHtml}
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+        <thead>
+          <tr>
+            <th align="left" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Item</th>
+            <th align="center" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Qty</th>
+            <th align="right" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            rows ||
+            `<tr><td colspan="3" style="padding:8px;color:#999;font-size:14px;">No items to display</td></tr>`
+          }
+        </tbody>
+      </table>
+
+      <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+        <p style="font-size: 15px; color: #333; margin: 4px 0; text-align: right;">
+          <strong>Total Amount:</strong>
+          <span style="color: #27ae60; font-size: 18px; font-weight: bold;">
+            ${order.amount || 0} ${currency.toUpperCase()}
+          </span>
+        </p>
+      </div>
+
+      ${
+        status === "paid" && paymentProvider === "esewa"
+          ? `
+        <div style="margin-top: 16px; text-align: center; padding: 12px; background-color: #e8f5e9; border-radius: 8px;">
+          <p style="color: #27ae60; font-size: 14px; margin: 0;">
+            ✅ Payment successfully processed via eSewa
+          </p>
+        </div>
+      `
+          : ""
+      }
+
+      <div style="margin-top: 32px; text-align: center; color: #888; font-size: 13px;">
+        <p style="margin: 4px 0;">Thank you for shopping with <strong>Avisekh Bag Pashal</strong> 👜</p>
+        <p style="margin: 4px 0;">We truly appreciate your trust and support.</p>
+        ${
+          esewaRefId
+            ? `<p style="margin: 8px 0; font-size: 12px;">Keep your eSewa reference ID for any inquiries.</p>`
+            : ""
+        }
+      </div>
+    </div>
+  `;
 
       await mailTransport.sendMail({
         from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
         to: email,
-        subject: isPickup
-          ? "Order Confirmation - Ready for Store Pickup!"
-          : "Order Confirmation - Thank You for Your Purchase!",
+        subject:
+          paymentProvider === "esewa" && status === "paid"
+            ? "✅ Payment Confirmed - Order via eSewa"
+            : isPickup
+            ? "Order Confirmation - Ready for Store Pickup!"
+            : "Order Confirmation - Thank You for Your Purchase!",
         html,
       });
+
+      console.log(`✅ Order confirmation email sent to: ${email}`);
     } catch (err) {
-      console.error("Error sending email:", err);
+      console.error("❌ Error sending order confirmation email:", err);
+      throw err;
     }
   }
 

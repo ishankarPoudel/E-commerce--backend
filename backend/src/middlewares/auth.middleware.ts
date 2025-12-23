@@ -30,6 +30,7 @@ export const authenticateToken = async (
       return res.status(401).json({
         success: false,
         message: "Access token missing",
+        forceLogout: true,
       });
     }
 
@@ -47,6 +48,7 @@ export const authenticateToken = async (
     return res.status(401).json({
       success: false,
       message: "Invalid or expired access token",
+      forceLogout: true,
     });
   }
 };
@@ -67,7 +69,7 @@ export const authorizeRoles = (...allowedRoles: UserRole[]) => {
     if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: "Forbidden",
+        message: "Forbidden: Insufficient permissions",
       });
     }
 
@@ -82,24 +84,63 @@ export const revalidateUser = async (
 ) => {
   const userRepo = AppDataSource.getRepository(UserEntity);
 
+  console.log(`\n🔍 [REVALIDATE] Checking user: ${req.user!.id}`); // ← Add this
+
   const user = await userRepo.findOne({
     where: { id: req.user!.id },
+    select: ["id", "email", "isBanned", "tokenVersion"], // ← Add email to see
+  });
+
+  console.log("[REVALIDATE] User data:", {
+    userId: req.user!.id, // ← Add this
+    email: user?.email, // ← Add this
+    found: !!user,
+    isBanned: user?.isBanned,
+    dbTokenVersion: user?.tokenVersion,
+    requestTokenVersion: req.user!.tokenVersion,
   });
 
   if (!user) {
-    return res.status(401).json({ message: "User not found" });
-  }
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
 
-  if (user.isBanned) {
-    return res.status(403).json({ message: "Account banned" });
-  }
-
-  if (user.tokenVersion !== req.user!.tokenVersion) {
     return res.status(401).json({
-      message: "Session revoked",
+      success: false,
+      message: "User not found",
       forceLogout: true,
+      errorType: "user_not_found",
     });
   }
 
+  if (user.isBanned) {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.status(403).json({
+      success: false,
+      message: "Your account has been banned by an administrator",
+      forceLogout: true,
+      errorType: "account_banned",
+    });
+  }
+
+  // ✅ Check token version mismatch
+  if (user.tokenVersion !== req.user!.tokenVersion) {
+    console.log(`❌ [REVALIDATE] TOKEN VERSION MISMATCH!`);
+    console.log(`   DB has: ${user.tokenVersion}`);
+    console.log(`   Token has: ${req.user!.tokenVersion}`);
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.status(401).json({
+      success: false,
+      message: "Your session has been revoked by an administrator",
+      forceLogout: true,
+      errorType: "session_revoked",
+    });
+  }
+
+  console.log("✅ [REVALIDATE] User revalidated successfully");
   next();
 };

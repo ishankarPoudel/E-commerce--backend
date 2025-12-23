@@ -224,22 +224,6 @@ export class AuthService {
     return { email: user.email };
   }
 
-  // async generateTokens(user: UserEntity) {
-  //   const payload = {
-  //     userId: user.id,
-  //     tokenVersion: user.tokenVersion,
-  //     role: user.role,
-  //   };
-  //   const accessToken = new Tokens().signAccessToken(payload);
-  //   const refreshToken = new Tokens().signRefreshToken(payload);
-
-  //   //stored hashed refresh token in DB
-  //   user.refreshToken = await bcrypt.hash(refreshToken, 10);
-  //   await this.userRepo.save(user);
-
-  //   return { accessToken, refreshToken };
-  // }
-
   async logoutUser(userId: string) {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) throw new ApiError(404, "User not found");
