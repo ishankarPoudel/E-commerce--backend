@@ -31,14 +31,9 @@ export class AdminService {
       isEmailVerified: true,
       isOauth: false,
       provider: "local",
-      tokenVersion: 0, // ✅ Explicitly set
+      tokenVersion: 0,
     });
     await this.userRepo.save(adminUser);
-
-    console.log(`✅ [ADMIN] Created admin:`, {
-      email: adminUser.email,
-      tokenVersion: adminUser.tokenVersion,
-    });
 
     return {
       email: adminUser.email,
@@ -71,10 +66,6 @@ export class AdminService {
   }
 
   async revokeUserSession(userId: string) {
-    console.log(`\n🔴 ========================================`);
-    console.log(`🔴 [ADMIN] REVOKING SESSION FOR USER: ${userId}`);
-    console.log(`🔴 ========================================\n`);
-
     const user = await this.userRepo.findOne({
       where: { id: userId },
       select: ["id", "email", "tokenVersion", "refreshToken"],
@@ -84,11 +75,6 @@ export class AdminService {
 
     const oldTokenVersion = user.tokenVersion;
     const newTokenVersion = oldTokenVersion + 1;
-
-    console.log(`📊 [ADMIN] BEFORE REVOKE:`);
-    console.log(`   User: ${user.email}`);
-    console.log(`   Current tokenVersion: ${oldTokenVersion}`);
-    console.log(`   New tokenVersion: ${newTokenVersion}`);
 
     // Execute the update
     const result = await this.userRepo
@@ -109,14 +95,6 @@ export class AdminService {
       select: ["id", "email", "tokenVersion"],
     });
 
-    console.log(`\n✅ [ADMIN] AFTER REVOKE:`);
-    console.log(`   User: ${updatedUser?.email}`);
-    console.log(`   tokenVersion in DB: ${updatedUser?.tokenVersion}`);
-    console.log(
-      `   Update successful: ${updatedUser?.tokenVersion === newTokenVersion}`
-    );
-    console.log(`\n🔴 ========================================\n`);
-
     if (updatedUser?.tokenVersion !== newTokenVersion) {
       throw new ApiError(
         500,
@@ -126,10 +104,6 @@ export class AdminService {
   }
 
   async banUser(userId: string) {
-    console.log(`\n🔴 ========================================`);
-    console.log(`🔴 [ADMIN] BANNING USER: ${userId}`);
-    console.log(`🔴 ========================================\n`);
-
     const user = await this.userRepo.findOne({
       where: { id: userId },
       select: ["id", "email", "isBanned", "tokenVersion"],
@@ -146,7 +120,6 @@ export class AdminService {
     console.log(`   isBanned: ${user.isBanned}`);
     console.log(`   tokenVersion: ${oldTokenVersion} → ${newTokenVersion}`);
 
-    // ✅ Use query builder for consistency
     const result = await this.userRepo
       .createQueryBuilder()
       .update(UserEntity)
@@ -175,16 +148,11 @@ export class AdminService {
         updatedUser?.isBanned && updatedUser?.tokenVersion === newTokenVersion
       }`
     );
-    console.log(`\n🔴 ========================================\n`);
 
     await new MailService().sendAccoutBanNotificationEmail(user.email);
   }
 
   async unbanUser(userId: string) {
-    console.log(`\n🟢 ========================================`);
-    console.log(`🟢 [ADMIN] UNBANNING USER: ${userId}`);
-    console.log(`🟢 ========================================\n`);
-
     const user = await this.userRepo.findOne({
       where: { id: userId },
       select: ["id", "email", "isBanned", "tokenVersion"],
@@ -196,12 +164,6 @@ export class AdminService {
     const oldTokenVersion = user.tokenVersion;
     const newTokenVersion = oldTokenVersion + 1;
 
-    console.log(`📊 [ADMIN] BEFORE UNBAN:`);
-    console.log(`   User: ${user.email}`);
-    console.log(`   isBanned: ${user.isBanned}`);
-    console.log(`   tokenVersion: ${oldTokenVersion} → ${newTokenVersion}`);
-
-    // ✅ Use query builder for consistency
     const result = await this.userRepo
       .createQueryBuilder()
       .update(UserEntity)
@@ -220,17 +182,6 @@ export class AdminService {
       where: { id: userId },
       select: ["id", "email", "isBanned", "tokenVersion"],
     });
-
-    console.log(`\n✅ [ADMIN] AFTER UNBAN:`);
-    console.log(`   User: ${updatedUser?.email}`);
-    console.log(`   isBanned: ${updatedUser?.isBanned}`);
-    console.log(`   tokenVersion: ${updatedUser?.tokenVersion}`);
-    console.log(
-      `   Update successful: ${
-        !updatedUser?.isBanned && updatedUser?.tokenVersion === newTokenVersion
-      }`
-    );
-    console.log(`\n🟢 ========================================\n`);
 
     await new MailService().sendAccountUnbanNotificationEmail(user.email);
   }

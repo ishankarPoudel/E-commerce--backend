@@ -333,25 +333,25 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
     const upload = opts?.multer ||  multer({"limits":{"fileSize":8388608}});
 
     
-        const argsUserController_getUserById: Record<string, TsoaRoute.ParameterSchema> = {
+        const argsUserController_getCurrentUser: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.get('/user/me',
             ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getUserById)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getCurrentUser)),
 
-            async function UserController_getUserById(request: ExRequest, response: ExResponse, next: any) {
+            async function UserController_getCurrentUser(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_getUserById, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_getCurrentUser, request, response });
 
                 const controller = new UserController();
 
               await templateService.apiHandler({
-                methodName: 'getUserById',
+                methodName: 'getCurrentUser',
                 controller,
                 response,
                 next,

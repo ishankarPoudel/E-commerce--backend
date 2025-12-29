@@ -25,15 +25,26 @@ export class TokensService {
   }
 
   async refreshTokens(refreshToken: string) {
-    if (!refreshToken) throw new ApiError(401, "Refresh Token missing");
+    if (!refreshToken) {
+      const error = new ApiError(401, "Refresh Token missing");
+      (error as any).forceLogout = true;
+      (error as any).errorType = "session_expired";
+      throw error;
+    }
     let payload: any;
     try {
       payload = new Tokens().verifyRefreshToken(refreshToken);
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        throw new ApiError(401, "Refresh Token expired");
+        const apiError = new ApiError(401, "Refresh Token expired");
+        (apiError as any).forceLogout = true;
+        (apiError as any).errorType = "session_expired";
+        throw apiError;
       }
-      throw new ApiError(401, "Invalid Refresh Token");
+      const apiError = new ApiError(401, "Invalid Refresh Token");
+      (apiError as any).forceLogout = true;
+      (apiError as any).errorType = "session_expired";
+      throw apiError;
     }
 
     const user = await this.userRepo.findOne({
@@ -42,21 +53,52 @@ export class TokensService {
       },
     });
 
-    if (!user || !user.refreshToken)
-      throw new ApiError(401, "User not found or refresh token missing");
+    if (!user) {
+      const error = new ApiError(401, "User not found");
+      (error as any).forceLogout = true;
+      (error as any).errorType = "session_expired";
+      throw error;
+    }
+
+    if (!user.refreshToken) {
+      const error = new ApiError(401, "Refresh token missing");
+      (error as any).forceLogout = true;
+      (error as any).errorType = "session_expired";
+      throw error;
+    }
 
     if (user.isBanned) {
-      throw new ApiError(403, "Your account has been banned. Contact support.");
+      const error = new ApiError(
+        403,
+        "Your account has been banned. Contact support."
+      );
+      (error as any).forceLogout = true;
+      (error as any).errorType = "account_banned";
+      throw error;
     }
     if (payload.tokenVersion !== user.tokenVersion) {
       throw new ApiError(401, "Session has been revoked by administrator");
+    }
+    if (payload.tokenVersion !== user.tokenVersion) {
+      const error = new ApiError(
+        401,
+        "Session has been revoked by administrator"
+      );
+      (error as any).forceLogout = true;
+      (error as any).errorType = "session_revoked";
+      throw error;
     }
 
     const isRefreshTokenValid = await bcrypt.compare(
       refreshToken,
       user.refreshToken
     );
-    if (!isRefreshTokenValid) throw new ApiError(401, "Invalid Refresh Token");
+    if (!isRefreshTokenValid) {
+      const error = new ApiError(401, "Invalid Refresh Token");
+      (error as any).forceLogout = true;
+      (error as any).errorType = "session_expired";
+      throw error;
+    }
 
     // Generate new tokens
     const newAccessToken = new Tokens().signAccessToken({

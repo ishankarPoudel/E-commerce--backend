@@ -19,22 +19,47 @@ import {
   authorizeRoles,
 } from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
-import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
+import {
+  UserEntity,
+  UserRole,
+} from "../../entities/user/userInfo/user.userInfo.entity";
+import AppDataSource from "../../config/data-source/data-source";
 
 @Route("/user")
 @Tags("User")
 export class UserController extends Controller {
   @Get("/me")
-  @Middlewares(authenticateToken, authorizeRoles(UserRole.USER, UserRole.ADMIN))
+  @Middlewares(authenticateToken)
   @SuccessResponse("200", "User retrieved successfully")
-  async getUserById(@Request() req: AuthenticatedRequest) {
-    const userId = req?.user?.id;
-    if (!userId) throw new ApiError(401, "Unauthorized access");
-    const user = await new UserService().getUserById(userId as string);
+  async getCurrentUser(@Request() req: AuthenticatedRequest) {
+    if (!req.user) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+    const userRepo = AppDataSource.getRepository(UserEntity);
+    const user = await userRepo.findOne({
+      where: { id: req.user.id },
+      select: ["id", "fullName", "email", "role", "tokenVersion"], // ✅ Only select needed fields
+    });
+    if (!user) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
     return {
       success: true,
-      message: "User retrieved successfully",
-      data: user,
+      data: {
+        userId: user.id,
+        role: user.role,
+        fullName: user.fullName,
+        email: user.email,
+        tokenVersion: user.tokenVersion,
+      },
     };
   }
 

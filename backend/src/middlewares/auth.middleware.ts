@@ -6,6 +6,8 @@ import {
   UserEntity,
   UserRole,
 } from "../entities/user/userInfo/user.userInfo.entity";
+import { TokenExpiredError } from "jsonwebtoken";
+import { error } from "console";
 
 export interface AuthUser {
   id: string;
@@ -30,11 +32,58 @@ export const authenticateToken = async (
       return res.status(401).json({
         success: false,
         message: "Access token missing",
-        forceLogout: true,
+        forceLogout: false, // forntend will  try refresh token at this point
       });
     }
 
-    const payload = new Tokens().verifyAccessToken(accessToken) as any;
+    let payload: any;
+    try {
+      payload = new Tokens().verifyAccessToken(accessToken);
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        return res.status(401).json({
+          success: false,
+          message: "Access Token expired",
+          forceLogout: false, // frontend will try refresh token at this point
+        });
+      }
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Access Token",
+        forceLogout: true,
+        errorType: "session_expired",
+      });
+    }
+
+    const userRepo = AppDataSource.getRepository(UserEntity);
+    const user = await userRepo.findOne({
+      where: { id: payload.userId },
+    });
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+        forceLogout: true,
+        errorType: "session_expired",
+      });
+    }
+    if (user.isBanned) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been banned. Contact support.",
+        forceLogout: true,
+        errorType: "account_banned",
+      });
+    }
+
+    if (payload.tokenVersion !== user.tokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: "Session has been revoked by administrator",
+        forceLogout: true,
+        errorType: "session_revoked",
+      });
+    }
 
     req.user = {
       id: payload.userId,
@@ -45,11 +94,7 @@ export const authenticateToken = async (
     next();
   } catch (error) {
     console.error("Authentication error:", error);
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired access token",
-      forceLogout: true,
-    });
+    next(error);
   }
 };
 
@@ -59,17 +104,24 @@ export const authorizeRoles = (...allowedRoles: UserRole[]) => {
     res: Response,
     next: NextFunction
   ) => {
-    if (!req.user) {
+    const authRq = req as AuthenticatedRequest;
+    if (!authRq.user) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized access",
+        message: "Unauthorized",
+        forceLogout: true,
+        errorType: "session_expired",
       });
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!allowedRoles.includes(authRq.user.role)) {
       return res.status(403).json({
         success: false,
         message: "Forbidden: Insufficient permissions",
+        errorType: "insufficient_permissions",
+        forceLogout: false, // User is authenticated but not authorized
+        requiredRole: allowedRoles,
+        currentRole: authRq.user.role,
       });
     }
 

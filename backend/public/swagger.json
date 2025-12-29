@@ -875,64 +875,72 @@
 	"paths": {
 		"/user/me": {
 			"get": {
-				"operationId": "GetUserById",
+				"operationId": "GetCurrentUser",
 				"responses": {
 					"200": {
 						"description": "User retrieved successfully",
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"data": {
+									"anyOf": [
+										{
 											"properties": {
-												"updatedAt": {
-													"type": "string",
-													"format": "date-time"
-												},
-												"createdAt": {
-													"type": "string",
-													"format": "date-time"
-												},
-												"provider": {
+												"data": {},
+												"message": {
 													"type": "string"
 												},
-												"isOauth": {
+												"success": {
 													"type": "boolean"
-												},
-												"isEmailVerified": {
-													"type": "boolean"
-												},
-												"fullName": {
-													"type": "string"
-												},
-												"email": {
-													"type": "string"
 												}
 											},
 											"required": [
-												"updatedAt",
-												"createdAt",
-												"provider",
-												"isOauth",
-												"isEmailVerified",
-												"fullName",
-												"email"
+												"message",
+												"success"
 											],
 											"type": "object"
 										},
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
+										{
+											"properties": {
+												"message": {},
+												"data": {
+													"properties": {
+														"tokenVersion": {
+															"type": "number",
+															"format": "double"
+														},
+														"email": {
+															"type": "string"
+														},
+														"fullName": {
+															"type": "string"
+														},
+														"role": {
+															"$ref": "#/components/schemas/UserRole"
+														},
+														"userId": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"tokenVersion",
+														"email",
+														"fullName",
+														"role",
+														"userId"
+													],
+													"type": "object"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"success"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"data",
-										"message",
-										"success"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
