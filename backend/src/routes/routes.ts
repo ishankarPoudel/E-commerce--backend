@@ -24,6 +24,8 @@ import { BagController } from './../controllers/bag/bag.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './../controllers/auth/auth.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AnalyticsController } from './../controllers/analytis/analytics.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AdminController } from './../controllers/admin/admin.controller';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 const multer = require('multer');
@@ -311,6 +313,104 @@ const models: TsoaRoute.Models = {
             "browser": {"dataType":"string","required":true},
             "device": {"dataType":"string","required":true},
             "location": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RevenueMetrics": {
+        "dataType": "refObject",
+        "properties": {
+            "total": {"dataType":"double","required":true},
+            "previousMonth": {"dataType":"double","required":true},
+            "percentageChange": {"dataType":"double","required":true},
+            "currency": {"dataType":"string","required":true},
+            "averageOrderValue": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserMetrics": {
+        "dataType": "refObject",
+        "properties": {
+            "total": {"dataType":"double","required":true},
+            "active": {"dataType":"double","required":true},
+            "newThisMonth": {"dataType":"double","required":true},
+            "percentageChange": {"dataType":"double","required":true},
+            "bannedUsers": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OrderMetrics": {
+        "dataType": "refObject",
+        "properties": {
+            "total": {"dataType":"double","required":true},
+            "pending": {"dataType":"double","required":true},
+            "completed": {"dataType":"double","required":true},
+            "cancelled": {"dataType":"double","required":true},
+            "percentageChange": {"dataType":"double","required":true},
+            "conversionRate": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RecentOrder": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "customerName": {"dataType":"string","required":true},
+            "customerEmail": {"dataType":"string","required":true},
+            "amount": {"dataType":"double","required":true},
+            "status": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "itemCount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TopProduct": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "category": {"dataType":"string","required":true},
+            "soldCount": {"dataType":"double","required":true},
+            "revenue": {"dataType":"double","required":true},
+            "image": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SalesChartData": {
+        "dataType": "refObject",
+        "properties": {
+            "date": {"dataType":"string","required":true},
+            "revenue": {"dataType":"double","required":true},
+            "orders": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OrderStatusBreakdown": {
+        "dataType": "refObject",
+        "properties": {
+            "status": {"dataType":"string","required":true},
+            "count": {"dataType":"double","required":true},
+            "percentage": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DashboardAnalyticsResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "revenue": {"ref":"RevenueMetrics","required":true},
+            "users": {"ref":"UserMetrics","required":true},
+            "orders": {"ref":"OrderMetrics","required":true},
+            "recentOrders": {"dataType":"array","array":{"dataType":"refObject","ref":"RecentOrder"},"required":true},
+            "topProducts": {"dataType":"array","array":{"dataType":"refObject","ref":"TopProduct"},"required":true},
+            "salesChart": {"dataType":"array","array":{"dataType":"refObject","ref":"SalesChartData"},"required":true},
+            "orderStatusBreakdown": {"dataType":"array","array":{"dataType":"refObject","ref":"OrderStatusBreakdown"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -1496,6 +1596,38 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'googleCallBack',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAnalyticsController_getDashboardAnalytics: Record<string, TsoaRoute.ParameterSchema> = {
+                startDate: {"in":"query","name":"startDate","dataType":"string"},
+                endDate: {"in":"query","name":"endDate","dataType":"string"},
+                period: {"in":"query","name":"period","dataType":"union","subSchemas":[{"dataType":"enum","enums":["week"]},{"dataType":"enum","enums":["month"]},{"dataType":"enum","enums":["quarter"]},{"dataType":"enum","enums":["year"]}]},
+        };
+        app.get('/auth/admin/analytics/dashboard',
+            ...(fetchMiddlewares<RequestHandler>(AnalyticsController)),
+            ...(fetchMiddlewares<RequestHandler>(AnalyticsController.prototype.getDashboardAnalytics)),
+
+            async function AnalyticsController_getDashboardAnalytics(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAnalyticsController_getDashboardAnalytics, request, response });
+
+                const controller = new AnalyticsController();
+
+              await templateService.apiHandler({
+                methodName: 'getDashboardAnalytics',
                 controller,
                 response,
                 next,

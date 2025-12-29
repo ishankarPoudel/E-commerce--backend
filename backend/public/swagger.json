@@ -860,6 +860,274 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"RevenueMetrics": {
+				"properties": {
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"previousMonth": {
+						"type": "number",
+						"format": "double"
+					},
+					"percentageChange": {
+						"type": "number",
+						"format": "double"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"averageOrderValue": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"total",
+					"previousMonth",
+					"percentageChange",
+					"currency",
+					"averageOrderValue"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserMetrics": {
+				"properties": {
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"active": {
+						"type": "number",
+						"format": "double"
+					},
+					"newThisMonth": {
+						"type": "number",
+						"format": "double"
+					},
+					"percentageChange": {
+						"type": "number",
+						"format": "double"
+					},
+					"bannedUsers": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"total",
+					"active",
+					"newThisMonth",
+					"percentageChange",
+					"bannedUsers"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderMetrics": {
+				"properties": {
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"pending": {
+						"type": "number",
+						"format": "double"
+					},
+					"completed": {
+						"type": "number",
+						"format": "double"
+					},
+					"cancelled": {
+						"type": "number",
+						"format": "double"
+					},
+					"percentageChange": {
+						"type": "number",
+						"format": "double"
+					},
+					"conversionRate": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"total",
+					"pending",
+					"completed",
+					"cancelled",
+					"percentageChange",
+					"conversionRate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RecentOrder": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"customerName": {
+						"type": "string"
+					},
+					"customerEmail": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"itemCount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"customerName",
+					"customerEmail",
+					"amount",
+					"status",
+					"createdAt",
+					"itemCount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TopProduct": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"soldCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"revenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"image": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"category",
+					"soldCount",
+					"revenue",
+					"image"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SalesChartData": {
+				"properties": {
+					"date": {
+						"type": "string"
+					},
+					"revenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"orders": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"date",
+					"revenue",
+					"orders"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderStatusBreakdown": {
+				"properties": {
+					"status": {
+						"type": "string"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					},
+					"percentage": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"status",
+					"count",
+					"percentage"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DashboardAnalyticsResponse": {
+				"properties": {
+					"revenue": {
+						"$ref": "#/components/schemas/RevenueMetrics"
+					},
+					"users": {
+						"$ref": "#/components/schemas/UserMetrics"
+					},
+					"orders": {
+						"$ref": "#/components/schemas/OrderMetrics"
+					},
+					"recentOrders": {
+						"items": {
+							"$ref": "#/components/schemas/RecentOrder"
+						},
+						"type": "array"
+					},
+					"topProducts": {
+						"items": {
+							"$ref": "#/components/schemas/TopProduct"
+						},
+						"type": "array"
+					},
+					"salesChart": {
+						"items": {
+							"$ref": "#/components/schemas/SalesChartData"
+						},
+						"type": "array"
+					},
+					"orderStatusBreakdown": {
+						"items": {
+							"$ref": "#/components/schemas/OrderStatusBreakdown"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"revenue",
+					"users",
+					"orders",
+					"recentOrders",
+					"topProducts",
+					"salesChart",
+					"orderStatusBreakdown"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -3442,6 +3710,90 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/auth/admin/analytics/dashboard": {
+			"get": {
+				"operationId": "GetDashboardAnalytics",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"message": {},
+												"data": {
+													"$ref": "#/components/schemas/DashboardAnalyticsResponse"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"message": {},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Analytics"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "startDate",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "endDate",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "period",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"week",
+								"month",
+								"quarter",
+								"year"
+							]
+						}
+					}
+				]
 			}
 		},
 		"/auth/admin/admin-login": {
