@@ -115,11 +115,6 @@ export class AdminService {
     const oldTokenVersion = user.tokenVersion;
     const newTokenVersion = oldTokenVersion + 1;
 
-    console.log(`📊 [ADMIN] BEFORE BAN:`);
-    console.log(`   User: ${user.email}`);
-    console.log(`   isBanned: ${user.isBanned}`);
-    console.log(`   tokenVersion: ${oldTokenVersion} → ${newTokenVersion}`);
-
     const result = await this.userRepo
       .createQueryBuilder()
       .update(UserEntity)
@@ -131,23 +126,11 @@ export class AdminService {
       .where("id = :id", { id: userId })
       .execute();
 
-    console.log(`📊 [ADMIN] UPDATE RESULT:`, result);
-
     // Verify
     const updatedUser = await this.userRepo.findOne({
       where: { id: userId },
       select: ["id", "email", "isBanned", "tokenVersion"],
     });
-
-    console.log(`\n✅ [ADMIN] AFTER BAN:`);
-    console.log(`   User: ${updatedUser?.email}`);
-    console.log(`   isBanned: ${updatedUser?.isBanned}`);
-    console.log(`   tokenVersion: ${updatedUser?.tokenVersion}`);
-    console.log(
-      `   Update successful: ${
-        updatedUser?.isBanned && updatedUser?.tokenVersion === newTokenVersion
-      }`
-    );
 
     await new MailService().sendAccoutBanNotificationEmail(user.email);
   }
