@@ -30,7 +30,7 @@ export class EsewaController extends Controller {
     body: {
       deliveryMethod?: "delivery" | "pickup";
       shippingAddress?: string;
-    }
+    },
   ) {
     const { deliveryMethod, shippingAddress } = body;
 
@@ -43,8 +43,9 @@ export class EsewaController extends Controller {
     const paymentInitiation = await this.esewaService.initiateEsewaPayment(
       req.user.id,
       deliveryMethod,
-      shippingAddress
+      shippingAddress,
     );
+    console.log("eSewa payment initiation response:", paymentInitiation);
     return {
       message: "eSewa payment initiated successfully",
       data: paymentInitiation,
@@ -55,18 +56,17 @@ export class EsewaController extends Controller {
   @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN, UserRole.USER))
   async verifyEsewaPayment(
     @Body() body: { esewaTransactionUuid: string },
-    @Request() request: AuthenticatedRequest
+    @Request() request: AuthenticatedRequest,
   ) {
     const { esewaTransactionUuid } = body;
 
     console.log(
       "Verifying eSewa payment for transaction UUID:",
-      esewaTransactionUuid
+      esewaTransactionUuid,
     );
 
-    const verificationResult = await this.esewaService.verifyEsewaPayment(
-      esewaTransactionUuid
-    );
+    const verificationResult =
+      await this.esewaService.verifyEsewaPayment(esewaTransactionUuid);
     return {
       message: "eSewa payment verification completed",
       data: verificationResult,

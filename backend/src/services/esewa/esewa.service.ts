@@ -1,11 +1,10 @@
 import crypto from "crypto";
 import AppDataSource from "../../config/data-source/data-source";
-import { CartEntity } from "../../entities/cart/cart.entity";
 import { OrderEntity } from "../../entities/order/orders.entity";
 import { ApiError } from "../../utils/apiError";
 import { CartService } from "../cart/cart.services";
 import axios from "axios";
-import { ref } from "process";
+
 import { MailService } from "../mail/mail.service";
 
 export class EsewaService {
@@ -19,7 +18,7 @@ export class EsewaService {
   private generateSignature(
     totalAmount: number,
     transactionUuid: string,
-    productCode: string
+    productCode: string,
   ) {
     const message = `total_amount=${totalAmount},transaction_uuid=${transactionUuid},product_code=${productCode}`;
     return crypto
@@ -31,7 +30,7 @@ export class EsewaService {
   async initiateEsewaPayment(
     userId: string,
     deliveryMethod: "delivery" | "pickup" = "delivery",
-    shippingAddress?: string
+    shippingAddress?: string,
   ) {
     const cartExists = await this.cartService.getCartByUserId(userId);
     if (!cartExists) {
@@ -42,7 +41,7 @@ export class EsewaService {
     }
     const amount = cartExists.cart.cartItems.reduce((sum, ci) => {
       if (!ci.product) return sum;
-      return sum + Math.round(Number(ci.product.price) * 100) * ci.quantity;
+      return sum + Math.round(Number(ci.product.price)) * ci.quantity;
     }, 0);
     if (amount <= 0) throw new ApiError(400, "Invalid cart amount");
 
@@ -72,18 +71,18 @@ export class EsewaService {
     });
     await this.orderRepo.save(order);
 
-    // Esewa payload, if not beiing used , 0 must be sent for these charges
+    // Esewa payload, if not being used  0 must be sent for these charges
     const taxAmount = 0;
-    const serviceCharge = 0;
+    const serviceCharge = 5;
     const deliveryCharge = 0;
 
-    const totalAmount = amount + taxAmount + serviceCharge + deliveryCharge;
+    let totalAmount = amount + taxAmount + serviceCharge + deliveryCharge;
 
     const signedFields = "total_amount,transaction_uuid,product_code";
     const signature = this.generateSignature(
       totalAmount,
       esewaTransactionUuid,
-      process.env.ESEWA_PRODUCT_CODE!
+      process.env.ESEWA_PRODUCT_CODE!,
     );
     const formUrl = process.env.ESEWA_PAYMENT_URL!;
 
@@ -91,13 +90,13 @@ export class EsewaService {
     return {
       formUrl: process.env.ESEWA_FORM_URL!,
       params: {
-        amount: amount,
+        amount: amount, //amount of products only
         tax_amount: taxAmount || 0,
-        total_amount: totalAmount || 0,
+        total_amount: totalAmount || 0, //amount includes all charges ie producut amnt plus service plus tax plus delivery
         transaction_uuid: esewaTransactionUuid,
         product_code: process.env.ESEWA_PRODUCT_CODE!,
-        product_service_charge: 0,
-        product_delivery_charge: 0,
+        product_service_charge: serviceCharge || 0,
+        product_delivery_charge: deliveryCharge || 0,
         success_url: process.env.ESEWA_SUCCESS_URL!,
         failure_url: process.env.ESEWA_FAILURE_URL!,
         signed_field_names: "total_amount,transaction_uuid,product_code",
@@ -106,99 +105,95 @@ export class EsewaService {
     };
   }
 
-  async verifyEsewaPayment(
-    esewaTransactionUuid: string,
-    retries = 3,
-    delayMs = 2000
-  ) {
+  async verifyEsewaPayment(esewaTransactionUuid: string) {
     const order = await this.orderRepo.findOne({
       where: { esewaTransactionUuid },
       relations: ["user"],
     });
+
     if (!order) throw new ApiError(404, "Order not found for this transaction");
 
-    const verifyUrl = `${process.env.ESEWA_VERIFY_URL}?product_code=${process.env.ESEWA_PRODUCT_CODE}&total_amount=${order.amount}&transaction_uuid=${order.esewaTransactionUuid}`;
+    // If order is already complete, return immediately
+    if (order.esewaStatus === "COMPLETE") {
+      return {
+        status: order.status,
+        ref_id: order.esewaRefId,
+        esewaStatus: order.esewaStatus,
+        orderId: order.id,
+      };
+    }
 
-    let emailSent = false;
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        const response = await axios.get(verifyUrl);
-        const { status, ref_id } = response.data;
-        const oldEsewaStatus = order.esewaStatus;
+    const serviceCharge = 5;
+    const totalAmount = order.amount + serviceCharge;
+    const verifyUrl = `${process.env.ESEWA_VERIFY_URL}?product_code=${process.env.ESEWA_PRODUCT_CODE}&total_amount=${totalAmount}&transaction_uuid=${order.esewaTransactionUuid}`;
 
-        switch (status) {
-          case "COMPLETE":
-            order.status = "paid";
-            order.orderStatus = "processing";
-            order.esewaStatus = "COMPLETE";
-            order.esewaRefId = ref_id;
-            break;
-          case "PENDING":
-            order.status = "pending";
-            order.orderStatus = "new";
-            order.esewaStatus = "PENDING";
-            break;
-          case "FULL_REFUND":
-          case "PARTIAL_REFUND":
-            order.status = "refunded";
-            order.orderStatus = "cancelled";
-            order.esewaStatus = status;
-            order.esewaRefId = ref_id;
-            break;
-          case "CANCELED":
-          case "NOT_FOUND":
-          case "AMBIGUOUS":
-            order.status = "failed";
-            order.orderStatus = "cancelled";
-            order.esewaStatus = status;
-            order.esewaRefId = ref_id;
-            break;
-          default:
-            order.status = "failed";
-            order.orderStatus = "cancelled";
-            order.esewaStatus = status;
-            order.esewaRefId = ref_id;
-        }
+    try {
+      const response = await axios.get(verifyUrl);
+      const { status, ref_id } = response.data;
 
-        await this.orderRepo.save(order);
+      // Capture old status BEFORE any changes
+      const oldEsewaStatus = order.esewaStatus as string | undefined;
 
-        if (
-          order.esewaStatus === "COMPLETE" &&
-          oldEsewaStatus !== "COMPLETE" &&
-          !emailSent
-        ) {
-          try {
-            await new MailService().sendOrderConfirmationEmail(
-              order.user.email,
-              order
-            );
-            emailSent = true;
-          } catch (emailError) {
-            console.error(
-              `Failed to send order confirmation email:`,
-              emailError
-            );
-          }
-        }
-        const shouldRetry = status === "PENDING" && attempt < retries;
-
-        if (shouldRetry) {
-          await new Promise((res) => setTimeout(res, delayMs)); // wait before retry
-          continue;
-        }
-
-        return {
-          status: order.status,
-          ref_id: order.esewaRefId,
-          esewaStatus: order.esewaStatus,
-          shouldRetry: false,
-          orderId: order.id,
-        };
-      } catch (err) {
-        if (attempt === retries)
-          throw new ApiError(500, "Failed to verify eSewa payment");
-        await new Promise((res) => setTimeout(res, delayMs));
+      switch (status) {
+        case "COMPLETE":
+          order.status = "paid";
+          order.orderStatus = "processing";
+          order.esewaStatus = "COMPLETE";
+          order.esewaRefId = ref_id;
+          break;
+        case "PENDING":
+          order.status = "pending";
+          order.orderStatus = "new";
+          order.esewaStatus = "PENDING";
+          break;
+        case "FULL_REFUND":
+        case "PARTIAL_REFUND":
+          order.status = "refunded";
+          order.orderStatus = "cancelled";
+          order.esewaStatus = status;
+          order.esewaRefId = ref_id;
+          break;
+        case "CANCELED":
+        case "NOT_FOUND":
+        case "AMBIGUOUS":
+          order.status = "failed";
+          order.orderStatus = "cancelled";
+          order.esewaStatus = status;
+          order.esewaRefId = ref_id;
+          break;
+        default:
+          order.status = "failed";
+          order.orderStatus = "cancelled";
+          order.esewaStatus = status;
+          order.esewaRefId = ref_id;
       }
+
+      await this.orderRepo.save(order);
+
+      // Send email ONLY if status just changed to COMPLETE
+      if (status === "COMPLETE" && oldEsewaStatus !== "COMPLETE") {
+        try {
+          await new MailService().sendOrderConfirmationEmail(
+            order.user.email,
+            order,
+          );
+        } catch (emailError) {
+          console.error("Failed to send email:", emailError);
+        }
+      }
+
+      return {
+        status: order.status,
+        ref_id: order.esewaRefId,
+        esewaStatus: order.esewaStatus,
+        orderId: order.id,
+      };
+    } catch (err) {
+      console.error("Error verifying eSewa payment:", err);
+      throw new ApiError(
+        500,
+        "Failed to verify eSewa payment. Please try again.",
+      );
     }
   }
 }
