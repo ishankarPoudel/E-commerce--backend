@@ -1979,52 +1979,37 @@
 				]
 			}
 		},
-		"/media/upload": {
-			"post": {
-				"operationId": "UploadMedia",
+		"/media/signature": {
+			"get": {
+				"operationId": "GetUploadSignature",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"anyOf": [
-										{
-											"properties": {
-												"data": {},
-												"message": {
-													"type": "string"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"message",
-												"success"
-											],
-											"type": "object"
+									"properties": {
+										"apiKey": {
+											"type": "string"
 										},
-										{
-											"properties": {
-												"data": {
-													"$ref": "#/components/schemas/MediaEntity"
-												},
-												"message": {
-													"type": "string"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"data",
-												"message",
-												"success"
-											],
-											"type": "object"
+										"cloudName": {
+											"type": "string"
+										},
+										"signature": {
+											"type": "string"
+										},
+										"timestamp": {
+											"type": "number",
+											"format": "double"
 										}
-									]
+									},
+									"required": [
+										"apiKey",
+										"cloudName",
+										"signature",
+										"timestamp"
+									],
+									"type": "object"
 								}
 							}
 						}
@@ -2034,30 +2019,7 @@
 					"Media"
 				],
 				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"bagId": {
-										"type": "string"
-									},
-									"file": {
-										"type": "string",
-										"format": "binary"
-									}
-								},
-								"required": [
-									"bagId",
-									"file"
-								]
-							}
-						}
-					}
-				}
+				"parameters": []
 			}
 		},
 		"/gemini/search": {
@@ -2263,9 +2225,6 @@
 												"orderId": {
 													"type": "string"
 												},
-												"shouldRetry": {
-													"type": "boolean"
-												},
 												"esewaStatus": {
 													"type": "string",
 													"enum": [
@@ -2289,7 +2248,6 @@
 											},
 											"required": [
 												"orderId",
-												"shouldRetry",
 												"esewaStatus",
 												"ref_id",
 												"status"

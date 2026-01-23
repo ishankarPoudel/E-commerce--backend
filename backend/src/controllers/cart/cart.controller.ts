@@ -33,7 +33,7 @@ export class CartController extends Controller {
   @Middlewares(authenticateToken, revalidateUser)
   async addToCart(
     @Body() cart: AddToCartValidator,
-    @Request() req: AuthenticatedRequest
+    @Request() req: AuthenticatedRequest,
   ) {
     const userId = this.getUserIdFromRequest(req);
     const cartService = await new CartService().addToCart(
@@ -41,7 +41,7 @@ export class CartController extends Controller {
       cart.bagId,
       cart.quantity,
       cart.color,
-      cart.size
+      cart.size,
     );
     return {
       message: "Item added to cart successfully",
@@ -52,12 +52,12 @@ export class CartController extends Controller {
   @Delete("/remove-from-cart")
   async removeFromCart(
     @Body() cart: { bagId: string; userId?: string },
-    @Request() req: AuthenticatedRequest
+    @Request() req: AuthenticatedRequest,
   ) {
     const userId = this.getUserIdFromRequest(req);
     const cartService = await new CartService().removeFromCart(
       userId,
-      cart.bagId
+      cart.bagId,
     );
     return {
       message: "Item removed from cart successfully",
@@ -68,14 +68,19 @@ export class CartController extends Controller {
   @Patch("/update-cart")
   async updateCart(
     @Body() cart: { bagId: string; quantity: number },
-    @Request() req: AuthenticatedRequest
+    @Request() req: AuthenticatedRequest,
   ) {
+    console.log("🎯 CONTROLLER - Received request");
+    console.log("🎯 CONTROLLER - bagId:", cart.bagId);
+    console.log("🎯 CONTROLLER - quantity:", cart.quantity);
+    console.log("🎯 CONTROLLER - userId:", req.user?.id);
+
     const userId = this.getUserIdFromRequest(req);
     const cartService = await new CartService().updateCartItemQuantity(
-      userId,
       cart.bagId,
-      cart.quantity
+      cart.quantity,
     );
+    console.log("✅ CONTROLLER - Updated cart item:", cartService.cart.id);
     return {
       message: "Cart updated successfully",
       data: cartService.cart,

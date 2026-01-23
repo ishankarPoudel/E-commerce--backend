@@ -12,7 +12,7 @@ export class CartService {
     bagId: string,
     quantity: number,
     color?: string,
-    size?: string
+    size?: string,
   ) {
     if (!quantity || quantity <= 0) throw new ApiError(400, "Invalid quantity");
 
@@ -61,7 +61,7 @@ export class CartService {
           where: { id: cart.id },
           relations: ["cartItems.product", "cartItems.product.images"],
         });
-      }
+      },
     );
   }
 
@@ -78,18 +78,16 @@ export class CartService {
     };
   }
 
-  async updateCartItemQuantity(
-    userId: string,
-    bagId: string,
-    quantity: number
-  ) {
+  async updateCartItemQuantity(bagId: string, quantity: number) {
     const cart = await this.cartItemRepo.findOne({
       where: {
         id: bagId,
       },
     });
-    if (!cart) throw new ApiError(404, "Cart not found");
 
+    if (!cart) {
+      throw new ApiError(404, "Cart item not found");
+    }
     if (quantity <= 0) {
       await this.cartItemRepo.remove(cart);
     } else {

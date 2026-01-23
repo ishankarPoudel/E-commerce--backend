@@ -28,8 +28,6 @@ import { AnalyticsController } from './../controllers/analytis/analytics.control
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AdminController } from './../controllers/admin/admin.controller';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
-const multer = require('multer');
-
 
 
 
@@ -423,14 +421,13 @@ const templateService = new ExpressTemplateService(models, {"noImplicitAdditiona
 
 
 
-export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof multer>}) {
+export function RegisterRoutes(app: Router) {
 
     // ###########################################################################################################
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
 
-    const upload = opts?.multer ||  multer({"limits":{"fileSize":8388608}});
 
     
         const argsUserController_getCurrentUser: Record<string, TsoaRoute.ParameterSchema> = {
@@ -717,32 +714,24 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsMediaController_uploadMedia: Record<string, TsoaRoute.ParameterSchema> = {
-                bagId: {"in":"formData","name":"bagId","required":true,"dataType":"string"},
-                file: {"in":"formData","name":"file","required":true,"dataType":"file"},
+        const argsMediaController_getUploadSignature: Record<string, TsoaRoute.ParameterSchema> = {
         };
-        app.post('/media/upload',
-            upload.fields([
-                {
-                    name: "file",
-                    maxCount: 1
-                }
-            ]),
+        app.get('/media/signature',
             ...(fetchMiddlewares<RequestHandler>(MediaController)),
-            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.uploadMedia)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.getUploadSignature)),
 
-            async function MediaController_uploadMedia(request: ExRequest, response: ExResponse, next: any) {
+            async function MediaController_getUploadSignature(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_uploadMedia, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_getUploadSignature, request, response });
 
                 const controller = new MediaController();
 
               await templateService.apiHandler({
-                methodName: 'uploadMedia',
+                methodName: 'getUploadSignature',
                 controller,
                 response,
                 next,
