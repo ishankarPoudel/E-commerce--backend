@@ -14,7 +14,7 @@ export class addBagValidator {
   @Length(0, 200)
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   categories: string[];
 
   @IsOptional()

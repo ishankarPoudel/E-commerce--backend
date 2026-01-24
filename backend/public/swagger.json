@@ -387,11 +387,33 @@
 						"format": "date-time",
 						"nullable": true
 					},
-					"image": {
+					"url": {
+						"type": "string"
+					},
+					"publicId": {
 						"type": "string"
 					},
 					"altText": {
 						"type": "string"
+					},
+					"format": {
+						"type": "string"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"bytes": {
+						"type": "number",
+						"format": "double"
+					},
+					"sortOrder": {
+						"type": "number",
+						"format": "double"
 					},
 					"bag": {
 						"$ref": "#/components/schemas/BagEntity"
@@ -402,7 +424,9 @@
 					"createdAt",
 					"updatedAt",
 					"deletedAt",
-					"image",
+					"url",
+					"publicId",
+					"sortOrder",
 					"bag"
 				],
 				"type": "object",
@@ -613,6 +637,109 @@
 					"unitPrice",
 					"color",
 					"size"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UploadImageBody": {
+				"properties": {
+					"bagId": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"publicId": {
+						"type": "string"
+					},
+					"format": {
+						"type": "string"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"bytes": {
+						"type": "number",
+						"format": "double"
+					},
+					"altText": {
+						"type": "string"
+					},
+					"sortOrder": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"bagId",
+					"url",
+					"publicId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_UploadImageBody.Exclude_keyofUploadImageBody.bagId__": {
+				"properties": {
+					"url": {
+						"type": "string"
+					},
+					"publicId": {
+						"type": "string"
+					},
+					"format": {
+						"type": "string"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"bytes": {
+						"type": "number",
+						"format": "double"
+					},
+					"altText": {
+						"type": "string"
+					},
+					"sortOrder": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"url",
+					"publicId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_UploadImageBody.bagId_": {
+				"$ref": "#/components/schemas/Pick_UploadImageBody.Exclude_keyofUploadImageBody.bagId__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"UploadMultipleImagesBody": {
+				"properties": {
+					"bagId": {
+						"type": "string"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Omit_UploadImageBody.bagId_"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"bagId",
+					"images"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1543,9 +1670,7 @@
 																				"images": {
 																					"items": {
 																						"properties": {
-																							"url": {
-																								"type": "string"
-																							},
+																							"url": {},
 																							"id": {
 																								"type": "string"
 																							}
@@ -2020,6 +2145,105 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/media/upload": {
+			"post": {
+				"operationId": "SaveImagedToDB",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/MediaEntity"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Media"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UploadImageBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/media/upload-multiple": {
+			"post": {
+				"operationId": "SaveMultipleImagesToDB",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/MediaEntity"
+											},
+											"type": "array"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Media"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UploadMultipleImagesBody"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/gemini/search": {

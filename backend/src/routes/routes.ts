@@ -152,8 +152,14 @@ const models: TsoaRoute.Models = {
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
             "deletedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"enum","enums":[null]}],"required":true},
-            "image": {"dataType":"string","required":true},
+            "url": {"dataType":"string","required":true},
+            "publicId": {"dataType":"string","required":true},
             "altText": {"dataType":"string"},
+            "format": {"dataType":"string"},
+            "width": {"dataType":"double"},
+            "height": {"dataType":"double"},
+            "bytes": {"dataType":"double"},
+            "sortOrder": {"dataType":"double","required":true},
             "bag": {"ref":"BagEntity","required":true},
         },
         "additionalProperties": false,
@@ -214,6 +220,41 @@ const models: TsoaRoute.Models = {
             "unitPrice": {"dataType":"double","required":true},
             "color": {"dataType":"string","required":true},
             "size": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UploadImageBody": {
+        "dataType": "refObject",
+        "properties": {
+            "bagId": {"dataType":"string","required":true},
+            "url": {"dataType":"string","required":true},
+            "publicId": {"dataType":"string","required":true},
+            "format": {"dataType":"string"},
+            "width": {"dataType":"double"},
+            "height": {"dataType":"double"},
+            "bytes": {"dataType":"double"},
+            "altText": {"dataType":"string"},
+            "sortOrder": {"dataType":"double"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_UploadImageBody.Exclude_keyofUploadImageBody.bagId__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"url":{"dataType":"string","required":true},"publicId":{"dataType":"string","required":true},"format":{"dataType":"string"},"width":{"dataType":"double"},"height":{"dataType":"double"},"bytes":{"dataType":"double"},"altText":{"dataType":"string"},"sortOrder":{"dataType":"double"}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_UploadImageBody.bagId_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_UploadImageBody.Exclude_keyofUploadImageBody.bagId__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UploadMultipleImagesBody": {
+        "dataType": "refObject",
+        "properties": {
+            "bagId": {"dataType":"string","required":true},
+            "images": {"dataType":"array","array":{"dataType":"refAlias","ref":"Omit_UploadImageBody.bagId_"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -732,6 +773,66 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getUploadSignature',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMediaController_saveImagedToDB: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"UploadImageBody"},
+        };
+        app.post('/media/upload',
+            ...(fetchMiddlewares<RequestHandler>(MediaController)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.saveImagedToDB)),
+
+            async function MediaController_saveImagedToDB(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_saveImagedToDB, request, response });
+
+                const controller = new MediaController();
+
+              await templateService.apiHandler({
+                methodName: 'saveImagedToDB',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMediaController_saveMultipleImagesToDB: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"UploadMultipleImagesBody"},
+        };
+        app.post('/media/upload-multiple',
+            ...(fetchMiddlewares<RequestHandler>(MediaController)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.saveMultipleImagesToDB)),
+
+            async function MediaController_saveMultipleImagesToDB(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_saveMultipleImagesToDB, request, response });
+
+                const controller = new MediaController();
+
+              await templateService.apiHandler({
+                methodName: 'saveMultipleImagesToDB',
                 controller,
                 response,
                 next,
