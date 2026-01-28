@@ -66,7 +66,16 @@ export class EsewaService {
         quantity: ci.quantity,
         color: ci.color,
         size: ci.size,
-        image: ci.product?.images?.[0]?.image || null,
+        images:
+          ci.product?.images?.map((img) => ({
+            id: img.id,
+            url: img.url,
+            publicId: img.publicId,
+            altText: img.altText,
+            format: img.format,
+            width: img.width,
+            height: img.height,
+          })) || [],
       })),
     });
     await this.orderRepo.save(order);
@@ -78,7 +87,6 @@ export class EsewaService {
 
     let totalAmount = amount + taxAmount + serviceCharge + deliveryCharge;
 
-    const signedFields = "total_amount,transaction_uuid,product_code";
     const signature = this.generateSignature(
       totalAmount,
       esewaTransactionUuid,
@@ -167,7 +175,6 @@ export class EsewaService {
           order.esewaStatus = status;
           order.esewaRefId = ref_id;
       }
-
       await this.orderRepo.save(order);
 
       // Send email ONLY if status just changed to COMPLETE
@@ -181,7 +188,6 @@ export class EsewaService {
           console.error("Failed to send email:", emailError);
         }
       }
-
       return {
         status: order.status,
         ref_id: order.esewaRefId,

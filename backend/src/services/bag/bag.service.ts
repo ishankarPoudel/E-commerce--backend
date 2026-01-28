@@ -43,7 +43,7 @@ export class BagService {
     search?: string,
     category?: string,
     minPrice?: number,
-    maxPrice?: number
+    maxPrice?: number,
   ) {
     const offset = ((page || 1) - 1) * (limit || 10);
 
@@ -58,7 +58,7 @@ export class BagService {
     if (search) {
       queryBuilder.andWhere(
         "(LOWER(bag.name) LIKE LOWER(:search) OR LOWER(bag.description) LIKE LOWER(:search))",
-        { search: `%${search}%` }
+        { search: `%${search}%` },
       );
     }
     if (category && category.length > 0) {
@@ -76,6 +76,8 @@ export class BagService {
     }
 
     const [bags, total] = await queryBuilder.getManyAndCount();
+
+    console.log("to be delivered bags to frontend :", bags);
 
     return {
       data: bags,
@@ -115,7 +117,7 @@ export class BagService {
 
       // Find images to remove (those currently linked but not in newBagImages)
       const imagesToRemove = existingBag.images.filter(
-        (img) => !(bag.bagImages ?? []).includes(img.id)
+        (img) => !(bag.bagImages ?? []).includes(img.id),
       );
 
       // Remove the MediaEntity records for imagesToRemove
@@ -159,7 +161,7 @@ export class BagService {
           coalesce(bag.description,'')
         ) @@ websearch_to_tsquery('english', :q)
       `,
-        { q }
+        { q },
       )
       .addSelect(
         `
@@ -171,7 +173,7 @@ export class BagService {
           websearch_to_tsquery('english', :q)
         )
       `,
-        "rank"
+        "rank",
       )
       .orderBy("rank", "DESC")
       .limit(20)

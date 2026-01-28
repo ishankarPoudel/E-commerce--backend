@@ -9,7 +9,7 @@ export class CheckOutService {
   async createPaymentIntent(
     userId: string,
     deliveryMethod: "delivery" | "pickup" = "delivery",
-    shippingAddress?: string
+    shippingAddress?: string,
   ) {
     const mailer = new MailService();
 
@@ -50,7 +50,16 @@ export class CheckOutService {
           quantity: ci.quantity,
           color: ci.color,
           size: ci.size,
-          image: ci.product?.images?.[0]?.image || null,
+          images:
+            ci.product?.images?.map((img) => ({
+              id: img.id,
+              url: img.url,
+              publicId: img.publicId,
+              altText: img.altText,
+              format: img.format,
+              width: img.width,
+              height: img.height,
+            })) || [],
         })),
       });
       await orderRepo.save(order);
@@ -77,7 +86,7 @@ export class CheckOutService {
           automatic_payment_methods: { enabled: true },
           receipt_email: cart.user?.email || undefined,
         },
-        { idempotencyKey: `order-${order.id}` }
+        { idempotencyKey: `order-${order.id}` },
       );
 
       order.stripePaymentIntentId = paymentIntent.id;

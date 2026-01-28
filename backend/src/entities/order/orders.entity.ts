@@ -19,7 +19,7 @@ export class OrderEntity extends CommonEntity {
   @Column({ default: "delivery" })
   deliveryMethod: "delivery" | "pickup";
 
-  @Column({ default: "USD" })
+  @Column({ default: "NPR" })
   currency: string;
 
   @Column({ type: "integer" })

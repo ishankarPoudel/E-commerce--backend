@@ -34,12 +34,7 @@ export class OrderService {
   async getAllOrders(userId: string) {
     const orders = await this.orderRepo.find({
       where: { user: { id: userId } },
-      relations: [
-        "items",
-        "items.product",
-        "items.product.images",
-        "items.order",
-      ],
+      relations: ["items", "items.product", "items.product.images"],
       order: { createdAt: "DESC" },
     });
 
@@ -52,24 +47,9 @@ export class OrderService {
       return {
         ...rest,
         shippingAddress: order.shippingAddress,
-        items: items?.map((it) => ({
-          id: it.id,
-          quantity: it.quantity,
-          unitPrice: it.unitPrice,
-          color: it.color,
-          size: it.size,
-          product: {
-            id: it.product.id,
-            name: it.product.name,
-            price: it.product.price,
-            images: it.product.images?.map((img) => ({
-              id: img.id,
-              url: img.image,
-            })),
-          },
-        })),
       };
     });
+    console.log("sanitizedOrders", sanitizedOrders);
 
     return { orders: sanitizedOrders };
   }
@@ -105,7 +85,7 @@ export class OrderService {
             .where("user.fullName ILIKE :search", { search: `%${search}%` })
             .orWhere("user.email ILIKE :search", { search: `%${search}%` })
             .orWhere("product.name ILIKE :search", { search: `%${search}%` });
-        })
+        }),
       );
     }
 
@@ -146,7 +126,7 @@ export class OrderService {
   //admin: update order status
   async updateOrderStatusForAdmin(
     orderId: string,
-    newStatus: "new" | "processing" | "completed" | "cancelled"
+    newStatus: "new" | "processing" | "completed" | "cancelled",
   ) {
     const order = await this.orderRepo.findOne({
       where: { id: orderId },
@@ -164,12 +144,12 @@ export class OrderService {
     await new MailService().sendOrderStatusEmail(
       order.user.email,
       order.id,
-      newStatus
+      newStatus,
     );
     return order;
   }
 
-  //admin: get all orders for a specific user
+  //admin: get all orders of  a specific user
   async getAllOrdersForUserAdmin(userId: string) {
     const orders = await this.orderRepo.find({
       where: { user: { id: userId } },

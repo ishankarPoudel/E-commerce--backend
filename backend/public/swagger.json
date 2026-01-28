@@ -1662,76 +1662,6 @@
 															"user": {
 																"$ref": "#/components/schemas/UserEntity"
 															},
-															"items": {
-																"items": {
-																	"properties": {
-																		"product": {
-																			"properties": {
-																				"images": {
-																					"items": {
-																						"properties": {
-																							"url": {},
-																							"id": {
-																								"type": "string"
-																							}
-																						},
-																						"required": [
-																							"url",
-																							"id"
-																						],
-																						"type": "object"
-																					},
-																					"type": "array"
-																				},
-																				"price": {
-																					"type": "number",
-																					"format": "double"
-																				},
-																				"name": {
-																					"type": "string"
-																				},
-																				"id": {
-																					"type": "string"
-																				}
-																			},
-																			"required": [
-																				"images",
-																				"price",
-																				"name",
-																				"id"
-																			],
-																			"type": "object"
-																		},
-																		"size": {
-																			"type": "string"
-																		},
-																		"color": {
-																			"type": "string"
-																		},
-																		"unitPrice": {
-																			"type": "number",
-																			"format": "double"
-																		},
-																		"quantity": {
-																			"type": "number",
-																			"format": "double"
-																		},
-																		"id": {
-																			"type": "string"
-																		}
-																	},
-																	"required": [
-																		"product",
-																		"size",
-																		"color",
-																		"unitPrice",
-																		"quantity",
-																		"id"
-																	],
-																	"type": "object"
-																},
-																"type": "array"
-															},
 															"shippingAddress": {
 																"type": "string"
 															}
@@ -1747,7 +1677,6 @@
 															"orderStatus",
 															"status",
 															"user",
-															"items",
 															"shippingAddress"
 														],
 														"type": "object"
