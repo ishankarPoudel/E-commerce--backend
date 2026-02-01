@@ -856,12 +856,47 @@
 					"name": {
 						"type": "string"
 					},
+					"type": {
+						"$ref": "#/components/schemas/BagType"
+					},
 					"price": {
 						"type": "number",
 						"format": "double"
 					},
 					"description": {
 						"type": "string"
+					},
+					"brand": {
+						"type": "string"
+					},
+					"material": {
+						"type": "string"
+					},
+					"colors": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"sizes": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"weightKg": {
+						"type": "number",
+						"format": "double"
+					},
+					"capacityLiters": {
+						"type": "number",
+						"format": "double"
+					},
+					"isFeatured": {
+						"type": "boolean"
+					},
+					"features": {
+						"$ref": "#/components/schemas/Record_string.boolean_"
 					},
 					"categories": {
 						"items": {

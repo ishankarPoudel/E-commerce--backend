@@ -103,13 +103,41 @@ export class BagService {
   async updateBagById(id: string, bag: updateBagValidator) {
     const bagRepo = AppDataSource.getRepository(BagEntity);
     const bagImageRepo = AppDataSource.getRepository(MediaEntity);
+    const categoryRepo = AppDataSource.getRepository(Category);
 
     const existingBag = await bagRepo.findOne({
       where: { id },
-      relations: { images: true },
+      relations: { images: true, categories: true },
     });
     if (!existingBag) throw new ApiError(404, "Bag not found.");
 
+    if (bag.name !== undefined) existingBag.name = bag.name;
+    if (bag.price !== undefined) existingBag.price = bag.price;
+    if (bag.description !== undefined)
+      existingBag.description = bag.description;
+    if (bag.type !== undefined) existingBag.type = bag.type;
+    if (bag.brand !== undefined) existingBag.brand = bag.brand;
+    if (bag.material !== undefined) existingBag.material = bag.material;
+    if (bag.colors !== undefined) existingBag.colors = bag.colors;
+    if (bag.sizes !== undefined) existingBag.sizes = bag.sizes;
+    if (bag.weightKg !== undefined) existingBag.weightKg = bag.weightKg;
+    if (bag.capacityLiters !== undefined)
+      existingBag.capacityLiters = bag.capacityLiters;
+    if (bag.isFeatured !== undefined) existingBag.isFeatured = bag.isFeatured;
+    if (bag.features !== undefined) existingBag.features = bag.features;
+
+    //  Update categories if provided
+    if (bag.categories !== undefined && bag.categories.length > 0) {
+      const newCategories = await categoryRepo.find({
+        where: { id: In(bag.categories) },
+      });
+      if (newCategories.length === 0) {
+        throw new ApiError(400, "No categories found for the provided IDs.");
+      }
+      existingBag.categories = newCategories;
+    }
+
+    // Update images if provided
     if (bag.bagImages !== undefined) {
       const newBagImages = await bagImageRepo.find({
         where: { id: In(bag.bagImages) },
@@ -128,8 +156,14 @@ export class BagService {
       existingBag.images = newBagImages;
     }
 
-    await bagRepo.save(existingBag);
-    return existingBag;
+    // ✅ Save all changes
+    const updatedBag = await bagRepo.save(existingBag);
+
+    // Return with relations
+    return bagRepo.findOne({
+      where: { id },
+      relations: { images: true, categories: true },
+    });
   }
 
   async deleteBagById(id: string) {

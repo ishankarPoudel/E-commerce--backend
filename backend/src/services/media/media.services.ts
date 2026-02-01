@@ -1,5 +1,6 @@
 import AppDataSource from "../../config/data-source/data-source";
 import { BagEntity } from "../../entities/bag/bag.entity";
+import { CartItemEntity } from "../../entities/cart/cartItem.entity";
 import { MediaEntity } from "../../entities/media/media.entity";
 import { ApiError } from "../../utils/apiError";
 
@@ -68,16 +69,42 @@ export class MediaService {
     return await this.mediaRepo.save(mediaEntities);
   }
 
-  async deleteMedia(mediaId: string): Promise<void> {
-    const media = await this.mediaRepo.findOne({ where: { id: mediaId } });
+  async deleteBagById(id: string) {
+    return await AppDataSource.transaction(
+      async (transactionalEntityManager) => {
+        const bagRepo = transactionalEntityManager.getRepository(BagEntity);
+        const cartItemRepo =
+          transactionalEntityManager.getRepository(CartItemEntity);
 
-    if (!media) {
-      throw new ApiError(404, "Media not found");
-    }
+      
+        const bag = await bagRepo.findOne({
+          where: { id },
+          relations: ["images"],
+        });
 
-    // TODO: Delete from Cloudinary using publicId
-    // await cloudinary.uploader.destroy(media.publicId);
+        if (!bag) {
+          throw new ApiError(404, "Bag not found.");
+        }
 
-    await this.mediaRepo.remove(media);
+        // Step 1: Delete all cart items referencing this bag
+        await cartItemRepo.delete({ product: { id } });
+        console.log(`✅ Deleted cart items for bag: ${bag.name}`);
+
+       
+        if (bag.images && bag.images.length > 0) {
+          const imageIds = bag.images.map((img) => img.id);
+          await  new MediaService().(imageIds);
+          console.log(
+            `✅ Deleted ${bag.images.length} images for bag: ${bag.name}`,
+          );
+        }
+
+        // Step 3: Delete the bag
+        await bagRepo.remove(bag);
+
+        console.log(`✅ Successfully deleted bag: ${bag.name} (ID: ${id})`);
+        return bag;
+      },
+    );
   }
 }

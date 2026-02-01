@@ -11,7 +11,7 @@ export class CartItemEntity extends CommonEntity {
   @JoinColumn({ name: "cart_id" })
   cart: CartEntity;
 
-  @ManyToOne(() => BagEntity)
+  @ManyToOne(() => BagEntity, { onDelete: "CASCADE" })
   @JoinColumn({ name: "product_id" })
   product: BagEntity;
 
