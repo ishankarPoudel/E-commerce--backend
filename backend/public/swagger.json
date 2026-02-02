@@ -2210,6 +2210,113 @@
 				}
 			}
 		},
+		"/media/delete-single-image": {
+			"post": {
+				"operationId": "DeleteSingleImageFromCloudinary",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Media"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"publicId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"publicId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/media/delete-multiple-images": {
+			"post": {
+				"operationId": "DeleteMultipleImagesFromCloudinary",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Media"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"publicId": {
+										"items": {
+											"type": "string"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"publicId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/gemini/search": {
 			"post": {
 				"operationId": "Search",
@@ -3256,7 +3363,15 @@
 								"schema": {
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/BagEntity"
+											"properties": {
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"success"
+											],
+											"type": "object"
 										},
 										"message": {
 											"type": "string"

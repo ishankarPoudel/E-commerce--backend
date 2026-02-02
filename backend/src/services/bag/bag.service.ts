@@ -7,6 +7,7 @@ import { ApiError } from "../../utils/apiError";
 import { updateBagValidator } from "../../validators/updateBag.validator";
 import { MediaEntity } from "../../entities/media/media.entity";
 import AppDataSource from "../../config/data-source/data-source";
+import cloudinary from "../../config/cloudinary/cloudinary.config";
 
 export class BagService {
   async addBag(bag: addBagValidator) {
@@ -167,16 +168,35 @@ export class BagService {
   }
 
   async deleteBagById(id: string) {
-    const bag = await AppDataSource.getRepository(BagEntity).findOne({
-      where: {
-        id: id,
-      },
+    return await AppDataSource.transaction(async (manager) => {
+      const bagRepo = manager.getRepository(BagEntity);
+
+      // Load bag WITH images to get publicIds
+      const bag = await bagRepo.findOne({
+        where: { id },
+        relations: ["images"],
+      });
+
+      if (!bag) {
+        throw new ApiError(404, "Bag not found");
+      }
+
+      // Extract Cloudinary publicIds
+      const publicIds =
+        bag.images?.filter((img) => img.publicId).map((img) => img.publicId) ||
+        [];
+
+      // Delete from Cloudinary
+      if (publicIds.length > 0) {
+        await Promise.allSettled(
+          publicIds.map((publicId) => cloudinary.uploader.destroy(publicId)),
+        );
+      }
+
+      await bagRepo.remove(bag);
+
+      return { success: true };
     });
-    if (!bag) {
-      throw new ApiError(404, "Bag not found.");
-    }
-    await AppDataSource.getRepository(BagEntity).delete(id);
-    return bag;
   }
 
   async searchBags(query: string) {

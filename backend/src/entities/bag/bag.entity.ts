@@ -64,7 +64,7 @@ export class BagEntity extends CommonEntity {
   features: Record<string, boolean>;
 
   @OneToMany(() => MediaEntity, (media) => media.bag, {
-    cascade: true,
+    onDelete: "CASCADE",
   })
   images: MediaEntity[];
 

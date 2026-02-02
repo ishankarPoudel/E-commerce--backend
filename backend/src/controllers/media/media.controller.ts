@@ -71,4 +71,26 @@ export class MediaController extends Controller {
       data: media,
     };
   }
+
+  @Post("/delete-single-image")
+  public async deleteSingleImageFromCloudinary(
+    @Body() body: { publicId: string },
+  ) {
+    await new MediaService().deleteMediaById(body.publicId);
+    return {
+      success: true,
+      message: "Image deleted successfully",
+    };
+  }
+
+  @Post("/delete-multiple-images")
+  public async deleteMultipleImagesFromCloudinary(
+    @Body() body: { publicId: string[] },
+  ) {
+    await new MediaService().deleteMultipleMedia(body.publicId);
+    return {
+      success: true,
+      message: "Images deleted successfully",
+    };
+  }
 }

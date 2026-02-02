@@ -853,6 +853,66 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMediaController_deleteSingleImageFromCloudinary: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"publicId":{"dataType":"string","required":true}}},
+        };
+        app.post('/media/delete-single-image',
+            ...(fetchMiddlewares<RequestHandler>(MediaController)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.deleteSingleImageFromCloudinary)),
+
+            async function MediaController_deleteSingleImageFromCloudinary(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_deleteSingleImageFromCloudinary, request, response });
+
+                const controller = new MediaController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteSingleImageFromCloudinary',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMediaController_deleteMultipleImagesFromCloudinary: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"publicId":{"dataType":"array","array":{"dataType":"string"},"required":true}}},
+        };
+        app.post('/media/delete-multiple-images',
+            ...(fetchMiddlewares<RequestHandler>(MediaController)),
+            ...(fetchMiddlewares<RequestHandler>(MediaController.prototype.deleteMultipleImagesFromCloudinary)),
+
+            async function MediaController_deleteMultipleImagesFromCloudinary(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMediaController_deleteMultipleImagesFromCloudinary, request, response });
+
+                const controller = new MediaController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteMultipleImagesFromCloudinary',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsGeminiController_search: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"sessionId":{"dataType":"string"},"userMessage":{"dataType":"string","required":true}}},
                 serverErrorResponse: {"in":"res","name":"500","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},

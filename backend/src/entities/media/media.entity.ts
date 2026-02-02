@@ -28,9 +28,7 @@ export class MediaEntity extends CommonEntity {
   @Column({ type: "int", default: 0 })
   sortOrder: number; // For ordering images
 
-  @ManyToOne(() => BagEntity, (bag) => bag.images, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => BagEntity, (bag) => bag.images, { onDelete: "CASCADE" })
   @JoinColumn({ name: "bag_id" })
   bag: BagEntity;
 }

@@ -1,8 +1,10 @@
+import cloudinary from "../../config/cloudinary/cloudinary.config";
 import AppDataSource from "../../config/data-source/data-source";
 import { BagEntity } from "../../entities/bag/bag.entity";
 import { CartItemEntity } from "../../entities/cart/cartItem.entity";
 import { MediaEntity } from "../../entities/media/media.entity";
 import { ApiError } from "../../utils/apiError";
+import { In } from "typeorm";
 
 interface CreateMediaInput {
   bagId: string;
@@ -69,42 +71,44 @@ export class MediaService {
     return await this.mediaRepo.save(mediaEntities);
   }
 
-  async deleteBagById(id: string) {
-    return await AppDataSource.transaction(
-      async (transactionalEntityManager) => {
-        const bagRepo = transactionalEntityManager.getRepository(BagEntity);
-        const cartItemRepo =
-          transactionalEntityManager.getRepository(CartItemEntity);
+  async deleteMediaById(publicId: string): Promise<void> {
+    const media = await this.mediaRepo.findOne({
+      where: { publicId: publicId },
+    });
+    if (!media) {
+      throw new ApiError(404, "Media not found");
+    }
+    try {
+      const result = await cloudinary.uploader.destroy(media.publicId);
+      if (result.result !== "ok" && result.result !== "not found") {
+        throw new ApiError(500, "Cloudinary deletion failed");
+      }
+      await this.mediaRepo.remove(media);
+    } catch (error) {
+      throw new ApiError(500, "Failed to delete media from Cloudinary");
+    }
+  }
+  async deleteMultipleMedia(publicId: string[]): Promise<void> {
+    const mediaEntities = await this.mediaRepo.findBy({
+      publicId: In(publicId),
+    });
 
-      
-        const bag = await bagRepo.findOne({
-          where: { id },
-          relations: ["images"],
-        });
+    if (mediaEntities.length === 0) {
+      if (mediaEntities.length === 0) {
+        throw new ApiError(404, "No media found");
+      }
 
-        if (!bag) {
-          throw new ApiError(404, "Bag not found.");
-        }
+      const cloudinaryPublicIds = mediaEntities.map((media) => media.publicId);
 
-        // Step 1: Delete all cart items referencing this bag
-        await cartItemRepo.delete({ product: { id } });
-        console.log(`✅ Deleted cart items for bag: ${bag.name}`);
+      try {
+        // Delete from Cloudinary in bulk
+        await cloudinary.api.delete_resources(cloudinaryPublicIds);
 
-       
-        if (bag.images && bag.images.length > 0) {
-          const imageIds = bag.images.map((img) => img.id);
-          await  new MediaService().(imageIds);
-          console.log(
-            `✅ Deleted ${bag.images.length} images for bag: ${bag.name}`,
-          );
-        }
-
-        // Step 3: Delete the bag
-        await bagRepo.remove(bag);
-
-        console.log(`✅ Successfully deleted bag: ${bag.name} (ID: ${id})`);
-        return bag;
-      },
-    );
+        // Delete from database
+        await this.mediaRepo.remove(mediaEntities);
+      } catch (error) {
+        throw new ApiError(500, "Failed to delete media");
+      }
+    }
   }
 }
