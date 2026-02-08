@@ -28,6 +28,7 @@ export interface UserResponseData {
   email: string;
   fullName: string;
 }
+
 interface RegisterResponse {
   success: boolean;
   message: string;
@@ -38,17 +39,37 @@ interface RegisterResponse {
   };
 }
 
-// const rateLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 5, // Limit each IP to 5 requests per windowMs
-//   message: { message: "Too many requests, please try again later." },
-// });
+interface VerifyOtpRequest {
+  email: string;
+  otp: string;
+}
+
+interface ResendOtpRequest {
+  email: string;
+}
+
+interface ResetPasswordRequest {
+  email: string;
+}
+
+interface RecoverPasswordRequest {
+  newPassword: string;
+  resetToken: string;
+}
+
+const rateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { message: "Too many requests, please try again later." },
+});
+
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
   @Post("/verify-otp")
-  // @Middlewares(rateLimiter)
-  async verifyOtp(@Body() { otp, email }: { otp: string; email: string }) {
+  @Middlewares(rateLimiter)
+  async verifyOtp(@Body() body: VerifyOtpRequest) {
+    const { otp, email } = body;
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp({ otp, email });
 
@@ -59,7 +80,7 @@ export class AuthController extends Controller {
 
     return {
       success: true,
-      message: "Email verified successfully,  logging you in",
+      message: "Email verified successfully, logging you in",
       data: {
         email: user.email,
         fullName: user.fullName,
@@ -68,8 +89,9 @@ export class AuthController extends Controller {
   }
 
   @Post("/resend-otp")
-  async resendOtp(@Body() { email }: { email: string }) {
-    const otp = await new AuthService().resendOtp(email);
+  async resendOtp(@Body() body: ResendOtpRequest) {
+    const { email } = body;
+    await new AuthService().resendOtp(email);
     return {
       success: true,
       message: "OTP resent successfully",
@@ -78,6 +100,7 @@ export class AuthController extends Controller {
       },
     };
   }
+
   @Post("/register")
   async registerUser(@Body() user: RegisterUserDto): Promise<RegisterResponse> {
     const result = await new AuthService().registerUser(user);
@@ -85,7 +108,7 @@ export class AuthController extends Controller {
 
     return {
       success: true,
-      message: "OPT sent to your email",
+      message: "OTP sent to your email",
       data: {
         user: {
           email: result.email,
@@ -96,17 +119,18 @@ export class AuthController extends Controller {
   }
 
   @Post("/login")
-  // @Middlewares(rateLimiter)
+  @Middlewares(rateLimiter)
   async loginUser(@Body() user: LoginValidator) {
     const { email } = user;
     const { accessToken, refreshToken } = await new AuthService().loginUser(
-      user
+      user,
     );
 
     this.setHeader("Set-Cookie", [
       `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
       `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
     ]);
+
     return {
       success: true,
       message: "Login successful",
@@ -133,6 +157,7 @@ export class AuthController extends Controller {
       `accessToken=; HttpOnly; Path=/; SameSite=lax; Max-Age=0;`,
       `refreshToken=; HttpOnly; Path=/; SameSite=lax; Max-Age=0;`,
     ]);
+
     return {
       success: true,
       message: "Logout successful",
@@ -140,8 +165,10 @@ export class AuthController extends Controller {
   }
 
   @Post("/reset-password")
-  // @Middlewares(rateLimiter)
-  async resetPassword(@Body() { email }: { email: string }) {
+  @Middlewares(rateLimiter)
+  // ✅ FIXED: Use named interface
+  async resetPassword(@Body() body: ResetPasswordRequest) {
+    const { email } = body;
     const { email: userEmail } = await new AuthService().resetPassword(email);
 
     return {
@@ -154,15 +181,14 @@ export class AuthController extends Controller {
   }
 
   @Post("/recover-password")
-  // @Middlewares(rateLimiter)
-  async recoverPassword(
-    @Body()
-    { newPassword, resetToken }: { newPassword: string; resetToken: string }
-  ) {
+  @Middlewares(rateLimiter)
+  async recoverPassword(@Body() body: RecoverPasswordRequest) {
+    const { newPassword, resetToken } = body;
     const { email } = await new AuthService().recoverPassword(
       newPassword,
-      resetToken
+      resetToken,
     );
+
     return {
       success: true,
       message: "Password reset successfully",
@@ -181,7 +207,7 @@ export class AuthController extends Controller {
     const refreshToken = req.cookies?.refreshToken;
     console.log(
       "Extracted refresh token:",
-      refreshToken ? "Present" : "Missing"
+      refreshToken ? "Present" : "Missing",
     );
 
     const newTokens = await new TokensService().refreshTokens(refreshToken);
@@ -195,7 +221,7 @@ export class AuthController extends Controller {
 
     return {
       success: true,
-      message: "Tokens refreshed Successfully",
+      message: "Tokens refreshed successfully",
     };
   }
 
@@ -216,13 +242,13 @@ export class AuthController extends Controller {
             if (err || !user) {
               this.setHeader(
                 "Location",
-                `${process.env.FRONTEND_BASE_URL}/auth/login?error=oauth_failed`
+                `${process.env.FRONTEND_BASE_URL}/auth/login?error=oauth_failed`,
               );
               this.setStatus(302);
               return resolve();
             }
 
-            //Capture device info for OAuth users too!
+            // Capture device info for OAuth users
             const userAgent = req.headers["user-agent"] || "";
             const ip =
               req.headers["x-forwarded-for"] || req.socket.remoteAddress;
@@ -249,7 +275,7 @@ export class AuthController extends Controller {
 
             this.setHeader(
               "Location",
-              `${process.env.FRONTEND_BASE_URL}/auth/login?success=oauth_success`
+              `${process.env.FRONTEND_BASE_URL}/auth/login?success=oauth_success`,
             );
             this.setStatus(302);
 
@@ -257,7 +283,7 @@ export class AuthController extends Controller {
           } catch (error) {
             reject(error);
           }
-        }
+        },
       )(req, req.res as ExpressResponse);
     });
   }

@@ -155,9 +155,9 @@ export async function seedBags() {
 
     const images = imageUrls.map((url, idx) =>
       mediaRepo.create({
-        image: url,
+        url: url,
         altText: `${seed.name} ${idx + 1}`,
-      })
+      }),
     );
 
     // Create the bag (cascade insert on images relation must be enabled in BagEntity)

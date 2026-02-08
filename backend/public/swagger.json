@@ -914,6 +914,34 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"VerifyOtpRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"otp": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"otp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ResendOtpRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserResponseData": {
 				"properties": {
 					"email": {
@@ -1019,6 +1047,34 @@
 					"browser",
 					"device",
 					"location"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ResetPasswordRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RecoverPasswordRequest": {
+				"properties": {
+					"newPassword": {
+						"type": "string"
+					},
+					"resetToken": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"newPassword",
+					"resetToken"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3560,19 +3616,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									},
-									"otp": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email",
-									"otp"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/VerifyOtpRequest"
 							}
 						}
 					}
@@ -3628,15 +3672,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/ResendOtpRequest"
 							}
 						}
 					}
@@ -3826,15 +3862,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/ResetPasswordRequest"
 							}
 						}
 					}
@@ -3890,19 +3918,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"resetToken": {
-										"type": "string"
-									},
-									"newPassword": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"resetToken",
-									"newPassword"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/RecoverPasswordRequest"
 							}
 						}
 					}

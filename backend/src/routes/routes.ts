@@ -319,6 +319,23 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VerifyOtpRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+            "otp": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ResendOtpRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserResponseData": {
         "dataType": "refObject",
         "properties": {
@@ -361,6 +378,23 @@ const models: TsoaRoute.Models = {
             "browser": {"dataType":"string","required":true},
             "device": {"dataType":"string","required":true},
             "location": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ResetPasswordRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RecoverPasswordRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "newPassword": {"dataType":"string","required":true},
+            "resetToken": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -1467,7 +1501,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_verifyOtp: Record<string, TsoaRoute.ParameterSchema> = {
-                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true},"otp":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"VerifyOtpRequest"},
         };
         app.post('/auth/verify-otp',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -1497,7 +1531,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_resendOtp: Record<string, TsoaRoute.ParameterSchema> = {
-                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"ResendOtpRequest"},
         };
         app.post('/auth/resend-otp',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -1617,7 +1651,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_resetPassword: Record<string, TsoaRoute.ParameterSchema> = {
-                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"ResetPasswordRequest"},
         };
         app.post('/auth/reset-password',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -1647,7 +1681,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_recoverPassword: Record<string, TsoaRoute.ParameterSchema> = {
-                undefined: {"in":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"resetToken":{"dataType":"string","required":true},"newPassword":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"RecoverPasswordRequest"},
         };
         app.post('/auth/recover-password',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
