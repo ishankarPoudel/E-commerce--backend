@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
-          cache-dependency-path: "backend/pnpm-lock.yaml"
+          cache-dependency-path: "E-commerce--backend/pnpm-lock.yaml"
 
       # Step 4: Install dependencies
       - name: Install dependencies
