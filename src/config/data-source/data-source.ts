@@ -14,7 +14,7 @@ const AppDataSource = new DataSource({
         password: process.env.DATABASE_PASSWORD || "classmate",
         database: process.env.DATABASE_NAME || "ecommerce",
       }),
-  synchronize: process.env.NODE_ENV !== "production", //
+  synchronize: true,
   logging: process.env.NODE_ENV === "development",
 
   //  Fix entity paths for compiled JavaScript
