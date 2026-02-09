@@ -1,4 +1,4 @@
-name: Backend Staging CI/CD
+name: Backend Staging CI/CD v2
 
 on:
   push:
@@ -20,6 +20,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "backend/pnpm-lock.yaml"
 
       # Step 3: Install pnpm using official action
       - name: Install pnpm
