@@ -30,28 +30,21 @@ jobs:
       # Step 4: Install dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: backend
 
       # Step 5: Run linter
       - name: Run linter
         run: pnpm run lint
-        working-directory: backend
 
       # Step 6: Type check
       - name: Type check
         run: pnpm run type-check || npx tsc --noEmit
-        working-directory: backend
 
       # Step 7: Build backend
       - name: Build backend
         run: pnpm run build
-        working-directory: backend
-        env:
-          NODE_ENV: production
 
       # Step 8: Validate build output
       - name: Validate build output
-        working-directory: backend
         run: |
           if [ ! -d "dist" ] || [ ! -f "dist/index.js" ]; then
             echo "Build validation failed! Missing dist folder or index.js"
@@ -63,6 +56,6 @@ jobs:
       - name: Deploy to Render (staging)
         if: success()
         run: |
-          echo "🚀 Deploying to Render..."
+          echo " Deploying to Render..."
           curl -X POST "${{ secrets.RENDER_BACKEND_STAGING_HOOK }}"
           echo " Deployment triggered successfully!"
