@@ -11,11 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Get your code
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js (WITHOUT pnpm cache first)
+      # Step 2: Install pnpm FIRST (before Node.js setup)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # Step 3: Setup Node.js (with pnpm already installed)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -23,51 +29,42 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: "backend/pnpm-lock.yaml"
 
-      # Step 3: Install pnpm using official action
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9 #
-
-      # Step 4: Get pnpm store directory for caching
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      # Step 5: Setup pnpm cache
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      # Step 6: Install dependencies
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         working-directory: backend
 
-      # Step 7: Run linter
+      # Step 5: Run linter
       - name: Run linter
         run: pnpm run lint
         working-directory: backend
 
-      # Step 8: Type check
+      # Step 6: Type check
       - name: Type check
         run: pnpm run type-check || npx tsc --noEmit
         working-directory: backend
 
-      # Step 10: Build backend
+      # Step 7: Build backend
       - name: Build backend
         run: pnpm run build
         working-directory: backend
+        env:
+          NODE_ENV: production
 
-      # Step 12: Deploy to Render (ONLY if all above steps passed)
+      # Step 8: Validate build output
+      - name: Validate build output
+        working-directory: backend
+        run: |
+          if [ ! -d "dist" ] || [ ! -f "dist/index.js" ]; then
+            echo "❌ Build validation failed! Missing dist folder or index.js"
+            exit 1
+          fi
+          echo "✅ Build output is valid!"
+
+      # Step 9: Deploy to Render (only if all previous steps pass)
       - name: Deploy to Render (staging)
         if: success()
         run: |
-          echo " Deploying to Render..."
+          echo "🚀 Deploying to Render..."
           curl -X POST "${{ secrets.RENDER_BACKEND_STAGING_HOOK }}"
-          echo "Deployment triggered!"
+          echo "✅ Deployment triggered successfully!"
