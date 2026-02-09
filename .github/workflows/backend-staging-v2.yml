@@ -26,8 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: "E-commerce--backend/pnpm-lock.yaml"
 
       # Step 4: Install dependencies
       - name: Install dependencies
@@ -59,7 +57,7 @@ jobs:
             echo "Build validation failed! Missing dist folder or index.js"
             exit 1
           fi
-          echo "✅ Build output is valid!"
+          echo "Build output is valid!"
 
       # Step 9: Deploy to Render (only if all previous steps pass)
       - name: Deploy to Render (staging)
@@ -67,4 +65,4 @@ jobs:
         run: |
           echo "🚀 Deploying to Render..."
           curl -X POST "${{ secrets.RENDER_BACKEND_STAGING_HOOK }}"
-          echo "✅ Deployment triggered successfully!"
+          echo " Deployment triggered successfully!"
