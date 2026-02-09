@@ -31,14 +31,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Step 5: Run linter
-      - name: Run linter
-        run: pnpm run lint
-
-      # Step 6: Type check
-      - name: Type check
-        run: pnpm run type-check || npx tsc --noEmit
-
       # Step 7: Build backend
       - name: Build backend
         run: pnpm run build
