@@ -4,7 +4,7 @@ import { LessThan } from "typeorm";
 import AppDataSource from "../config/data-source/data-source";
 
 // Add a delay or check if DataSource is initialized
-cron.schedule("*/10 * * * * *", async () => {
+cron.schedule("0 * * * *", async () => {
   try {
     // Check if DataSource is initialized
     if (!AppDataSource.isInitialized) {
