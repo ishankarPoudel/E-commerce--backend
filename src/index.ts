@@ -8,7 +8,6 @@ import * as swaggerDocument from "../public/swagger.json";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
-import "./crons/index.ts";
 import { authMiddlewareWithExclusions } from "./middlewares/authExclude.middleware";
 import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
 import AppDataSource from "./config/data-source/data-source";
@@ -25,7 +24,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 app.use(express.json());
