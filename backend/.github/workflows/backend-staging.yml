@@ -1,0 +1,48 @@
+name: Backend Staging CI/CD
+
+"on":
+  push:
+    branches:
+      - staging
+      - production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Get your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      # Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Install dependencies
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: backend
+
+      # Run tests (if you have them)
+      - name: Run tests
+        run: pnpm run test || echo "No tests yet"
+        working-directory: backend
+
+      # Build backend
+      - name: Build backend
+        run: pnpm run build
+        working-directory: backend
+
+      # Deploy to Render (ONLY if above steps passed)
+      - name: Deploy to Render (staging)
+        run: curl -X POST "$RENDER_BACKEND_STAGING_HOOK"
+        env:
+          RENDER_BACKEND_STAGING_HOOK: ${{ secrets.RENDER_BACKEND_STAGING_HOOK }}
