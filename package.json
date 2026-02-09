@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "start": "node dist/index.js",
     "start:dev": "tsoa spec-and-routes && nodemon --transpile-only src/index.ts",
+    "prebuild": "tsoa spec-and-routes",
+    "build": "tsc",
+    "postbuild": "cp -r public dist/ || true",
     "seed": "ts-node --transpile-only src/config/seed/seed.ts",
     "migrate": "ts-node --transpile-only src/migrations/1760238694191-UpdateBagSearchVectorTrigger.ts",
-    "create-admin": "ts-node src/scripts/create-admin.ts",
-    "build": "tsc"
+    "create-admin": "ts-node src/scripts/create-admin.ts"
   },
   "keywords": [],
   "author": "",
