@@ -98,6 +98,9 @@ importers:
       postgres:
         specifier: ^3.4.8
         version: 3.4.8
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
       stripe:
         specifier: ^18.5.0
         version: 18.5.0(@types/node@22.19.7)

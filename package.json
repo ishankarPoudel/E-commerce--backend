@@ -57,6 +57,7 @@
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.17.2",
     "postgres": "^3.4.8",
+    "reflect-metadata": "^0.2.2",
     "stripe": "^18.5.0",
     "swagger-ui-express": "^5.0.1",
     "tsoa": "^6.6.0",
