@@ -286,9 +286,7 @@ export class AuthController extends Controller {
 
             this.setCookies(res, accessToken, refreshToken);
 
-            res.redirect(
-              `${process.env.FRONTEND_BASE_URL}/auth/callback?success=true`,
-            );
+            res.redirect(`${process.env.FRONTEND_BASE_URL}`);
 
             resolve();
           } catch (error) {
