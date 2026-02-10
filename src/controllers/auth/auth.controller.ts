@@ -69,6 +69,7 @@ export class AuthController extends Controller {
     refreshToken: string,
   ) {
     const isProduction = process.env.NODE_ENV === "production";
+    const COOKIE_DOMAIN = ".shankarpoudel.com";
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -76,14 +77,16 @@ export class AuthController extends Controller {
       sameSite: "none",
       maxAge: 900000, // 15 minutes
       path: "/",
+      domain: COOKIE_DOMAIN,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: "none",
       maxAge: 604800000, // 7 days
       path: "/",
+      domain: COOKIE_DOMAIN,
     });
   }
 
