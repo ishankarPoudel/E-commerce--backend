@@ -12,8 +12,10 @@ import { RegisterUserDto } from "../../validators/registerUser.validator";
 import { AuthService } from "../../services/auth/auth.service";
 import { UserEntity } from "../../entities/user/userInfo/user.userInfo.entity";
 import { ApiError } from "../../utils/apiError";
-import { Request as ExpressRequest } from "express";
-import { Response as ExpressResponse } from "express";
+import {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 import {
   authenticateToken,
   AuthenticatedRequest,
@@ -52,11 +54,6 @@ interface ResetPasswordRequest {
   email: string;
 }
 
-interface RecoverPasswordRequest {
-  newPassword: string;
-  resetToken: string;
-}
-
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
@@ -66,17 +63,42 @@ const rateLimiter = rateLimit({
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
+  private setCookies(
+    res: ExpressResponse,
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 900000, // 15 minutes
+      path: "/",
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 604800000, // 7 days
+      path: "/",
+    });
+  }
+
   @Post("/verify-otp")
   @Middlewares(rateLimiter)
-  async verifyOtp(@Body() body: VerifyOtpRequest) {
+  async verifyOtp(
+    @Body() body: VerifyOtpRequest,
+    @Request() req: ExpressRequest,
+  ) {
     const { otp, email } = body;
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp({ otp, email });
 
-    this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=none; Max-Age=900;`,
-      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=none; Max-Age=604800;`,
-    ]);
+    const res = req.res as ExpressResponse;
+    this.setCookies(res, accessToken, refreshToken);
 
     return {
       success: true,
@@ -120,16 +142,17 @@ export class AuthController extends Controller {
 
   @Post("/login")
   @Middlewares(rateLimiter)
-  async loginUser(@Body() user: LoginValidator) {
+  async loginUser(
+    @Body() user: LoginValidator,
+    @Request() req: ExpressRequest,
+  ) {
     const { email } = user;
     const { accessToken, refreshToken } = await new AuthService().loginUser(
       user,
     );
 
-    this.setHeader("Set-Cookie", [
-      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
-      `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
-    ]);
+    const res = req.res as ExpressResponse;
+    this.setCookies(res, accessToken, refreshToken);
 
     return {
       success: true,
@@ -153,10 +176,10 @@ export class AuthController extends Controller {
     }
 
     await new AuthService().logoutUser(req.user.id);
-    this.setHeader("Set-Cookie", [
-      `accessToken=; HttpOnly; Path=/; SameSite=lax; Max-Age=0;`,
-      `refreshToken=; HttpOnly; Path=/; SameSite=lax; Max-Age=0;`,
-    ]);
+
+    const res = req.res as ExpressResponse;
+    res.clearCookie("accessToken", { path: "/" });
+    res.clearCookie("refreshToken", { path: "/" });
 
     return {
       success: true,
@@ -166,7 +189,6 @@ export class AuthController extends Controller {
 
   @Post("/reset-password")
   @Middlewares(rateLimiter)
-  // ✅ FIXED: Use named interface
   async resetPassword(@Body() body: ResetPasswordRequest) {
     const { email } = body;
     const { email: userEmail } = await new AuthService().resetPassword(email);
@@ -182,7 +204,10 @@ export class AuthController extends Controller {
 
   @Post("/recover-password")
   @Middlewares(rateLimiter)
-  async recoverPassword(@Body() body: RecoverPasswordRequest) {
+  async recoverPassword(
+    @Body() body: { newPassword: string; resetToken: string },
+    @Request() req: ExpressRequest,
+  ) {
     const { newPassword, resetToken } = body;
     const { email } = await new AuthService().recoverPassword(
       newPassword,
@@ -202,22 +227,12 @@ export class AuthController extends Controller {
   async refreshToken(@Request() req: ExpressRequest) {
     console.log("Refresh token endpoint called");
     console.log("Cookies:", req.cookies);
-    console.log("Headers:", req.headers);
 
     const refreshToken = req.cookies?.refreshToken;
-    console.log(
-      "Extracted refresh token:",
-      refreshToken ? "Present" : "Missing",
-    );
-
     const newTokens = await new TokensService().refreshTokens(refreshToken);
 
-    this.setHeader("Set-Cookie", [
-      `accessToken=${newTokens.accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
-      `refreshToken=${newTokens.refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
-    ]);
-
-    console.log("New tokens generated and cookies set");
+    const res = req.res as ExpressResponse;
+    this.setCookies(res, newTokens.accessToken, newTokens.refreshToken);
 
     return {
       success: true,
@@ -235,25 +250,26 @@ export class AuthController extends Controller {
   @Get("/google/callback")
   async googleCallBack(@Request() req: ExpressRequest): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      const res = req.res as ExpressResponse;
+
       passport.authenticate(
         "google",
         async (err: Error, user: any, info: any) => {
           try {
             if (err || !user) {
-              this.setHeader(
-                "Location",
+              console.error(" Google OAuth failed:", err);
+
+              res.redirect(
                 `${process.env.FRONTEND_BASE_URL}/auth/login?error=oauth_failed`,
               );
-              this.setStatus(302);
               return resolve();
             }
 
-            // Capture device info for OAuth users
+            // Capture device info
             const userAgent = req.headers["user-agent"] || "";
             const ip =
               req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-            // Update user with device info
             const userRepo = AppDataSource.getRepository(UserEntity);
             user.deviceInfo = {
               device: this.getDeviceType(userAgent),
@@ -268,23 +284,22 @@ export class AuthController extends Controller {
             const { accessToken, refreshToken } =
               await new TokensService().generateTokens(user);
 
-            this.setHeader("Set-Cookie", [
-              `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=3600;`,
-              `refreshToken=${refreshToken}; HttpOnly; Path=/; SameSite=lax; Max-Age=604800;`,
-            ]);
+            this.setCookies(res, accessToken, refreshToken);
 
-            this.setHeader(
-              "Location",
-              `${process.env.FRONTEND_BASE_URL}/auth/login?success=oauth_success`,
+            res.redirect(
+              `${process.env.FRONTEND_BASE_URL}/auth/callback?success=true`,
             );
-            this.setStatus(302);
 
             resolve();
           } catch (error) {
+            console.error(" Error in Google callback:", error);
+            res.redirect(
+              `${process.env.FRONTEND_BASE_URL}/auth/login?error=server_error`,
+            );
             reject(error);
           }
         },
-      )(req, req.res as ExpressResponse);
+      )(req, res);
     });
   }
 
