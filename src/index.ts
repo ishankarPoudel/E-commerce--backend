@@ -22,11 +22,7 @@ app.use(stripeWebHook);
 app.use(cookieParser());
 
 //  CORS for production
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://shankarpoudel.com",
-  "https://www.shankarpoudel.com",
-];
+const allowedOrigins = ["http://localhost:5173", "https://shankarpoudel.com"];
 
 app.use(
   cors({

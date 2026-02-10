@@ -80,7 +80,7 @@ export class AuthController extends Controller {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: isProduction,
+      secure: true,
       sameSite: "none",
       maxAge: 604800000, // 7 days
       path: "/",
