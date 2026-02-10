@@ -17,17 +17,18 @@ const excludedRoutes: { path: string; method: string }[] = [
   { path: "/docs", method: "GET" },
   { path: "/docs/swagger.json", method: "GET" },
   { path: "/openapi.json", method: "GET" },
+  { path: "/bag/get-all-bags", method: "GET" },
 ];
 
 export const authMiddlewareWithExclusions = async (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const isExcluded = excludedRoutes.some(
     (route) =>
       req.path === route.path &&
-      req.method.toLowerCase() === route.method.toLowerCase()
+      req.method.toLowerCase() === route.method.toLowerCase(),
   );
 
   if (isExcluded) {
