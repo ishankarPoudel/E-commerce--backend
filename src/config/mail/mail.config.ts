@@ -1,18 +1,11 @@
 import nodemailer from "nodemailer";
 
 export const mailTransport = nodemailer.createTransport({
-  service: "gmail",
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  requireTLS: false, // true if you want to use TLS
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.GMAIL_USER || "shankarpoudel499@gmail.com",
-    pass: process.env.GMAIL_PASS || "lfxw munn symz nzpd",
+    user: process.env.GMAIL_USER!,
+    pass: process.env.GMAIL_PASS!,
   },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000, // 10 seconds
 });
