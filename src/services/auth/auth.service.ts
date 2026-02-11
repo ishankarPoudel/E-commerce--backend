@@ -27,7 +27,7 @@ export class AuthService {
     if (existingUser && existingUser.isEmailVerified) {
       throw new ApiError(
         400,
-        `Account already exists, please login via ${existingUser.provider} `
+        `Account already exists, please login via ${existingUser.provider} `,
       );
     }
 
@@ -51,7 +51,7 @@ export class AuthService {
     const otp = new GenerateRandomToken().mailToken();
     existingUser.emailVerificationToken = otp;
     existingUser.emailVerificationTokenExpiresAt = new Date(
-      Date.now() + 15 * 60 * 1000
+      Date.now() + 15 * 60 * 1000,
     ); // 15 minutes from now
 
     await this.userRepo.save(existingUser);
@@ -115,7 +115,7 @@ export class AuthService {
     const otp = new GenerateRandomToken().mailToken();
     user.emailVerificationToken = otp;
     user.emailVerificationTokenExpiresAt = new Date(
-      Date.now() + 15 * 60 * 1000
+      Date.now() + 15 * 60 * 1000,
     ); // 15 minutes from now
     await this.userRepo.save(user);
     await new MailService().sendVerificationEmail(user.email, otp);
@@ -134,19 +134,19 @@ export class AuthService {
     if (user.isOauth) {
       throw new ApiError(
         400,
-        `This account was created using ${user.provider}. Please log in with that method.`
+        `This account was created using ${user.provider}. Please log in with that method.`,
       );
     }
     if (!user.isEmailVerified) {
       throw new ApiError(
         403,
-        "Email not verified. Please verify your email first."
+        "Email not verified. Please verify your email first.",
       );
     }
 
     const isPasswordValid = await bcrypt.compare(
       credentials.password,
-      user.password
+      user.password,
     );
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
@@ -198,7 +198,7 @@ export class AuthService {
     if (userExists.isOauth) {
       throw new ApiError(
         400,
-        `This account was created using ${userExists.provider}. Please log in with that method. You cannot reset the password here.`
+        `This account was created using ${userExists.provider}. Please log in with that method. You cannot reset the password here.`,
       );
     }
 

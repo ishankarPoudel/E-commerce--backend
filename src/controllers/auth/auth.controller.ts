@@ -75,7 +75,7 @@ export class AuthController extends Controller {
       secure: true,
       sameSite: "none",
       maxAge: 900000, // 15 minutes
-      path: "/",
+      domain: ".shankarpoudel.com",
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -83,7 +83,7 @@ export class AuthController extends Controller {
       secure: true,
       sameSite: "none",
       maxAge: 604800000, // 7 days
-      path: "/",
+      domain: ".shankarpoudel.com",
     });
   }
 

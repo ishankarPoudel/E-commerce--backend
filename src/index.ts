@@ -15,7 +15,6 @@ import { seedInitialAdmin } from "./seeders/seed-initial-admin";
 
 const app = express();
 
-// Enable trust proxy for Render (fixes rate-limit error)
 app.set("trust proxy", 1);
 
 app.use(stripeWebHook);
