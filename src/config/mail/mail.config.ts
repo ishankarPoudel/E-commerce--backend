@@ -1,11 +1,7 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-export const mailTransport = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.GMAIL_USER!,
-    pass: process.env.GMAIL_PASS!,
-  },
-});
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("RESEND_API_KEY is not defined");
+}
+
+export const resend = new Resend(process.env.RESEND_API_KEY);

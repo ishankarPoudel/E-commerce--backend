@@ -1,10 +1,28 @@
-import { mailTransport } from "../../config/mail/mail.config";
+import { resend } from "../../config/mail/mail.config";
+
+const FROM_NAME = "Avisekh Bag Pashal";
+const FROM_EMAIL = process.env.FROM_EMAIL || "onboarding@resend.dev";
 
 export class MailService {
+  private async sendMail({
+    to,
+    subject,
+    html,
+  }: {
+    to: string;
+    subject: string;
+    html: string;
+  }) {
+    return resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to,
+      subject,
+      html,
+    });
+  }
   async sendVerificationEmail(email: string, token: string) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "OPT to activate your account",
         html: `
@@ -20,8 +38,7 @@ export class MailService {
 
   async sendPasswordResetEmail(email: string, token: string) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "Reset Your Password",
         html: `
@@ -57,8 +74,7 @@ export class MailService {
 
   async sendLoginDetectedEmail(email: string, deviceInfo: any) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "🔐 New Login Detected on Your Account",
         html: `
@@ -112,8 +128,7 @@ export class MailService {
 
   async sendPasswordChangeConfirmationEmail(email: string) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "Your Password Has Been Changed",
         html: ` <p style="font-size: 16px; color: #555;">Hi there,</p>
@@ -166,8 +181,8 @@ export class MailService {
         status === "paid"
           ? "#27ae60"
           : status === "pending"
-          ? "#f39c12"
-          : "#e74c3c";
+            ? "#f39c12"
+            : "#e74c3c";
 
       const isPickup = deliveryMethod === "pickup";
       const deliveryTitle = isPickup ? "🏪 Store Pickup" : "🚚 Home Delivery";
@@ -217,7 +232,7 @@ export class MailService {
         </div>
       `
           : paymentProvider === "stripe"
-          ? `
+            ? `
         <div style="background-color: #f0f9ff; border-left: 4px solid #635bff; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #635bff; margin: 0 0 8px 0; font-size: 16px;">
             💳 Payment via Stripe
@@ -232,8 +247,8 @@ export class MailService {
           </p>
         </div>
       `
-          : isPickup
-          ? `
+            : isPickup
+              ? `
         <div style="background-color: #fff3cd; border-left: 4px solid #f39c12; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #f39c12; margin: 0 0 8px 0; font-size: 16px;">
             💵 Cash Payment at Store
@@ -245,7 +260,7 @@ export class MailService {
           </p>
         </div>
       `
-          : "";
+              : "";
 
       const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
@@ -323,15 +338,14 @@ export class MailService {
     </div>
   `;
 
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject:
           paymentProvider === "esewa" && status === "paid"
             ? "✅ Payment Confirmed - Order via eSewa"
             : isPickup
-            ? "Order Confirmation - Ready for Store Pickup!"
-            : "Order Confirmation - Thank You for Your Purchase!",
+              ? "Order Confirmation - Ready for Store Pickup!"
+              : "Order Confirmation - Thank You for Your Purchase!",
         html,
       });
 
@@ -344,8 +358,7 @@ export class MailService {
 
   async sendAccoutBanNotificationEmail(email: string) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "Account Ban Notification",
         html: `
@@ -363,8 +376,7 @@ export class MailService {
 
   async sendAccountUnbanNotificationEmail(email: string) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "Account Unban Notification",
         html: `
@@ -383,11 +395,10 @@ export class MailService {
   async sendOrderStatusEmail(
     email: string,
     orderId: string,
-    newStatus: string
+    newStatus: string,
   ) {
     try {
-      await mailTransport.sendMail({
-        from: `Avisekh Bag Pashal <${process.env.GMAIL_USER}>`,
+      await this.sendMail({
         to: email,
         subject: "Order Status Update",
         html: `
