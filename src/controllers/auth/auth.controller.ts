@@ -94,6 +94,7 @@ export class AuthController extends Controller {
     @Request() req: ExpressRequest,
   ) {
     const { otp, email } = body;
+    console.log("opt code called with otp:", otp, "and email:", email);
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp({ otp, email });
 
