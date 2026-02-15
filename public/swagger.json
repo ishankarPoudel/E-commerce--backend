@@ -1063,22 +1063,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"RecoverPasswordRequest": {
-				"properties": {
-					"newPassword": {
-						"type": "string"
-					},
-					"resetToken": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"newPassword",
-					"resetToken"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"RevenueMetrics": {
 				"properties": {
 					"total": {
@@ -2471,12 +2455,10 @@
 																	"type": "string"
 																},
 																"product_delivery_charge": {
-																	"type": "number",
-																	"format": "double"
+																	"type": "string"
 																},
 																"product_service_charge": {
-																	"type": "number",
-																	"format": "double"
+																	"type": "string"
 																},
 																"product_code": {
 																	"type": "string"
@@ -2484,12 +2466,15 @@
 																"transaction_uuid": {
 																	"type": "string"
 																},
-																"total_amount": {},
-																"tax_amount": {
-																	"type": "number",
-																	"format": "double"
+																"total_amount": {
+																	"type": "string"
 																},
-																"amount": {}
+																"tax_amount": {
+																	"type": "string"
+																},
+																"amount": {
+																	"type": "string"
+																}
 															},
 															"required": [
 																"signature",
@@ -3918,7 +3903,19 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/RecoverPasswordRequest"
+								"properties": {
+									"resetToken": {
+										"type": "string"
+									},
+									"newPassword": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"resetToken",
+									"newPassword"
+								],
+								"type": "object"
 							}
 						}
 					}

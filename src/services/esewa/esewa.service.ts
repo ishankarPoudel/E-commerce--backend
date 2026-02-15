@@ -99,6 +99,10 @@ export class EsewaService {
     const signedFieldNames = "total_amount,transaction_uuid,product_code";
     const signature = this.generateSignature(payload);
 
+    console.log("ESEWA SIGNED MESSAGE:", message);
+    console.log("ESEWA SIGNATURE:", signature);
+    console.log("ESEWA PAYLOAD:", payload);
+
     return {
       formUrl: process.env.ESEWA_FORM_URL!,
       params: {

@@ -390,15 +390,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "RecoverPasswordRequest": {
-        "dataType": "refObject",
-        "properties": {
-            "newPassword": {"dataType":"string","required":true},
-            "resetToken": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "RevenueMetrics": {
         "dataType": "refObject",
         "properties": {
@@ -1502,6 +1493,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_verifyOtp: Record<string, TsoaRoute.ParameterSchema> = {
                 body: {"in":"body","name":"body","required":true,"ref":"VerifyOtpRequest"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/auth/verify-otp',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -1592,6 +1584,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_loginUser: Record<string, TsoaRoute.ParameterSchema> = {
                 user: {"in":"body","name":"user","required":true,"ref":"LoginValidator"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/auth/login',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -1681,7 +1674,8 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_recoverPassword: Record<string, TsoaRoute.ParameterSchema> = {
-                body: {"in":"body","name":"body","required":true,"ref":"RecoverPasswordRequest"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"resetToken":{"dataType":"string","required":true},"newPassword":{"dataType":"string","required":true}}},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/auth/recover-password',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),

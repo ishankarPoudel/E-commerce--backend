@@ -1,11 +1,14 @@
 import { DataSource } from "typeorm";
 import path from "path";
 
+const isDevelopment = process.env.NODE_ENV === "development";
+const isProduction = process.env.NODE_ENV === "production";
+
 const AppDataSource = new DataSource({
   type: "postgres",
 
-  //  Use DATABASE_URL if available (Render), otherwise use individual vars (local)
-  ...(process.env.DATABASE_URL
+  // Only use DATABASE_URL in production
+  ...(isProduction && process.env.DATABASE_URL
     ? { url: process.env.DATABASE_URL }
     : {
         host: process.env.DATABASE_HOSTNAME || "localhost",
@@ -14,10 +17,10 @@ const AppDataSource = new DataSource({
         password: process.env.DATABASE_PASSWORD || "classmate",
         database: process.env.DATABASE_NAME || "ecommerce",
       }),
-  synchronize: true,
-  logging: process.env.NODE_ENV === "development",
 
-  //  Fix entity paths for compiled JavaScript
+  synchronize: isDevelopment, // Only in development
+  logging: isDevelopment,
+
   entities: [path.join(__dirname, "../../entities/**/*.entity.{ts,js}")],
   migrations: [path.join(__dirname, "../../migrations/**/*.{ts,js}")],
 
@@ -25,11 +28,8 @@ const AppDataSource = new DataSource({
   migrationsRun: false,
   subscribers: [],
 
-  // SSL REQUIRED for Render PostgreSQL
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: false }
-      : false,
+  //  SSL only in production
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 });
 
 export default AppDataSource;
