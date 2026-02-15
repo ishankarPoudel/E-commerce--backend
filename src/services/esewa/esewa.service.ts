@@ -99,7 +99,13 @@ export class EsewaService {
     const signedFieldNames = "total_amount,transaction_uuid,product_code";
     const signature = this.generateSignature(payload);
 
-    console.log("ESEWA SIGNED MESSAGE:", message);
+    console.log(
+      "ESEWA SIGNED Message:",
+      signedFieldNames
+        .split(",")
+        .map((key) => `${key}=${payload[key as keyof typeof payload]}`)
+        .join(","),
+    );
     console.log("ESEWA SIGNATURE:", signature);
     console.log("ESEWA PAYLOAD:", payload);
 
