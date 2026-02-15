@@ -17,8 +17,7 @@ export class EsewaService {
     transaction_uuid: string;
     product_code: string;
   }) {
-    const signedFieldNames =
-      "amount,total_amount,transaction_uuid,product_code";
+    const signedFieldNames = "total_amount,transaction_uuid,product_code";
 
     const message = signedFieldNames
       .split(",")
@@ -99,8 +98,7 @@ export class EsewaService {
       product_code: process.env.ESEWA_PRODUCT_CODE!,
     };
 
-    const signedFieldNames =
-      "amount,total_amount,transaction_uuid,product_code";
+    const signedFieldNames = "total_amount,transaction_uuid,product_code";
     const signature = this.generateSignature(payload);
 
     console.log(
