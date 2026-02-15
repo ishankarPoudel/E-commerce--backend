@@ -11,16 +11,18 @@ export class EsewaService {
   private orderRepo = AppDataSource.getRepository(OrderEntity);
   private cartService = new CartService();
 
-  /**
-   * Generate eSewa HMAC SHA256 signature
-   */
+  private generateSignature(payload: {
+    total_amount: string;
+    transaction_uuid: string;
+    product_code: string;
+  }) {
+    const signedFieldNames = "total_amount,transaction_uuid,product_code";
 
-  private generateSignature(
-    totalAmount: number,
-    transactionUuid: string,
-    productCode: string,
-  ) {
-    const message = `total_amount=${totalAmount},transaction_uuid=${transactionUuid},product_code=${productCode}`;
+    const message = signedFieldNames
+      .split(",")
+      .map((key) => `${key}=${payload[key as keyof typeof payload]}`)
+      .join(",");
+
     return crypto
       .createHmac("sha256", process.env.ESEWA_SECRET_KEY!)
       .update(message)
@@ -33,16 +35,15 @@ export class EsewaService {
     shippingAddress?: string,
   ) {
     const cartExists = await this.cartService.getCartByUserId(userId);
-    if (!cartExists) {
-      throw new ApiError(400, "Cart is empty. Cannot initiate payment.");
-    }
     if (!cartExists || cartExists.cart.cartItems.length === 0) {
       throw new ApiError(400, "Cart is empty. Cannot initiate payment.");
     }
+
     const amount = cartExists.cart.cartItems.reduce((sum, ci) => {
       if (!ci.product) return sum;
       return sum + Math.round(Number(ci.product.price)) * ci.quantity;
     }, 0);
+
     if (amount <= 0) throw new ApiError(400, "Invalid cart amount");
 
     const esewaTransactionUuid = `esewa-${Date.now()}-${crypto
@@ -78,36 +79,39 @@ export class EsewaService {
           })) || [],
       })),
     });
+
     await this.orderRepo.save(order);
 
-    // Esewa payload, if not being used  0 must be sent for these charges
+    // Charges (must be included in total_amount)
     const taxAmount = 0;
     const serviceCharge = 5;
     const deliveryCharge = 0;
 
-    let totalAmount = amount + taxAmount + serviceCharge + deliveryCharge;
+    const totalAmount = amount + taxAmount + serviceCharge + deliveryCharge;
 
-    const signature = this.generateSignature(
-      totalAmount,
-      esewaTransactionUuid,
-      process.env.ESEWA_PRODUCT_CODE!,
-    );
-    const formUrl = process.env.ESEWA_PAYMENT_URL!;
+    // payload MUST be strings
+    const payload = {
+      total_amount: String(totalAmount),
+      transaction_uuid: esewaTransactionUuid,
+      product_code: process.env.ESEWA_PRODUCT_CODE!,
+    };
 
-    // form to be submitted by frontend , form is hidden and auto submitted
+    const signedFieldNames = "total_amount,transaction_uuid,product_code";
+    const signature = this.generateSignature(payload);
+
     return {
       formUrl: process.env.ESEWA_FORM_URL!,
       params: {
-        amount: amount, //amount of products only
-        tax_amount: taxAmount || 0,
-        total_amount: totalAmount || 0, //amount includes all charges ie producut amnt plus service plus tax plus delivery
-        transaction_uuid: esewaTransactionUuid,
-        product_code: process.env.ESEWA_PRODUCT_CODE!,
-        product_service_charge: serviceCharge || 0,
-        product_delivery_charge: deliveryCharge || 0,
+        amount: String(amount),
+        tax_amount: String(taxAmount),
+        total_amount: payload.total_amount,
+        transaction_uuid: payload.transaction_uuid,
+        product_code: payload.product_code,
+        product_service_charge: String(serviceCharge),
+        product_delivery_charge: String(deliveryCharge),
         success_url: process.env.ESEWA_SUCCESS_URL!,
         failure_url: process.env.ESEWA_FAILURE_URL!,
-        signed_field_names: "total_amount,transaction_uuid,product_code",
+        signed_field_names: signedFieldNames,
         signature,
       },
     };

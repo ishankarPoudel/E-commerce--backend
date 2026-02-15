@@ -47,7 +47,7 @@ export class EsewaController extends Controller {
     );
     console.log("eSewa payment initiation response:", paymentInitiation);
     return {
-      message: "eSewa payment initiated successfully",
+      message: "Establishing connection with Esewa",
       data: paymentInitiation,
     };
   }
