@@ -1,11 +1,17 @@
-import { Body, Get, Post, Query, Route, Tags } from "tsoa";
+import { Body, Get, Middlewares, Post, Query, Route, Tags } from "tsoa";
 import { CreateCategoryValidator } from "../../validators/createCategory.validator";
 import { CategoryService } from "../../services/category/category.service";
+import {
+  authenticateToken,
+  authorizeRoles,
+} from "../../middlewares/auth.middleware";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("/category")
 @Tags("Category")
 export class CategoryController {
   @Post("/add-category")
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   async addCategory(@Body() category: CreateCategoryValidator) {
     const newCategory = await new CategoryService().createCategory(category);
     return {
@@ -29,7 +35,7 @@ export class CategoryController {
   async getCategoriesWithBags(@Query() page: number, @Query() limit: number) {
     const categories = await new CategoryService().getCategoriesWithBags(
       page,
-      limit
+      limit,
     );
     return {
       success: true,

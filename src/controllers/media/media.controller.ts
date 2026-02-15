@@ -1,6 +1,11 @@
-import { Controller, Post, Route, Tags, Get, Body } from "tsoa";
+import { Controller, Post, Route, Tags, Get, Body, Middlewares } from "tsoa";
 import cloudinary from "../../config/cloudinary/cloudinary.config";
 import { MediaService } from "../../services/media/media.services";
+import {
+  authenticateToken,
+  authorizeRoles,
+} from "../../middlewares/auth.middleware";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 interface UploadImageBody {
   bagId: string;
@@ -60,6 +65,7 @@ export class MediaController extends Controller {
     };
   }
   @Post("upload-multiple")
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   public async saveMultipleImagesToDB(@Body() body: UploadMultipleImagesBody) {
     const media = await new MediaService().createMultipleMedia(
       body.bagId,
@@ -73,6 +79,7 @@ export class MediaController extends Controller {
   }
 
   @Post("/delete-single-image")
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   public async deleteSingleImageFromCloudinary(
     @Body() body: { publicId: string },
   ) {
@@ -84,6 +91,7 @@ export class MediaController extends Controller {
   }
 
   @Post("/delete-multiple-images")
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   public async deleteMultipleImagesFromCloudinary(
     @Body() body: { publicId: string[] },
   ) {

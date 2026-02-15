@@ -22,11 +22,10 @@ export interface AuthenticatedRequest extends Request {
 export const authenticateToken = async (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const accessToken = req.cookies?.accessToken;
-    console.log("Access Token from cookie:", accessToken);
 
     if (!accessToken) {
       return res.status(401).json({
@@ -102,7 +101,7 @@ export const authorizeRoles = (...allowedRoles: UserRole[]) => {
   return async (
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const authRq = req as AuthenticatedRequest;
     if (!authRq.user) {
@@ -132,7 +131,7 @@ export const authorizeRoles = (...allowedRoles: UserRole[]) => {
 export const revalidateUser = async (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userRepo = AppDataSource.getRepository(UserEntity);
 

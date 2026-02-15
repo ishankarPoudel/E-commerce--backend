@@ -8,7 +8,7 @@ import * as swaggerDocument from "../public/swagger.json";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { authMiddlewareWithExclusions } from "./middlewares/authExclude.middleware";
+
 import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
 import AppDataSource from "./config/data-source/data-source";
 import { seedInitialAdmin } from "./seeders/seed-initial-admin";
@@ -50,8 +50,6 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.get("/swagger.json", (req: Request, res: Response) => {
   res.json(swaggerDocument);
 });
-
-app.use(authMiddlewareWithExclusions as express.RequestHandler);
 
 RegisterRoutes(app);
 app.use(errorHandler);
