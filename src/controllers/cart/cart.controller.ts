@@ -88,6 +88,7 @@ export class CartController extends Controller {
   }
 
   @Get("/get-cart")
+  @Middlewares(authenticateToken, revalidateUser)
   async getCart(@Request() req: AuthenticatedRequest) {
     const userId = this.getUserIdFromRequest(req);
     const cartService = await new CartService().getCartByUserId(userId);
