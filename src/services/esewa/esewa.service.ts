@@ -12,7 +12,6 @@ export class EsewaService {
   private cartService = new CartService();
 
   private generateSignature(payload: {
-    amount: string;
     total_amount: string;
     transaction_uuid: string;
     product_code: string;
@@ -92,7 +91,6 @@ export class EsewaService {
 
     // payload MUST be strings
     const payload = {
-      amount: String(amount),
       total_amount: String(totalAmount),
       transaction_uuid: esewaTransactionUuid,
       product_code: process.env.ESEWA_PRODUCT_CODE!,
