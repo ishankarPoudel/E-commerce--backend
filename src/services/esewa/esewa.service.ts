@@ -12,11 +12,13 @@ export class EsewaService {
   private cartService = new CartService();
 
   private generateSignature(payload: {
+    amount: string;
     total_amount: string;
     transaction_uuid: string;
     product_code: string;
   }) {
-    const signedFieldNames = "total_amount,transaction_uuid,product_code";
+    const signedFieldNames =
+      "amount,total_amount,transaction_uuid,product_code";
 
     const message = signedFieldNames
       .split(",")
@@ -91,12 +93,14 @@ export class EsewaService {
 
     // payload MUST be strings
     const payload = {
+      amount: String(amount),
       total_amount: String(totalAmount),
       transaction_uuid: esewaTransactionUuid,
       product_code: process.env.ESEWA_PRODUCT_CODE!,
     };
 
-    const signedFieldNames = "total_amount,transaction_uuid,product_code";
+    const signedFieldNames =
+      "amount,total_amount,transaction_uuid,product_code";
     const signature = this.generateSignature(payload);
 
     console.log(
