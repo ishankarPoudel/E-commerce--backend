@@ -37,7 +37,7 @@ export class BagController extends Controller {
     @Query() search?: string,
     @Query() category?: string,
     @Query() minPrice?: number,
-    @Query() maxPrice?: number
+    @Query() maxPrice?: number,
   ) {
     const bags = await new BagService().getAllBags(
       page,
@@ -45,7 +45,7 @@ export class BagController extends Controller {
       search,
       category,
       minPrice,
-      maxPrice
+      maxPrice,
     );
     return {
       success: true,
@@ -65,7 +65,7 @@ export class BagController extends Controller {
   }
 
   @Patch("/update-bag/:id")
-  @Middlewares(authenticateToken)
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   async updateBag(@Path() id: string, @Body() bag: updateBagValidator) {
     const updatedBag = await new BagService().updateBagById(id, bag);
     return {
@@ -76,7 +76,7 @@ export class BagController extends Controller {
   }
 
   @Delete("/delete-bag/:id")
-  @Middlewares(authenticateToken)
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   async deleteBagById(@Path() id: string) {
     const bag = await new BagService().deleteBagById(id);
     return {

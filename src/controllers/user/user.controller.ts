@@ -42,7 +42,7 @@ export class UserController extends Controller {
     const userRepo = AppDataSource.getRepository(UserEntity);
     const user = await userRepo.findOne({
       where: { id: req.user.id },
-      select: ["id", "fullName", "email", "role", "tokenVersion"], // ✅ Only select needed fields
+      select: ["id", "fullName", "email", "role", "tokenVersion"],
     });
     if (!user) {
       this.setStatus(404);
@@ -64,15 +64,15 @@ export class UserController extends Controller {
   }
 
   @Patch("/update-me")
-  @SuccessResponse("200", "User updated successfully")
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.USER, UserRole.ADMIN))
   async updateUserById(
     @Request() req: AuthenticatedRequest,
-    @Body() body: any
+    @Body() body: any,
   ) {
     const userId = req?.user?.id;
     const updatedUser = await new UserService().updateUserById(
       userId as string,
-      body
+      body,
     );
     return {
       success: true,
@@ -82,20 +82,21 @@ export class UserController extends Controller {
   }
 
   @Get("/all-users")
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.ADMIN))
   async getAllUsers(
     @Request() req: AuthenticatedRequest,
     @Query() page?: number,
     @Query() pageSize?: number,
     @Query() search?: string,
     @Query() sortBy?: "name" | "joinedAt",
-    @Query() order?: "asc" | "desc"
+    @Query() order?: "asc" | "desc",
   ) {
     const users = await new UserService().getAllUsers(
       page,
       pageSize,
       search,
       sortBy,
-      order
+      order,
     );
     return {
       success: true,

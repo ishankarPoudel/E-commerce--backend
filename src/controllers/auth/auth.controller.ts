@@ -74,7 +74,7 @@ export class AuthController extends Controller {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 900000, // 15 minutes
+      maxAge: 300000, // 5 minutes
       domain: ".shankarpoudel.com",
     });
 
@@ -82,7 +82,7 @@ export class AuthController extends Controller {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 604800000, // 7 days
+      maxAge: 1296000000, // 15 days
       domain: ".shankarpoudel.com",
     });
   }
@@ -112,6 +112,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/resend-otp")
+  @Middlewares(rateLimiter)
   async resendOtp(@Body() body: ResendOtpRequest) {
     const { email } = body;
     await new AuthService().resendOtp(email);

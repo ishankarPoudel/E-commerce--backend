@@ -15,9 +15,11 @@ import { CartService } from "../../services/cart/cart.services";
 import {
   AuthenticatedRequest,
   authenticateToken,
+  authorizeRoles,
   revalidateUser,
 } from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("/cart")
 @Tags("Cart")
@@ -50,6 +52,11 @@ export class CartController extends Controller {
   }
 
   @Delete("/remove-from-cart")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.USER, UserRole.ADMIN),
+  )
   async removeFromCart(
     @Body() cart: { bagId: string; userId?: string },
     @Request() req: AuthenticatedRequest,
@@ -66,21 +73,21 @@ export class CartController extends Controller {
   }
 
   @Patch("/update-cart")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.USER, UserRole.ADMIN),
+  )
   async updateCart(
     @Body() cart: { bagId: string; quantity: number },
     @Request() req: AuthenticatedRequest,
   ) {
-    console.log("🎯 CONTROLLER - Received request");
-    console.log("🎯 CONTROLLER - bagId:", cart.bagId);
-    console.log("🎯 CONTROLLER - quantity:", cart.quantity);
-    console.log("🎯 CONTROLLER - userId:", req.user?.id);
-
     const userId = this.getUserIdFromRequest(req);
     const cartService = await new CartService().updateCartItemQuantity(
       cart.bagId,
       cart.quantity,
     );
-    console.log("✅ CONTROLLER - Updated cart item:", cartService.cart.id);
+
     return {
       message: "Cart updated successfully",
       data: cartService.cart,
@@ -88,7 +95,11 @@ export class CartController extends Controller {
   }
 
   @Get("/get-cart")
-  @Middlewares(authenticateToken, revalidateUser)
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.USER, UserRole.ADMIN),
+  )
   async getCart(@Request() req: AuthenticatedRequest) {
     const userId = this.getUserIdFromRequest(req);
     const cartService = await new CartService().getCartByUserId(userId);
