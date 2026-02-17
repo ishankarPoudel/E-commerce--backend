@@ -6,7 +6,7 @@ import {
   UserEntity,
   UserRole,
 } from "../entities/user/userInfo/user.userInfo.entity";
-import { TokenExpiredError } from "jsonwebtoken";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { error } from "console";
 
 export interface AuthUser {
@@ -25,9 +25,14 @@ export const authenticateToken = async (
   next: NextFunction,
 ) => {
   try {
+    console.log("🔍 All cookies received:", req.cookies);
+    console.log("🔍 Cookie header:", req.headers.cookie);
+
     const accessToken = req.cookies?.accessToken;
+    console.log("acces token exists in cookie:", !!accessToken);
 
     if (!accessToken) {
+      console.log("No access token found in cookies");
       return res.status(401).json({
         success: false,
         message: "Please login to continue",
@@ -40,8 +45,16 @@ export const authenticateToken = async (
     let payload: any;
     try {
       payload = new Tokens().verifyAccessToken(accessToken);
+      console.log("Access token verified");
     } catch (error) {
+      console.error("Access token verification failed:", error);
       if (error instanceof TokenExpiredError) {
+        console.log("Access token has expired");
+
+        if (error instanceof JsonWebTokenError) {
+          console.log("invalid jwt token");
+        }
+        console.log("unknow token error");
         return res.status(401).json({
           success: false,
           message: "Access Token expired",
@@ -92,7 +105,7 @@ export const authenticateToken = async (
       role: payload.role,
       tokenVersion: payload.tokenVersion,
     };
-
+    console.log("User authenticated:");
     next();
   } catch (error) {
     console.error("Authentication error:", error);

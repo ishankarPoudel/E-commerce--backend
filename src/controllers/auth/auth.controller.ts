@@ -56,7 +56,7 @@ interface ResetPasswordRequest {
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 100,
   message: { message: "Too many requests, please try again later." },
 });
 
@@ -81,7 +81,7 @@ export class AuthController extends Controller {
   ) {
     const isProduction = process.env.NODE_ENV === "production";
 
-    const accessTokenOptions = this.getCookieOptions(300000); // 5 minutes
+    const accessTokenOptions = this.getCookieOptions(15000); // 15 seconds
     const refreshTokenOptions = this.getCookieOptions(1296000000); // 15 days
 
     res.cookie("accessToken", accessToken, {
@@ -91,6 +91,10 @@ export class AuthController extends Controller {
     res.cookie("refreshToken", refreshToken, {
       ...refreshTokenOptions,
     });
+
+    console.log("🍪 Cookies set successfully");
+    console.log("🍪 Access token options:", accessTokenOptions);
+    console.log("🍪 Refresh token options:", refreshTokenOptions);
   }
   private clearCookies(res: ExpressResponse) {
     const isProduction = process.env.NODE_ENV === "production";
@@ -172,6 +176,7 @@ export class AuthController extends Controller {
 
     const res = req.res as ExpressResponse;
     this.setCookies(res, accessToken, refreshToken);
+    console.log("✅ Login successful, cookies set");
 
     return {
       success: true,
