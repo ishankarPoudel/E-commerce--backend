@@ -68,7 +68,7 @@ export class AuthController extends Controller {
     return {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
       maxAge,
       domain: isProduction ? ".shankarpoudel.com" : undefined,
     };
@@ -81,20 +81,15 @@ export class AuthController extends Controller {
   ) {
     const isProduction = process.env.NODE_ENV === "production";
 
+    const accessTokenOptions = this.getCookieOptions(300000); // 5 minutes
+    const refreshTokenOptions = this.getCookieOptions(1296000000); // 15 days
+
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 300000, // 5 minutes
-      domain: ".shankarpoudel.com",
+      ...accessTokenOptions,
     });
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 1296000000, // 15 days
-      domain: ".shankarpoudel.com",
+      ...refreshTokenOptions,
     });
   }
   private clearCookies(res: ExpressResponse) {
