@@ -27,8 +27,7 @@ export class TokensService {
   async refreshTokens(refreshToken: string) {
     if (!refreshToken) {
       const error = new ApiError(401, "Refresh Token missing");
-      (error as any).forceLogout = true;
-      (error as any).errorType = "session_expired";
+      (error as any).errorType = "guest_user";
       throw error;
     }
     let payload: any;
@@ -37,13 +36,14 @@ export class TokensService {
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         const apiError = new ApiError(401, "Refresh Token expired");
-        (apiError as any).forceLogout = true;
         (apiError as any).errorType = "session_expired";
+        (apiError as any).forceLogout = true;
+
         throw apiError;
       }
       const apiError = new ApiError(401, "Invalid Refresh Token");
       (apiError as any).forceLogout = true;
-      (apiError as any).errorType = "session_expired";
+      (apiError as any).errorType = "invalid_token";
       throw apiError;
     }
 
@@ -56,14 +56,14 @@ export class TokensService {
     if (!user) {
       const error = new ApiError(401, "User not found");
       (error as any).forceLogout = true;
-      (error as any).errorType = "session_expired";
+      (error as any).errorType = "user_not_found";
       throw error;
     }
 
     if (!user.refreshToken) {
       const error = new ApiError(401, "Refresh token missing");
       (error as any).forceLogout = true;
-      (error as any).errorType = "session_expired";
+      (error as any).errorType = "invalid_token";
       throw error;
     }
 
@@ -76,6 +76,8 @@ export class TokensService {
       (error as any).errorType = "account_banned";
       throw error;
     }
+
+    //token verosion mismatch - token revoked by admin
     if (payload.tokenVersion !== user.tokenVersion) {
       throw new ApiError(401, "Session has been revoked by administrator");
     }
@@ -96,7 +98,7 @@ export class TokensService {
     if (!isRefreshTokenValid) {
       const error = new ApiError(401, "Invalid Refresh Token");
       (error as any).forceLogout = true;
-      (error as any).errorType = "session_expired";
+      (error as any).errorType = "invalid_token";
       throw error;
     }
 
@@ -109,6 +111,7 @@ export class TokensService {
     const newRefreshToken = new Tokens().signRefreshToken({
       userId: user.id,
       tokenVersion: user.tokenVersion,
+      role: user.role,
     });
 
     user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
