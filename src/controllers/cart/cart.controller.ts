@@ -24,20 +24,17 @@ import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 @Route("/cart")
 @Tags("Cart")
 export class CartController extends Controller {
-  private getUserIdFromRequest(req: AuthenticatedRequest): string {
-    const userId = req.user?.id;
-    if (!userId) {
-      throw new ApiError(401, "User ID not found in request");
-    }
-    return userId;
-  }
   @Post("/add-to-cart")
-  @Middlewares(authenticateToken, revalidateUser)
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.USER, UserRole.ADMIN),
+  )
   async addToCart(
     @Body() cart: AddToCartValidator,
     @Request() req: AuthenticatedRequest,
   ) {
-    const userId = this.getUserIdFromRequest(req);
+    const userId = req.user!.id;
     const cartService = await new CartService().addToCart(
       userId,
       cart.bagId,
@@ -61,7 +58,7 @@ export class CartController extends Controller {
     @Body() cart: { bagId: string; userId?: string },
     @Request() req: AuthenticatedRequest,
   ) {
-    const userId = this.getUserIdFromRequest(req);
+    const userId = req.user!.id;
     const cartService = await new CartService().removeFromCart(
       userId,
       cart.bagId,
@@ -82,7 +79,7 @@ export class CartController extends Controller {
     @Body() cart: { bagId: string; quantity: number },
     @Request() req: AuthenticatedRequest,
   ) {
-    const userId = this.getUserIdFromRequest(req);
+    const userId = req.user?.id;
     const cartService = await new CartService().updateCartItemQuantity(
       cart.bagId,
       cart.quantity,
@@ -101,7 +98,7 @@ export class CartController extends Controller {
     authorizeRoles(UserRole.USER, UserRole.ADMIN),
   )
   async getCart(@Request() req: AuthenticatedRequest) {
-    const userId = this.getUserIdFromRequest(req);
+    const userId = req.user!.id;
     const cartService = await new CartService().getCartByUserId(userId);
     return {
       message: "Cart retrieved successfully",

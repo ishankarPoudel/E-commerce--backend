@@ -11,6 +11,7 @@ import {
   AuthenticatedRequest,
   authenticateToken,
   authorizeRoles,
+  revalidateUser,
 } from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
 import { CheckOutService } from "../../services/stripe/checkout.service";
@@ -20,7 +21,11 @@ import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 @Tags("Checkout")
 export class CheckOutController extends Controller {
   @Post("/create-payment-intent")
-  @Middlewares(authenticateToken, authorizeRoles(UserRole.USER, UserRole.ADMIN))
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.USER, UserRole.ADMIN),
+  )
   async createPaymentIntent(
     @Request() req: AuthenticatedRequest,
     @Body()

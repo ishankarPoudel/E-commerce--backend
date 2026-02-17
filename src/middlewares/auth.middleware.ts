@@ -30,8 +30,10 @@ export const authenticateToken = async (
     if (!accessToken) {
       return res.status(401).json({
         success: false,
-        message: "Access token missing",
+        message: "Please login to continue",
+        errorType: "guest_user",
         forceLogout: false, // forntend will  try refresh token at this point
+        requiresAuth: true, // Indicates that this endpoint requires authentication
       });
     }
 
@@ -44,13 +46,14 @@ export const authenticateToken = async (
           success: false,
           message: "Access Token expired",
           forceLogout: false, // frontend will try refresh token at this point
+          errorType: "token_expired",
         });
       }
       return res.status(401).json({
         success: false,
         message: "Invalid Access Token",
         forceLogout: true,
-        errorType: "session_expired",
+        errorType: "invalid_token",
       });
     }
 
@@ -63,7 +66,7 @@ export const authenticateToken = async (
         success: false,
         message: "User not found",
         forceLogout: true,
-        errorType: "session_expired",
+        errorType: "user_not_found",
       });
     }
     if (user.isBanned) {
@@ -107,9 +110,9 @@ export const authorizeRoles = (...allowedRoles: UserRole[]) => {
     if (!authRq.user) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized",
+        message: "Unauthorized: Please login to continue",
         forceLogout: true,
-        errorType: "session_expired",
+        errorType: "guest_user",
       });
     }
 
@@ -135,20 +138,9 @@ export const revalidateUser = async (
 ) => {
   const userRepo = AppDataSource.getRepository(UserEntity);
 
-  console.log(`\n🔍 [REVALIDATE] Checking user: ${req.user!.id}`); // ← Add this
-
   const user = await userRepo.findOne({
     where: { id: req.user!.id },
-    select: ["id", "email", "isBanned", "tokenVersion"], // ← Add email to see
-  });
-
-  console.log("[REVALIDATE] User data:", {
-    userId: req.user!.id, // ← Add this
-    email: user?.email, // ← Add this
-    found: !!user,
-    isBanned: user?.isBanned,
-    dbTokenVersion: user?.tokenVersion,
-    requestTokenVersion: req.user!.tokenVersion,
+    select: ["id", "email", "isBanned", "tokenVersion"],
   });
 
   if (!user) {
@@ -177,10 +169,6 @@ export const revalidateUser = async (
 
   // ✅ Check token version mismatch
   if (user.tokenVersion !== req.user!.tokenVersion) {
-    console.log(`❌ [REVALIDATE] TOKEN VERSION MISMATCH!`);
-    console.log(`   DB has: ${user.tokenVersion}`);
-    console.log(`   Token has: ${req.user!.tokenVersion}`);
-
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
 
@@ -191,7 +179,5 @@ export const revalidateUser = async (
       errorType: "session_revoked",
     });
   }
-
-  console.log("✅ [REVALIDATE] User revalidated successfully");
   next();
 };

@@ -21,20 +21,13 @@ import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 @Route("/order")
 @Tags("Order")
 export class OrderController extends Controller {
-  private getUserIdFromRequest(req: AuthenticatedRequest): string {
-    const userId = req.user?.id;
-    if (!userId) {
-      throw new ApiError(404, "Unauthorized to access");
-    }
-    return userId;
-  }
   @Post("/get-order-by-id")
   @Middlewares(authenticateToken, authorizeRoles(UserRole.USER, UserRole.ADMIN))
   async getOrderById(
     @Request() req: AuthenticatedRequest,
     @Body() order: { orderId?: string },
   ) {
-    const userId = this.getUserIdFromRequest(req);
+    const userId = req.user!.id;
     const orderService = await new OrderService().getOrderById(
       userId,
       order?.orderId as string,
@@ -49,7 +42,7 @@ export class OrderController extends Controller {
   @Get("/get-all-orders") // get all orders of logged in user
   @Middlewares(authenticateToken, authorizeRoles(UserRole.USER, UserRole.ADMIN))
   async getAllOrders(@Request() req: AuthenticatedRequest) {
-    const userId = this.getUserIdFromRequest(req);
+    const userId = req.user!.id;
     const orders = await new OrderService().getAllOrders(userId);
     return {
       success: true,
