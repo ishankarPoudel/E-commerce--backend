@@ -243,9 +243,6 @@ export class AuthController extends Controller {
 
   @Post("/refresh-token")
   async refreshToken(@Request() req: ExpressRequest) {
-    console.log("Refresh token endpoint called");
-    console.log("Cookies:", req.cookies);
-
     const refreshToken = req.cookies?.refreshToken;
     const newTokens = await new TokensService().refreshTokens(refreshToken);
 

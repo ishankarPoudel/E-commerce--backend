@@ -70,7 +70,7 @@ export class TokensService {
     if (user.isBanned) {
       const error = new ApiError(
         403,
-        "Your account has been banned. Contact support."
+        "Your account has been banned. Contact support.",
       );
       (error as any).forceLogout = true;
       (error as any).errorType = "account_banned";
@@ -82,7 +82,7 @@ export class TokensService {
     if (payload.tokenVersion !== user.tokenVersion) {
       const error = new ApiError(
         401,
-        "Session has been revoked by administrator"
+        "Session has been revoked by administrator",
       );
       (error as any).forceLogout = true;
       (error as any).errorType = "session_revoked";
@@ -91,7 +91,7 @@ export class TokensService {
 
     const isRefreshTokenValid = await bcrypt.compare(
       refreshToken,
-      user.refreshToken
+      user.refreshToken,
     );
     if (!isRefreshTokenValid) {
       const error = new ApiError(401, "Invalid Refresh Token");
