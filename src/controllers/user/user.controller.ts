@@ -29,7 +29,7 @@ import AppDataSource from "../../config/data-source/data-source";
 @Tags("User")
 export class UserController extends Controller {
   @Get("/me")
-  @Middlewares(authenticateToken)
+  @Middlewares(authenticateToken, authorizeRoles(UserRole.USER, UserRole.ADMIN))
   @SuccessResponse("200", "User retrieved successfully")
   async getCurrentUser(@Request() req: AuthenticatedRequest) {
     if (!req.user) {
