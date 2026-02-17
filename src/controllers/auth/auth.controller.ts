@@ -63,6 +63,17 @@ const rateLimiter = rateLimit({
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
+  private getCookieOptions(maxAge: number) {
+    const isProduction = process.env.NODE_ENV === "production";
+    return {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge,
+      domain: isProduction ? ".shankarpoudel.com" : undefined,
+    };
+  }
+
   private setCookies(
     res: ExpressResponse,
     accessToken: string,
@@ -86,7 +97,18 @@ export class AuthController extends Controller {
       domain: ".shankarpoudel.com",
     });
   }
-
+  private clearCookies(res: ExpressResponse) {
+    const isProduction = process.env.NODE_ENV === "production";
+    const clearOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+      domain: isProduction ? ".shankarpoudel.com" : undefined,
+      path: "/",
+    };
+    res.clearCookie("accessToken", clearOptions);
+    res.clearCookie("refreshToken", clearOptions);
+  }
   @Post("/verify-otp")
   @Middlewares(rateLimiter)
   async verifyOtp(
@@ -180,8 +202,7 @@ export class AuthController extends Controller {
     await new AuthService().logoutUser(req.user.id);
 
     const res = req.res as ExpressResponse;
-    res.clearCookie("accessToken", { path: "/" });
-    res.clearCookie("refreshToken", { path: "/" });
+    this.clearCookies(res);
 
     return {
       success: true,
