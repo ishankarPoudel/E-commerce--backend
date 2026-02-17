@@ -81,7 +81,7 @@ export class AuthController extends Controller {
   ) {
     const isProduction = process.env.NODE_ENV === "production";
 
-    const accessTokenOptions = this.getCookieOptions(15000); // 15 seconds
+    const accessTokenOptions = this.getCookieOptions(305000); // 5 min 5 second
     const refreshTokenOptions = this.getCookieOptions(1296000000); // 15 days
 
     res.cookie("accessToken", accessToken, {
