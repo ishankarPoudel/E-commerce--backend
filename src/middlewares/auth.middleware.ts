@@ -25,9 +25,6 @@ export const authenticateToken = async (
   next: NextFunction,
 ) => {
   try {
-    console.log("🔍 All cookies received:", req.cookies);
-    console.log("🔍 Cookie header:", req.headers.cookie);
-
     const accessToken = req.cookies?.accessToken;
     const refreshToken = req.cookies?.refreshToken;
     console.log("acces token exists in cookie:", !!accessToken);
@@ -189,7 +186,7 @@ export const revalidateUser = async (
     });
   }
 
-  // ✅ Check token version mismatch
+  //  Check token version mismatch
   if (user.tokenVersion !== req.user!.tokenVersion) {
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
