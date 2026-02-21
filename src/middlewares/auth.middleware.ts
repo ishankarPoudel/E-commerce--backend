@@ -29,16 +29,25 @@ export const authenticateToken = async (
     console.log("🔍 Cookie header:", req.headers.cookie);
 
     const accessToken = req.cookies?.accessToken;
+    const refreshToken = req.cookies?.refreshToken;
     console.log("acces token exists in cookie:", !!accessToken);
 
     if (!accessToken) {
       console.log("No access token found in cookies");
+
+      if (refreshToken) {
+        return res.status(401).json({
+          success: false,
+          message: "Access Token missing please refresh",
+          forceLogout: false, // frontend will try refresh token at this point
+          errorType: "token_expired",
+        });
+      }
       return res.status(401).json({
         success: false,
         message: "Please login to continue",
         errorType: "guest_user",
         forceLogout: false, // forntend will  try refresh token at this point
-        requiresAuth: true, // Indicates that this endpoint requires authentication
       });
     }
 

@@ -81,7 +81,7 @@ export class AuthController extends Controller {
   ) {
     const isProduction = process.env.NODE_ENV === "production";
 
-    const accessTokenOptions = this.getCookieOptions(305000); // 5 min 5 second
+    const accessTokenOptions = this.getCookieOptions(900000); //16 minutes
     const refreshTokenOptions = this.getCookieOptions(1296000000); // 15 days
 
     res.cookie("accessToken", accessToken, {
@@ -91,10 +91,6 @@ export class AuthController extends Controller {
     res.cookie("refreshToken", refreshToken, {
       ...refreshTokenOptions,
     });
-
-    console.log("🍪 Cookies set successfully");
-    console.log("🍪 Access token options:", accessTokenOptions);
-    console.log("🍪 Refresh token options:", refreshTokenOptions);
   }
   private clearCookies(res: ExpressResponse) {
     const isProduction = process.env.NODE_ENV === "production";
