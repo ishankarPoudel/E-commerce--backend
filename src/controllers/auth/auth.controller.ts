@@ -111,7 +111,6 @@ export class AuthController extends Controller {
     @Request() req: ExpressRequest,
   ) {
     const { otp, email } = body;
-    console.log("opt code called with otp:", otp, "and email:", email);
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp({ otp, email });
 
@@ -172,7 +171,6 @@ export class AuthController extends Controller {
 
     const res = req.res as ExpressResponse;
     this.setCookies(res, accessToken, refreshToken);
-    console.log("✅ Login successful, cookies set");
 
     return {
       success: true,
