@@ -5,7 +5,7 @@ export const errorHandler = (
   err: any,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   console.error(" Error here:", {
     message: err.message,
@@ -18,16 +18,21 @@ export const errorHandler = (
   // Default error values
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
+  const errorType = err.errorType || "unknown";
 
   // Pass forceLogout and errorType to response
   const responseBody: any = {
     success: false,
     message,
+    errorType,
   };
 
   // Add forceLogout flag if present
   if (err.forceLogout === true) {
-    responseBody.forceLogout = true;
+    responseBody.forceLogout = err.forceLogout;
+  }
+  if (err.forceLogout !== undefined) {
+    responseBody.forceLogout = err.forceLogout;
   }
 
   // Add errorType if present
@@ -39,6 +44,6 @@ export const errorHandler = (
   if (process.env.NODE_ENV === "development") {
     responseBody.stack = err.stack;
   }
-
+  console.log("🚨 Sending error response:", responseBody);
   res.status(statusCode).json(responseBody);
 };

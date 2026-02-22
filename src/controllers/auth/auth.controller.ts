@@ -56,13 +56,24 @@ interface ResetPasswordRequest {
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 100,
   message: { message: "Too many requests, please try again later." },
 });
 
 @Route("/auth")
 @Tags("Auth")
 export class AuthController extends Controller {
+  private getCookieOptions(maxAge: number) {
+    const isProduction = process.env.NODE_ENV === "production";
+    return {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+      maxAge,
+      domain: isProduction ? ".shankarpoudel.com" : undefined,
+    };
+  }
+
   private setCookies(
     res: ExpressResponse,
     accessToken: string,
@@ -70,23 +81,29 @@ export class AuthController extends Controller {
   ) {
     const isProduction = process.env.NODE_ENV === "production";
 
+    const accessTokenOptions = this.getCookieOptions(900000); //16 minutes
+    const refreshTokenOptions = this.getCookieOptions(1296000000); // 15 days
+
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 900000, // 15 minutes
-      domain: ".shankarpoudel.com",
+      ...accessTokenOptions,
     });
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 604800000, // 7 days
-      domain: ".shankarpoudel.com",
+      ...refreshTokenOptions,
     });
   }
-
+  private clearCookies(res: ExpressResponse) {
+    const isProduction = process.env.NODE_ENV === "production";
+    const clearOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+      domain: isProduction ? ".shankarpoudel.com" : undefined,
+      path: "/",
+    };
+    res.clearCookie("accessToken", clearOptions);
+    res.clearCookie("refreshToken", clearOptions);
+  }
   @Post("/verify-otp")
   @Middlewares(rateLimiter)
   async verifyOtp(
@@ -94,7 +111,6 @@ export class AuthController extends Controller {
     @Request() req: ExpressRequest,
   ) {
     const { otp, email } = body;
-    console.log("opt code called with otp:", otp, "and email:", email);
     const { user, accessToken, refreshToken } =
       await new AuthService().verifyOtp({ otp, email });
 
@@ -112,6 +128,7 @@ export class AuthController extends Controller {
   }
 
   @Post("/resend-otp")
+  @Middlewares(rateLimiter)
   async resendOtp(@Body() body: ResendOtpRequest) {
     const { email } = body;
     await new AuthService().resendOtp(email);
@@ -179,8 +196,7 @@ export class AuthController extends Controller {
     await new AuthService().logoutUser(req.user.id);
 
     const res = req.res as ExpressResponse;
-    res.clearCookie("accessToken", { path: "/" });
-    res.clearCookie("refreshToken", { path: "/" });
+    this.clearCookies(res);
 
     return {
       success: true,
@@ -226,9 +242,6 @@ export class AuthController extends Controller {
 
   @Post("/refresh-token")
   async refreshToken(@Request() req: ExpressRequest) {
-    console.log("Refresh token endpoint called");
-    console.log("Cookies:", req.cookies);
-
     const refreshToken = req.cookies?.refreshToken;
     const newTokens = await new TokensService().refreshTokens(refreshToken);
 

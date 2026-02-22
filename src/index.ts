@@ -8,7 +8,6 @@ import * as swaggerDocument from "../public/swagger.json";
 import { errorHandler } from "./middlewares/errorhandler.middleware";
 import cookieParser from "cookie-parser";
 import path from "path";
-
 import { stripeWebHook } from "./config/stripe/routes/stripeWebhook.route";
 import AppDataSource from "./config/data-source/data-source";
 import { seedInitialAdmin } from "./seeders/seed-initial-admin";
@@ -21,12 +20,15 @@ app.use(stripeWebHook);
 app.use(cookieParser());
 
 //  CORS for production
-const allowedOrigins = ["http://localhost:5173", "https://shankarpoudel.com"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ecommerce.shankarpoudel.com",
+  "https://www.ecommerce.shankarpoudel.com",
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (Postman, mobile apps)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {

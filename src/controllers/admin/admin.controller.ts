@@ -47,11 +47,11 @@ export class AdminController extends Controller {
   @Middlewares(
     authenticateToken,
     revalidateUser,
-    authorizeRoles(UserRole.ADMIN)
+    authorizeRoles(UserRole.ADMIN),
   )
   async revokeUserSession(
     @Request() req: AuthenticatedRequest,
-    @Body() body: { userId: string }
+    @Body() body: { userId: string },
   ) {
     if (!req.user) {
       throw new ApiError(401, "Unauthorized");
@@ -69,7 +69,7 @@ export class AdminController extends Controller {
   @Middlewares(
     authenticateToken,
     revalidateUser,
-    authorizeRoles(UserRole.ADMIN)
+    authorizeRoles(UserRole.ADMIN),
   )
   async banUser(@Body() body: { userId: string }) {
     const adminService = await new AdminService().banUser(body.userId);
@@ -84,7 +84,7 @@ export class AdminController extends Controller {
   @Middlewares(
     authenticateToken,
     revalidateUser,
-    authorizeRoles(UserRole.ADMIN)
+    authorizeRoles(UserRole.ADMIN),
   )
   async unbanUser(@Body() body: { userId: string }) {
     const adminService = await new AdminService().unbanUser(body.userId);

@@ -1428,7 +1428,7 @@
 				"operationId": "UpdateUserById",
 				"responses": {
 					"200": {
-						"description": "User updated successfully",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {

@@ -18,10 +18,15 @@ export class AnalyticsController extends Controller {
   private analyticsService = new AnalyticsService();
 
   @Get("/dashboard")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.ADMIN),
+  )
   async getDashboardAnalytics(
     @Query() startDate?: string,
     @Query() endDate?: string,
-    @Query() period?: "week" | "month" | "quarter" | "year"
+    @Query() period?: "week" | "month" | "quarter" | "year",
   ) {
     try {
       let parsedStartDate: Date | undefined;
@@ -58,7 +63,7 @@ export class AnalyticsController extends Controller {
 
       const data = await this.analyticsService.getDashboardAnalytics(
         parsedStartDate,
-        parsedEndDate
+        parsedEndDate,
       );
 
       this.setStatus(200);

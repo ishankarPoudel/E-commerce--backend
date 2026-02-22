@@ -7,18 +7,29 @@ import {
   Route,
   Tags,
 } from "tsoa";
-import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
+import {
+  AuthenticatedRequest,
+  authenticateToken,
+  authorizeRoles,
+  revalidateUser,
+} from "../../middlewares/auth.middleware";
 import { ApiError } from "../../utils/apiError";
 import { CheckOutService } from "../../services/stripe/checkout.service";
+import { UserRole } from "../../entities/user/userInfo/user.userInfo.entity";
 
 @Route("checkout")
 @Tags("Checkout")
 export class CheckOutController extends Controller {
   @Post("/create-payment-intent")
+  @Middlewares(
+    authenticateToken,
+    revalidateUser,
+    authorizeRoles(UserRole.USER, UserRole.ADMIN),
+  )
   async createPaymentIntent(
     @Request() req: AuthenticatedRequest,
     @Body()
-    body: { deliveryMethod?: "delivery" | "pickup"; shippingAddress?: string }
+    body: { deliveryMethod?: "delivery" | "pickup"; shippingAddress?: string },
   ) {
     const userId = req.user?.id;
     if (!userId) throw new ApiError(401, "Unauthorized");
@@ -26,13 +37,13 @@ export class CheckOutController extends Controller {
     if (body.deliveryMethod === "delivery" && !body.shippingAddress) {
       throw new ApiError(
         400,
-        "Shipping address is required for delivery method"
+        "Shipping address is required for delivery method",
       );
     }
     const checkoutIntent = await new CheckOutService().createPaymentIntent(
       userId,
       body.deliveryMethod,
-      body.shippingAddress
+      body.shippingAddress,
     );
     return {
       success: true,
