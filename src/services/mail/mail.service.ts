@@ -178,7 +178,7 @@ export class MailService {
 
       const isPickup = deliveryMethod === "pickup";
       const serviceCharge = 5;
-      const totalAmount = (order.amount || 0) + serviceCharge;
+      const totalAmount = Number(order.amount || 0) + serviceCharge;
       const deliveryTitle = isPickup ? "Store Pickup" : " Home Delivery";
       const deliveryMessage = isPickup
         ? `
@@ -311,7 +311,7 @@ export class MailService {
         <p style="font-size: 15px; color: #333; margin: 8px 0 4px 0; text-align: right;">
           <strong>Total Amount:</strong>
           <span style="color: #27ae60; font-size: 18px; font-weight: bold;">
-        NPR${order.amount + serviceCharge}
+        NPR${(Number(order.amount) + serviceCharge).toFixed(2)} 
           </span>
         </p>
       </div>
