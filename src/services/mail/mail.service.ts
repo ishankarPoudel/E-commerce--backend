@@ -76,7 +76,7 @@ export class MailService {
     try {
       await this.sendMail({
         to: email,
-        subject: "🔐 New Login Detected on Your Account",
+        subject: " New Login Detected on Your Account",
         html: `
     <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px;">
       <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
@@ -152,7 +152,7 @@ export class MailService {
       const items: OrderItem[] =
         order.itemsSnapshot || order.itemsSnapShot || [];
 
-      const currency = order.currency || "USD";
+      const currency = order.currency || "NPR";
       const deliveryMethod = order.deliveryMethod || "delivery";
       const status = order.status || "pending";
       const paymentProvider = order.paymentProvider; // "esewa" | "stripe"
@@ -185,7 +185,7 @@ export class MailService {
             : "#e74c3c";
 
       const isPickup = deliveryMethod === "pickup";
-      const deliveryTitle = isPickup ? "🏪 Store Pickup" : "🚚 Home Delivery";
+      const deliveryTitle = isPickup ? "Store Pickup" : " Home Delivery";
       const deliveryMessage = isPickup
         ? `
       <p style="font-size: 14px; color: #555; text-align: center; margin: 8px 0;">
@@ -204,30 +204,30 @@ export class MailService {
       </p>
     `;
 
-      // ✅ Payment method display
+      // Payment method section
       const paymentMethodHtml =
         paymentProvider === "esewa"
           ? `
         <div style="background-color: #f0f9ff; border-left: 4px solid #60a917; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #60a917; margin: 0 0 8px 0; font-size: 16px;">
-            💳 Payment via eSewa
+        Payment via eSewa
           </h3>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Payment Method: <strong>eSewa Digital Wallet</strong>
+        Payment Method: <strong>eSewa Digital Wallet</strong>
           </p>
           ${
             esewaRefId
               ? `
-            <p style="font-size: 14px; color: #555; margin: 4px 0;">
-              eSewa Reference ID: <strong>${esewaRefId}</strong>
-            </p>
+        <p style="font-size: 14px; color: #555; margin: 4px 0;">
+          eSewa Reference ID: <strong>${esewaRefId}</strong>
+        </p>
           `
               : ""
           }
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Payment Status: <strong style="color: ${statusColor};">${
-              status === "paid" ? "Completed ✓" : status.toUpperCase()
-            }</strong>
+        Payment Status: <strong style="color: ${statusColor};">${
+          status === "paid" ? "Completed ✓" : status.toUpperCase()
+        }</strong>
           </p>
         </div>
       `
@@ -235,15 +235,15 @@ export class MailService {
             ? `
         <div style="background-color: #f0f9ff; border-left: 4px solid #635bff; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #635bff; margin: 0 0 8px 0; font-size: 16px;">
-            💳 Payment via Stripe
+        💳 Payment via Stripe
           </h3>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Payment Method: <strong>Credit/Debit Card</strong>
+        Payment Method: <strong>Credit/Debit Card</strong>
           </p>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Payment Status: <strong style="color: ${statusColor};">${
-              status === "paid" ? "Completed ✓" : status.toUpperCase()
-            }</strong>
+        Payment Status: <strong style="color: ${statusColor};">${
+          status === "paid" ? "Completed ✓" : status.toUpperCase()
+        }</strong>
           </p>
         </div>
       `
@@ -251,21 +251,27 @@ export class MailService {
               ? `
         <div style="background-color: #fff3cd; border-left: 4px solid #f39c12; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #f39c12; margin: 0 0 8px 0; font-size: 16px;">
-            💵 Cash Payment at Store
+        💵 Cash Payment at Store
           </h3>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-            Please pay <strong>${
-              order.amount || 0
-            } ${currency.toUpperCase()}</strong> when you pick up your order.
+        Please pay <strong>${
+          order.amount || 0
+        }  ${currency.toUpperCase()}</strong> when you pick up your order.
+          </p>
+          <p style="font-size: 13px; color: #666; margin: 8px 0 0 0;">
+        <em>Note: A service charge of 5 NPR will be applied at pickup.</em>
           </p>
         </div>
       `
               : "";
 
+      const serviceCharge = 5;
+      const totalAmount = (order.amount || 0) + serviceCharge;
+
       const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
       <h2 style="color: #2c3e50; text-align: center; margin-bottom: 12px;">
-        👜 Order Confirmation
+        Order Confirmation
       </h2>
       <p style="color: #555; text-align: center; font-size: 15px; margin-top: 0;">
         Thank you for your purchase! Your order has been received.
@@ -292,9 +298,9 @@ export class MailService {
       <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
         <thead>
           <tr>
-            <th align="left" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Item</th>
-            <th align="center" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Qty</th>
-            <th align="right" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Total</th>
+        <th align="left" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Item</th>
+        <th align="center" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Qty</th>
+        <th align="right" style="border-bottom: 1px solid #ddd; padding: 8px; font-size: 14px; color: #333;">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -306,10 +312,16 @@ export class MailService {
       </table>
 
       <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
-        <p style="font-size: 15px; color: #333; margin: 4px 0; text-align: right;">
+        <p style="font-size: 14px; color: #555; margin: 4px 0; text-align: right;">
+          Subtotal: ${order.amount || 0} ${currency.toUpperCase()}
+        </p>
+        <p style="font-size: 14px; color: #555; margin: 4px 0; text-align: right;">
+          Service Charge: ${serviceCharge} ${currency.toUpperCase()}
+        </p>
+        <p style="font-size: 15px; color: #333; margin: 8px 0 4px 0; text-align: right;">
           <strong>Total Amount:</strong>
           <span style="color: #27ae60; font-size: 18px; font-weight: bold;">
-            ${order.amount || 0} ${currency.toUpperCase()}
+        ${totalAmount} ${currency.toUpperCase()}
           </span>
         </p>
       </div>
@@ -319,7 +331,7 @@ export class MailService {
           ? `
         <div style="margin-top: 16px; text-align: center; padding: 12px; background-color: #e8f5e9; border-radius: 8px;">
           <p style="color: #27ae60; font-size: 14px; margin: 0;">
-            ✅ Payment successfully processed via eSewa
+        Payment successfully processed via eSewa
           </p>
         </div>
       `
@@ -335,16 +347,16 @@ export class MailService {
             : ""
         }
       </div>
-    </div>
-  `;
+        </div>
+      `;
 
       await this.sendMail({
         to: email,
         subject:
           paymentProvider === "esewa" && status === "paid"
-            ? "✅ Payment Confirmed - Order via eSewa"
+            ? " Payment Confirmed - Payment via eSewa"
             : isPickup
-              ? "Order Confirmation - Ready for Store Pickup!"
+              ? "Order Confirmation - We received your order for pickup!"
               : "Order Confirmation - Thank You for Your Purchase!",
         html,
       });
