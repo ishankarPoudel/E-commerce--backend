@@ -248,7 +248,7 @@ export class MailService {
         Cash Payment at Store
           </h3>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-        Please pay <strong>${totalAmount} ${currency.toUpperCase()}</strong> when you pick up your order.
+        Please pay <strong> NPR${order.amount || 0} (service charge: ${serviceCharge} NPR)</strong> when you pick up your order.
           </p>
           
           <p style="font-size: 13px; color: #666; margin: 8px 0 0 0;">
