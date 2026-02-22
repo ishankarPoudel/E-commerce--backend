@@ -311,7 +311,7 @@ export class MailService {
         <p style="font-size: 15px; color: #333; margin: 8px 0 4px 0; text-align: right;">
           <strong>Total Amount:</strong>
           <span style="color: #27ae60; font-size: 18px; font-weight: bold;">
-        ${totalAmount} ${currency.toUpperCase()}
+        NPR${order.amount + serviceCharge}
           </span>
         </p>
       </div>
