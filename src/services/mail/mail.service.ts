@@ -106,14 +106,6 @@ export class MailService {
           If this <strong>wasn't you</strong>, we recommend updating your password immediately and reviewing your account activity.
         </p>
 
-        <div style="margin-top: 30px;">
-          <a href="${
-            process.env.CLIENT_URL
-          }/account/security" style="padding: 12px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
-            Secure My Account
-          </a>
-        </div>
-
         <p style="font-size: 13px; color: #aaa; margin-top: 40px;">
           This message was sent from Avisekh Bag Pashal security system. Do not reply to this email as it is not monitored and replies will not be answered or read.
         </p>
@@ -152,7 +144,7 @@ export class MailService {
       const items: OrderItem[] =
         order.itemsSnapshot || order.itemsSnapShot || [];
 
-      const currency = order.currency || "NPR";
+      const currency = "NPR";
       const deliveryMethod = order.deliveryMethod || "delivery";
       const status = order.status || "pending";
       const paymentProvider = order.paymentProvider; // "esewa" | "stripe"
@@ -185,6 +177,8 @@ export class MailService {
             : "#e74c3c";
 
       const isPickup = deliveryMethod === "pickup";
+      const serviceCharge = 5;
+      const totalAmount = (order.amount || 0) + serviceCharge;
       const deliveryTitle = isPickup ? "Store Pickup" : " Home Delivery";
       const deliveryMessage = isPickup
         ? `
@@ -235,7 +229,7 @@ export class MailService {
             ? `
         <div style="background-color: #f0f9ff; border-left: 4px solid #635bff; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #635bff; margin: 0 0 8px 0; font-size: 16px;">
-        💳 Payment via Stripe
+        Payment via Stripe
           </h3>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
         Payment Method: <strong>Credit/Debit Card</strong>
@@ -251,22 +245,18 @@ export class MailService {
               ? `
         <div style="background-color: #fff3cd; border-left: 4px solid #f39c12; padding: 16px; margin: 16px 0; border-radius: 8px;">
           <h3 style="color: #f39c12; margin: 0 0 8px 0; font-size: 16px;">
-        💵 Cash Payment at Store
+        Cash Payment at Store
           </h3>
           <p style="font-size: 14px; color: #555; margin: 4px 0;">
-        Please pay <strong>${
-          order.amount || 0
-        }  ${currency.toUpperCase()}</strong> when you pick up your order.
+        Please pay <strong>${totalAmount} ${currency.toUpperCase()}</strong> when you pick up your order.
           </p>
+          
           <p style="font-size: 13px; color: #666; margin: 8px 0 0 0;">
         <em>Note: A service charge of 5 NPR will be applied at pickup.</em>
           </p>
         </div>
       `
               : "";
-
-      const serviceCharge = 5;
-      const totalAmount = (order.amount || 0) + serviceCharge;
 
       const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
