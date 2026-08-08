@@ -21,7 +21,6 @@
     "@types/express": "^5.0.6",
     "@types/node": "^22.19.7",
     "@types/swagger-ui-express": "^4.1.8",
-    "dotenv": "^16.6.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
@@ -45,6 +44,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "crypto-js": "^4.2.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^7.5.1",
     "jsonwebtoken": "^9.0.3",
