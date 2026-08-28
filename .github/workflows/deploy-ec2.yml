@@ -4,30 +4,24 @@ on:
   push:
     branches:
       - staging
-      - production
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Pull latest code
-        run: |
-          cd ~/E-commerce--backend
-          git pull origin staging
-
-      - name: Rebuild Docker image
-        run: |
-          cd ~/E-commerce--backend
-          sudo docker build -t ecommerce-backend .
-
-      - name: Restart container
-        run: |
-          cd ~/E-commerce--backend
-          sudo docker rm -f backend || true
-          sudo docker run -d -p 8000:8000 --env-file .env --restart=always --name backend ecommerce-backend
-
-      - name: Verify deployment
-        run: |
-          sleep 5
-          sudo docker logs backend --tail 10
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          debug: true
+          script: |
+            cd ~/E-commerce--backend
+            git pull origin staging
+            sudo docker build -t ecommerce-backend .
+            sudo docker rm -f backend || true
+            sudo docker run -d -p 8000:8000 --env-file .env --restart=always --name backend ecommerce-backend
+            sleep 5
+            sudo docker logs backend --tail 10
