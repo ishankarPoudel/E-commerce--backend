@@ -1,0 +1,32 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code
+        run: |
+          cd ~/E-commerce--backend
+          git pull origin staging
+
+      - name: Rebuild Docker image
+        run: |
+          cd ~/E-commerce--backend
+          sudo docker build -t ecommerce-backend .
+
+      - name: Restart container
+        run: |
+          cd ~/E-commerce--backend
+          sudo docker rm -f backend || true
+          sudo docker run -d -p 8000:8000 --env-file .env --restart=always --name backend ecommerce-backend
+
+      - name: Verify deployment
+        run: |
+          sleep 5
+          sudo docker logs backend --tail 10
