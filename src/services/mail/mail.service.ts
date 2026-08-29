@@ -31,6 +31,7 @@ export class MailService {
         <p>If you did not create an account, please ignore this email.</p>
         `,
       });
+      console.log("FROM_NAME:", FROM_NAME, "FROM_EMAIL:", FROM_EMAIL);
     } catch (err) {
       console.error("Error sending email:", err);
     }
