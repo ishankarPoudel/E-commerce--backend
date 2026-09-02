@@ -8,7 +8,7 @@ RUN pnpm build
 FROM node:20-slim
 WORKDIR /app
 RUN npm install -g pnpm
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/public ./public
