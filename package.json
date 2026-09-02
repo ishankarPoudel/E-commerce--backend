@@ -63,5 +63,8 @@
     "swagger-ui-express": "^5.0.1",
     "tsoa": "^6.6.0",
     "typeorm": "^0.3.28"
-  }
+  },
+  "pnpm": {
+  "onlyBuiltDependencies": ["bcrypt", "@scarf/scarf"]
+}
 }
